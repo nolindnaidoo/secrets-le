@@ -91,64 +91,35 @@ export function sanitizeContent(
 	const replacements: SecretReplacement[] = [];
 
 	try {
-		let sanitized = content;
-		const sortedSecrets = [...secrets].sort((a, b) => {
-			const lineA = a.position?.line ?? 0;
-			const lineB = b.position?.line ?? 0;
-			if (lineA !== lineB) return lineB - lineA; // Process from end to start
-			return (b.position?.column ?? 0) - (a.position?.column ?? 0);
-		});
+		// Replace by offset, end to start, so earlier offsets stay valid.
+		// Overlapping detections (two patterns over the same span) collapse
+		// to a single replacement; stale offsets are skipped, never guessed.
+		const sortedSecrets = [...secrets].sort((a, b) => b.start - a.start);
 
-		const lines = sanitized.split('\n');
+		let sanitized = content;
+		let lastReplacedStart = Number.POSITIVE_INFINITY;
 
 		for (const secret of sortedSecrets) {
-			const lineNum = (secret.position?.line ?? 1) - 1;
-			const column = (secret.position?.column ?? 1) - 1;
+			if (secret.start < 0 || secret.end > content.length) continue;
+			if (secret.end > lastReplacedStart) continue;
+			if (content.slice(secret.start, secret.end) !== secret.value) continue;
 
-			if (lineNum >= 0 && lineNum < lines.length) {
-				const line = lines[lineNum] ?? '';
-				const value = secret.value;
+			sanitized =
+				sanitized.slice(0, secret.start) +
+				replaceWith +
+				sanitized.slice(secret.end);
+			lastReplacedStart = secret.start;
 
-				// Use column position if available, otherwise fall back to indexOf
-				// This ensures we replace at the exact detected position, not the first occurrence
-				let valueIndex = -1;
-				if (column >= 0 && column < line.length) {
-					// Try to find the value starting at or near the detected column position
-					const searchStart = Math.max(0, column - value.length);
-					const searchEnd = Math.min(line.length, column + value.length * 2);
-					const searchRegion = line.substring(searchStart, searchEnd);
-					const relativeIndex = searchRegion.indexOf(value);
-
-					if (relativeIndex >= 0) {
-						valueIndex = searchStart + relativeIndex;
-					}
-				}
-
-				// Fallback to indexOf if position-based search failed
-				if (valueIndex < 0) {
-					valueIndex = line.indexOf(value);
-				}
-
-				// Only replace if we found a match
-				if (valueIndex >= 0 && valueIndex < line.length) {
-					const before = line.substring(0, valueIndex);
-					const after = line.substring(valueIndex + value.length);
-					const newLine = before + replaceWith + after;
-					lines[lineNum] = newLine;
-
-					replacements.push(
-						Object.freeze({
-							original: value,
-							replaced: replaceWith,
-							type: secret.type,
-							position: secret.position,
-						}),
-					);
-				}
-			}
+			replacements.push(
+				Object.freeze({
+					original: secret.value,
+					replaced: replaceWith,
+					type: secret.type,
+					position: secret.position,
+				}),
+			);
 		}
 
-		sanitized = lines.join('\n');
 		const sanitizedLength = sanitized.length;
 		const processingTimeMs = Date.now() - startTime;
 

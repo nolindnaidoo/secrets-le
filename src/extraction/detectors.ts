@@ -1,260 +1,274 @@
 /**
- * Secret detection patterns
- * Detects various types of secrets using regex patterns and validation
+ * Secret detection over whole content.
+ *
+ * Every pattern runs against the full text with the `d` flag; positions
+ * come from match.indices via the newline-offset index, so the reported
+ * line/column point at the secret VALUE, not the start of the match.
+ * v1.x matched line by line, which made the three multiline private-key
+ * patterns unmatchable in practice (a PEM block never fits on one line).
+ *
+ * Key-based patterns accept optional quotes around the key name, so
+ * JSON (`"apiKey": "..."`), YAML (`api_key: ...`), env (`API_KEY=...`)
+ * and code (`apiKey = '...'`) all match the same way.
+ *
+ * Intentional rejections and misses are documented in heuristics.ts.
+ * The v1.x "reversed format" api-key pattern (value before key name)
+ * was dropped: it never matched real configs and doubled every scan.
  */
 
 import type { ConfidenceLevel, DetectedSecret, SecretType } from '../types';
+import {
+	confidenceByLength,
+	isJwtShaped,
+	looksLikePlaceholder,
+} from './heuristics';
+import { createPositionIndex, lineTextAt } from './position';
 
-export interface SecretPattern {
+interface SecretPattern {
 	readonly type: SecretType;
 	readonly pattern: RegExp;
-	readonly confidence: (
-		match: RegExpMatchArray,
-		context: string,
-	) => ConfidenceLevel;
-	readonly extractKey?: (
-		match: RegExpMatchArray,
-		context: string,
-	) => string | undefined;
+	/** Capture group holding the secret value; 0 = whole match. */
+	readonly valueGroup: number;
+	/** Capture group holding the key name, when the pattern has one. */
+	readonly keyGroup?: number;
+	readonly confidence: (value: string) => ConfidenceLevel;
 	readonly description: string;
 }
 
-/**
- * All secret detection patterns
- */
-export const SECRET_PATTERNS = Object.freeze([
-	// API Keys
-	{
-		type: 'api-key',
-		pattern: /(?:api[_-]?key|apikey)\s*[:=]\s*['"]?([a-zA-Z0-9_-]{20,})['"]?/gi,
-		confidence: (match: RegExpMatchArray) => {
-			const value = match[1] ?? '';
-			if (value.length >= 32) return 'high';
-			if (value.length >= 20) return 'medium';
-			return 'low';
-		},
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Generic API key',
-	},
-	{
-		type: 'api-key',
-		pattern:
-			/(?:['"]?)([a-zA-Z0-9_-]{32,})(?:['"]?)\s*[:=]\s*(?:['"]?)(?:api[_-]?key|apikey)/gi,
-		confidence: () => 'high',
-		description: 'API key (reversed format)',
-	},
+const high = (): ConfidenceLevel => 'high';
+const medium = (): ConfidenceLevel => 'medium';
+const low = (): ConfidenceLevel => 'low';
 
-	// AWS Keys
-	{
-		type: 'aws-key',
-		pattern:
-			/(?:aws[_-]?(?:access[_-]?)?key[_-]?(?:id)?|accesskeyid)\s*[:=]\s*['"]?(AKIA[0-9A-Z]{16})['"]?/gi,
-		confidence: () => 'high',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'AWS Access Key ID',
-	},
+/**
+ * Key-based pattern prefix: an identifier ENDING in one of `names`
+ * (compound keys like DATABASE_PASSWORD or db_password must match),
+ * optionally quoted, followed by `:` or `=` and an optional quote.
+ */
+const key = (names: string): string =>
+	`['"]?\\b([A-Za-z0-9_-]*(?:${names}))\\b['"]?\\s*[:=]\\s*['"]?`;
+
+/**
+ * Order matters: specific key patterns (oauth/access/refresh/jwt) come
+ * before the generic token pattern; the first pattern to claim a span
+ * wins dedupe.
+ */
+export const SECRET_PATTERNS: readonly SecretPattern[] = Object.freeze([
+	// --- key-based patterns (keyGroup 1, valueGroup 2) -----------------
 	{
 		type: 'aws-secret',
-		pattern:
-			/(?:aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey)\s*[:=]\s*['"]?([a-zA-Z0-9/+=]{40})['"]?/gi,
-		confidence: () => 'high',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
+		pattern: new RegExp(
+			`${key('aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey')}([A-Za-z0-9/+=]{40})(?!['"A-Za-z0-9/+=])`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: high,
 		description: 'AWS Secret Access Key',
-	},
-
-	// Passwords
-	{
-		type: 'password',
-		pattern: /(?:password|passwd|pwd)\s*[:=]\s*['"]?([^\s'"]{8,})['"]?/gi,
-		confidence: (match: RegExpMatchArray) => {
-			const value = match[1] ?? '';
-			if (value.length >= 12) return 'high';
-			if (value.length >= 8) return 'medium';
-			return 'low';
-		},
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Password',
-	},
-
-	// Tokens
-	{
-		type: 'token',
-		pattern:
-			/(?:token|secret[_-]?token)\s*[:=]\s*['"]?([a-zA-Z0-9_\-.]{20,})['"]?/gi,
-		confidence: (match: RegExpMatchArray) => {
-			const value = match[1] ?? '';
-			if (value.length >= 32) return 'high';
-			if (value.length >= 20) return 'medium';
-			return 'low';
-		},
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Generic token',
-	},
-	{
-		type: 'bearer-token',
-		pattern: /(?:bearer|authorization)\s+([a-zA-Z0-9_\-.]{20,})/gi,
-		confidence: () => 'high',
-		description: 'Bearer token',
 	},
 	{
 		type: 'access-token',
-		pattern: /(?:access[_-]?token)\s*[:=]\s*['"]?([a-zA-Z0-9_\-.]{20,})['"]?/gi,
-		confidence: () => 'high',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
+		pattern: new RegExp(
+			`${key('access[_-]?token')}([A-Za-z0-9_\\-.]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: high,
 		description: 'Access token',
 	},
 	{
 		type: 'refresh-token',
-		pattern:
-			/(?:refresh[_-]?token)\s*[:=]\s*['"]?([a-zA-Z0-9_\-.]{20,})['"]?/gi,
-		confidence: () => 'high',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
+		pattern: new RegExp(
+			`${key('refresh[_-]?token')}([A-Za-z0-9_\\-.]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: high,
 		description: 'Refresh token',
 	},
-
-	// JWT Tokens
+	{
+		type: 'oauth-token',
+		pattern: new RegExp(
+			`${key('oauth[_-]?(?:2[_-]?)?token')}([A-Za-z0-9_\\-.]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: high,
+		description: 'OAuth token',
+	},
 	{
 		type: 'jwt',
-		pattern:
-			/(?:jwt|json[_-]?web[_-]?token)\s*[:=]\s*['"]?([a-zA-Z0-9_\-.]{50,})['"]?/gi,
-		confidence: (match: RegExpMatchArray) => {
-			const value = match[1] ?? '';
-			const parts = value.split('.');
-			if (parts.length === 3) return 'high';
-			return 'medium';
-		},
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
+		pattern: new RegExp(
+			`${key('jwt|json[_-]?web[_-]?token')}([A-Za-z0-9_\\-.]{50,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: (v) => (isJwtShaped(v) ? 'high' : 'medium'),
 		description: 'JWT token',
 	},
 	{
-		type: 'jwt',
-		pattern: /['"]?([a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+)['"]?/g,
-		confidence: (match: RegExpMatchArray) => {
-			const value = match[1] ?? '';
-			if (value.includes('.') && value.split('.').length === 3) return 'high';
-			return 'medium';
-		},
-		description: 'JWT token (format only)',
-	},
-
-	// OAuth
-	{
-		type: 'oauth-token',
-		pattern:
-			/(?:oauth[_-]?token|oauth[_-]?2[_-]?token)\s*[:=]\s*['"]?([a-zA-Z0-9_\-.]{20,})['"]?/gi,
-		confidence: () => 'high',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'OAuth token',
-	},
-
-	// Private Keys
-	{
-		type: 'private-key',
-		pattern:
-			/-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----[\s\S]{100,}?-----END\s+(?:RSA\s+)?PRIVATE\s+KEY-----/gi,
-		confidence: () => 'high',
-		description: 'Private key (RSA/SSH)',
+		type: 'api-key',
+		pattern: new RegExp(
+			`${key('api[_-]?key|apikey')}([A-Za-z0-9_-]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: (v) => confidenceByLength(v, 32, 20),
+		description: 'Generic API key',
 	},
 	{
-		type: 'ssh-key',
-		pattern:
-			/-----BEGIN\s+(?:OPENSSH\s+)?PRIVATE\s+KEY-----[\s\S]{100,}?-----END\s+(?:OPENSSH\s+)?PRIVATE\s+KEY-----/gi,
-		confidence: () => 'high',
-		description: 'SSH private key',
+		type: 'token',
+		pattern: new RegExp(
+			`${key('token|secret[_-]?token')}([A-Za-z0-9_\\-.]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: (v) => confidenceByLength(v, 32, 20),
+		description: 'Generic token',
 	},
 	{
-		type: 'pgp-key',
-		pattern:
-			/-----BEGIN\s+PGP\s+PRIVATE\s+KEY\s+BLOCK-----[\s\S]{100,}?-----END\s+PGP\s+PRIVATE\s+KEY\s+BLOCK-----/gi,
-		confidence: () => 'high',
-		description: 'PGP private key',
+		type: 'password',
+		pattern: new RegExp(`${key('password|passwd|pwd')}([^\\s'";]{8,})`, 'gid'),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: (v) => confidenceByLength(v, 12, 8),
+		description: 'Password',
 	},
-
-	// Database URLs
 	{
-		type: 'database-url',
-		pattern:
-			/(?:database[_-]?url|db[_-]?url|datasource[_-]?url)\s*[:=]\s*['"]?(?:postgres|mysql|mongodb|redis|sqlite):\/\/[^\s'"]+['"]?/gi,
-		confidence: (match: RegExpMatchArray) => {
-			const value = match[0] ?? '';
-			if (value.includes('://')) {
-				const url = value.match(
-					/(postgres|mysql|mongodb|redis|sqlite):\/\/[^\s'"]+/,
-				);
-				if (url?.[0]?.includes(':')) return 'high';
-			}
-			return 'medium';
-		},
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Database connection URL',
+		type: 'azure-key',
+		pattern: new RegExp(
+			`${key('azure[_-]?(?:account[_-]?)?key|accountkey')}([A-Za-z0-9+/]{32,}={0,2})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: high,
+		description: 'Azure account key',
+	},
+	{
+		type: 'gcp-key',
+		pattern: new RegExp(
+			`${key('gcp[_-]?key|google[_-]?cloud[_-]?key')}([A-Za-z0-9_-]{12,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: medium,
+		description: 'GCP/Google Cloud key',
+	},
+	{
+		type: 'session-id',
+		pattern: new RegExp(
+			`${key('session[_-]?id|sessionid')}([A-Za-z0-9_-]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: medium,
+		description: 'Session ID',
+	},
+	{
+		type: 'cookie',
+		pattern: new RegExp(`${key('cookie|set-cookie')}([^\\s'";]{20,})`, 'gid'),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: low,
+		description: 'Cookie value',
 	},
 	{
 		type: 'connection-string',
-		pattern:
-			/(?:connection[_-]?string|conn[_-]?string)\s*[:=]\s*['"]?[^\s'"]{20,}['"]?/gi,
-		confidence: () => 'medium',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
+		pattern: new RegExp(
+			`${key('connection[_-]?string|conn[_-]?string')}([^\\s'"]{20,})`,
+			'gid',
+		),
+		keyGroup: 1,
+		valueGroup: 2,
+		confidence: medium,
 		description: 'Connection string',
 	},
 
-	// Azure
+	// --- standalone patterns (valueGroup 1, no key required) -----------
 	{
-		type: 'azure-key',
+		type: 'aws-key',
+		pattern: /\b(AKIA[0-9A-Z]{16})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'AWS Access Key ID',
+	},
+	{
+		type: 'token',
 		pattern:
-			/(?:azure[_-]?(?:account[_-]?)?key|accountkey)\s*[:=]\s*['"]?([a-zA-Z0-9+/]{32,}=?)['"]?/gi,
-		confidence: () => 'high',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Azure account key',
+			/\b(ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_-]{35})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Known token prefix (GitHub/Slack/Stripe/Google)',
 	},
-
-	// GCP
 	{
-		type: 'gcp-key',
+		type: 'bearer-token',
+		pattern: /\bbearer\s+([A-Za-z0-9_\-.=]{20,})/dgi,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Bearer token',
+	},
+	{
+		type: 'jwt',
 		pattern:
-			/(?:gcp[_-]?key|google[_-]?cloud[_-]?key|project[_-]?id)\s*[:=]\s*['"]?([a-zA-Z0-9_-]{12,})['"]?/gi,
-		confidence: () => 'medium',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'GCP/Google Cloud key',
+			/\b(eyJ[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'JWT token (format only)',
 	},
-
-	// Session IDs
 	{
-		type: 'session-id',
+		type: 'database-url',
 		pattern:
-			/(?:session[_-]?id|sessionid)\s*[:=]\s*['"]?([a-zA-Z0-9_-]{20,})['"]?/gi,
-		confidence: () => 'medium',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Session ID',
+			/\b((?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis|rediss|amqp):\/\/[^\s'"@]+:[^\s'"@]+@[^\s'"]+)/dgi,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Database URL with embedded credentials',
 	},
-
-	// Cookies
 	{
-		type: 'cookie',
-		pattern: /(?:cookie|set-cookie)\s*[:=]\s*['"]?([^\s'"]{20,})['"]?/gi,
-		confidence: () => 'low',
-		extractKey: (match: RegExpMatchArray) =>
-			match[0]?.split(/[:=]/)[0]?.trim().toLowerCase(),
-		description: 'Cookie value',
+		type: 'private-key',
+		pattern:
+			/-----BEGIN\s+(?:[A-Z][A-Z ]*\s+)?PRIVATE\s+KEY(?:\s+BLOCK)?-----[\s\S]+?-----END\s+(?:[A-Z][A-Z ]*\s+)?PRIVATE\s+KEY(?:\s+BLOCK)?-----/dg,
+		valueGroup: 0,
+		confidence: high,
+		description: 'Private key block (PEM)',
 	},
-]) as readonly SecretPattern[];
+]);
 
-/**
- * Detects secrets in content using all patterns
- */
+const API_KEY_TYPES: ReadonlySet<SecretType> = new Set([
+	'api-key',
+	'aws-key',
+	'aws-secret',
+	'gcp-key',
+	'azure-key',
+]);
+const TOKEN_TYPES: ReadonlySet<SecretType> = new Set([
+	'token',
+	'jwt',
+	'oauth-token',
+	'bearer-token',
+	'access-token',
+	'refresh-token',
+]);
+const PRIVATE_KEY_TYPES: ReadonlySet<SecretType> = new Set([
+	'private-key',
+	'ssh-key',
+	'pgp-key',
+]);
+
+/** PEM blocks carry their kind in the header; refine the reported type. */
+function classifyPemBlock(block: string): SecretType {
+	if (block.includes('OPENSSH')) return 'ssh-key';
+	if (block.includes('PGP')) return 'pgp-key';
+	return 'private-key';
+}
+
 export function detectSecrets(
 	content: string,
 	options: {
@@ -273,96 +287,71 @@ export function detectSecrets(
 		sensitivity = 'medium',
 	} = options;
 
-	const lines = content.split('\n');
+	const positionAt = createPositionIndex(content);
 	const secrets: DetectedSecret[] = [];
 	const seen = new Set<string>();
 
-	for (let lineNum = 0; lineNum < lines.length; lineNum++) {
-		const line = lines[lineNum] ?? '';
-		if (!line) continue;
+	for (const pattern of SECRET_PATTERNS) {
+		const resolvedType =
+			pattern.valueGroup === 0 && pattern.type === 'private-key'
+				? undefined // classified per match below
+				: pattern.type;
 
-		for (const pattern of SECRET_PATTERNS) {
-			// Check if this pattern type should be included
-			if (
-				(pattern.type === 'api-key' ||
-					pattern.type === 'aws-key' ||
-					pattern.type === 'aws-secret' ||
-					pattern.type === 'gcp-key' ||
-					pattern.type === 'azure-key') &&
-				!includeApiKeys
-			) {
-				continue;
-			}
-			if (pattern.type === 'password' && !includePasswords) {
-				continue;
-			}
-			if (
-				(pattern.type === 'token' ||
-					pattern.type === 'jwt' ||
-					pattern.type === 'oauth-token' ||
-					pattern.type === 'bearer-token' ||
-					pattern.type === 'access-token' ||
-					pattern.type === 'refresh-token') &&
-				!includeTokens
-			) {
-				continue;
-			}
-			if (
-				(pattern.type === 'private-key' ||
-					pattern.type === 'ssh-key' ||
-					pattern.type === 'pgp-key') &&
-				!includePrivateKeys
-			) {
-				continue;
-			}
+		if (resolvedType && !included(resolvedType)) continue;
 
-			const matches = Array.from(line.matchAll(pattern.pattern));
-			for (const match of matches) {
-				if (!match[0]) continue;
+		pattern.pattern.lastIndex = 0;
+		for (const match of content.matchAll(pattern.pattern)) {
+			const indices = match.indices;
+			if (!indices) continue;
 
-				// Extract the secret value
-				let value = match[1];
-				if (!value && match[0]) {
-					// For patterns without capture groups, use the full match
-					value = match[0];
-				}
-				if (!value) continue;
+			const valueSpan = indices[pattern.valueGroup];
+			const value = match[pattern.valueGroup];
+			if (!valueSpan || !value) continue;
 
-				// Filter by sensitivity
-				const confidence = pattern.confidence(match, line);
-				if (sensitivity === 'high' && confidence !== 'high') {
-					continue;
-				}
-				if (sensitivity === 'medium' && confidence === 'low') {
-					continue;
-				}
+			if (looksLikePlaceholder(value)) continue;
 
-				// Deduplicate based on value and line
-				const key = `${lineNum}:${value}`;
-				if (seen.has(key)) continue;
-				seen.add(key);
+			const type = resolvedType ?? classifyPemBlock(value) ?? pattern.type;
+			if (!resolvedType && !included(type)) continue;
 
-				const keyName = pattern.extractKey
-					? pattern.extractKey(match, line)
+			const confidence = pattern.confidence(value);
+			if (sensitivity === 'high' && confidence !== 'high') continue;
+			if (sensitivity === 'medium' && confidence === 'low') continue;
+
+			const [start, end] = valueSpan;
+			const dedupeKey = `${start}:${value}`;
+			if (seen.has(dedupeKey)) continue;
+			seen.add(dedupeKey);
+
+			const keyName =
+				pattern.keyGroup !== undefined
+					? match[pattern.keyGroup]?.toLowerCase()
 					: undefined;
 
-				const secret: DetectedSecret = Object.freeze({
+			secrets.push(
+				Object.freeze({
 					value,
-					type: pattern.type,
+					type,
 					confidence,
-					position: Object.freeze({
-						line: lineNum + 1,
-						column: (match.index ?? 0) + 1,
-					}),
-					context: line.trim(),
+					start,
+					end,
+					position: positionAt(start),
+					context: lineTextAt(content, start).trim(),
 					key: keyName,
 					description: pattern.description,
-				});
-
-				secrets.push(secret);
-			}
+				}),
+			);
 		}
 	}
 
+	// Report in document order regardless of which pattern found what.
+	secrets.sort((a, b) => a.start - b.start);
 	return Object.freeze(secrets);
+
+	function included(type: SecretType): boolean {
+		if (API_KEY_TYPES.has(type)) return includeApiKeys;
+		if (type === 'password') return includePasswords;
+		if (TOKEN_TYPES.has(type)) return includeTokens;
+		if (PRIVATE_KEY_TYPES.has(type)) return includePrivateKeys;
+		return true;
+	}
 }

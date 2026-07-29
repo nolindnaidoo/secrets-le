@@ -21,6 +21,9 @@ export interface DetectedSecret {
 	readonly value: string;
 	readonly type: SecretType;
 	readonly confidence: ConfidenceLevel;
+	/** Offsets of the value within the scanned content. */
+	readonly start: number;
+	readonly end: number;
 	readonly position?:
 		| {
 				readonly line: number;
