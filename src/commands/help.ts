@@ -1,8 +1,5 @@
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import type { Telemetry } from '../telemetry/telemetry';
-
-const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 /**
  * Register help command to show documentation
@@ -31,48 +28,33 @@ export function registerHelpCommand(
 }
 
 function buildHelpContent(): string {
-	const title = localize('runtime.help.title', 'Secrets-LE Help');
-	const quickStart = localize(
-		'runtime.help.quick-start',
-		'1. Open a file\n2. Run "Secrets-LE: Detect Secrets" to scan for secrets\n3. Run "Secrets-LE: Sanitize Secrets" to replace them with placeholders',
-	);
-	const commands = localize(
-		'runtime.help.commands',
-		'**Detect**: Scan document for secrets (API keys, tokens, passwords, etc.)\n**Sanitize**: Replace detected secrets with safe placeholders\n**Settings**: Configure detection sensitivity and options',
-	);
-	const troubleshooting = localize(
-		'runtime.help.troubleshooting',
-		'**No secrets found?** Adjust sensitivity in settings\n**Performance issues?** Enable safety settings for large files\n**Need help?** Check Output panel for details',
-	);
-	const settings = localize(
-		'runtime.help.settings',
-		'Access via Command Palette: "Secrets-LE: Open Settings"\nKey settings: Detection sensitivity, sanitization placeholder, safety checks',
-	);
-	const support = localize(
-		'runtime.help.support',
-		'GitHub Issues: https://github.com/OffensiveEdge/secrets-le/issues',
-	);
-
-	return `# ${title}
+	return `# Secrets-LE Help
 
 ## Quick Start
 
-${quickStart}
+1. Open a workspace folder
+2. Run "Secrets-LE: Detect Secrets" to scan for secrets
+3. Run "Secrets-LE: Sanitize Secrets" to replace them with placeholders
 
 ## Commands
 
-${commands}
+**Detect**: Scan workspace for secrets (API keys, tokens, passwords, etc.)
+**Sanitize**: Replace detected secrets in the active file with safe placeholders
+**Settings**: Configure detection sensitivity and options
 
 ## Troubleshooting
 
-${troubleshooting}
+**No secrets found?** Adjust sensitivity in settings
+**Performance issues?** Reduce workspace scan limits in settings
+**Need help?** Check Output panel for details
 
 ## Settings
 
-${settings}
+Access via Command Palette: "Secrets-LE: Open Settings"
+Key settings: Detection sensitivity, sanitization placeholder, safety checks
 
 ## Support
 
-${support}
+GitHub Issues: https://github.com/nolindnaidoo/secrets-le/issues
 `;
 }

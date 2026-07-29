@@ -34,7 +34,6 @@ export default defineConfig({
   resolve: {
     alias: {
       'vscode': path.resolve(__dirname, 'src/__mocks__/vscode.ts'),
-      'vscode-nls': path.resolve(__dirname, 'src/__mocks__/vscode-nls.ts'),
     },
   },
 })

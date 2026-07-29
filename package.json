@@ -1,10 +1,6 @@
 {
 	"name": "secrets-le",
-	"publisher": "OffensiveEdge",
-	"displayName": "%manifest.ext.name%",
-	"description": "%manifest.ext.description%",
 	"version": "1.7.1",
-	"license": "MIT",
 	"author": {
 		"name": "OffensiveEdge",
 		"url": "https://github.com/OffensiveEdge"
@@ -13,46 +9,20 @@
 		"type": "git",
 		"url": "https://github.com/OffensiveEdge/secrets-le.git"
 	},
-	"bugs": {
-		"url": "https://github.com/OffensiveEdge/secrets-le/issues"
-	},
-	"homepage": "https://github.com/OffensiveEdge/secrets-le#readme",
-	"engines": {
-		"vscode": "^1.70.0",
-		"node": ">=20.0.0"
-	},
-	"categories": [
-		"Other",
-		"Programming Languages",
-		"Linters",
-		"Security"
-	],
-	"keywords": [
-		"secrets",
-		"secret",
-		"credentials",
-		"api-key",
-		"api",
-		"token",
-		"password",
-		"detection",
-		"sanitize",
-		"sanitization",
-		"security",
-		"gitguardian",
-		"aws",
-		"azure",
-		"gcp",
-		"private-key",
-		"jwt",
-		"oauth",
-		"detect",
-		"scan",
-		"scanner"
-	],
-	"icon": "src/assets/images/icon.png",
 	"main": "./dist/extension.js",
-	"l10n": "./package.nls.json",
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.5",
+		"@types/node": "^24.7.1",
+		"@types/vscode": "^1.70.0",
+		"@vscode/test-electron": "^2.3.0",
+		"@vscode/vsce": "^3.6.2",
+		"esbuild": "^0.28.1",
+		"@vitest/coverage-v8": "^3.2.4",
+		"@vitest/ui": "^3.2.4",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.3",
+		"vitest": "^3.2.4"
+	},
 	"activationEvents": [
 		"onCommand:secrets-le.detect",
 		"onCommand:secrets-le.sanitize",
@@ -75,6 +45,9 @@
 		"onLanguage:bash",
 		"onLanguage:plaintext"
 	],
+	"bugs": {
+		"url": "https://github.com/OffensiveEdge/secrets-le/issues"
+	},
 	"capabilities": {
 		"virtualWorkspaces": {
 			"supported": "limited",
@@ -85,6 +58,12 @@
 			"description": "%manifest.capability.untrusted-workspaces.desc%"
 		}
 	},
+	"categories": [
+		"Other",
+		"Programming Languages",
+		"Linters",
+		"Security"
+	],
 	"contributes": {
 		"commands": [
 			{
@@ -282,50 +261,83 @@
 					"minimum": 1048576,
 					"description": "%manifest.settings.performance.max-memory.desc%"
 				},
-			"secrets-le.performance.maxCpuUsage": {
-				"type": "number",
-				"default": 1000000,
-				"minimum": 100000,
-				"description": "%manifest.settings.performance.max-cpu.desc%"
-			},
-			"secrets-le.workspace.scanPatterns": {
-				"type": "array",
-				"items": {
-					"type": "string"
+				"secrets-le.performance.maxCpuUsage": {
+					"type": "number",
+					"default": 1000000,
+					"minimum": 100000,
+					"description": "%manifest.settings.performance.max-cpu.desc%"
 				},
-				"default": ["**/*"],
-				"description": "%manifest.settings.workspace.scan-patterns.desc%"
-			},
-			"secrets-le.workspace.scanExcludes": {
-				"type": "array",
-				"items": {
-					"type": "string"
+				"secrets-le.workspace.scanPatterns": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": ["**/*"],
+					"description": "%manifest.settings.workspace.scan-patterns.desc%"
 				},
-				"default": [
-					"**/node_modules/**",
-					"**/.git/**",
-					"**/dist/**",
-					"**/build/**",
-					"**/.next/**",
-					"**/coverage/**",
-					"**/*.min.js",
-					"**/*.bundle.js",
-					"**/package-lock.json",
-					"**/yarn.lock",
-					"**/pnpm-lock.yaml"
-				],
-				"description": "%manifest.settings.workspace.scan-excludes.desc%"
-			},
-			"secrets-le.workspace.scanMaxFiles": {
-				"type": "number",
-				"default": 10000,
-				"minimum": 100,
-				"description": "%manifest.settings.workspace.scan-max-files.desc%"
+				"secrets-le.workspace.scanExcludes": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						"**/node_modules/**",
+						"**/.git/**",
+						"**/dist/**",
+						"**/build/**",
+						"**/.next/**",
+						"**/coverage/**",
+						"**/*.min.js",
+						"**/*.bundle.js",
+						"**/package-lock.json",
+						"**/yarn.lock",
+						"**/pnpm-lock.yaml"
+					],
+					"description": "%manifest.settings.workspace.scan-excludes.desc%"
+				},
+				"secrets-le.workspace.scanMaxFiles": {
+					"type": "number",
+					"default": 10000,
+					"minimum": 100,
+					"description": "%manifest.settings.workspace.scan-max-files.desc%"
+				}
 			}
 		}
-	}
-},
-"scripts": {
+	},
+	"description": "%manifest.ext.description%",
+	"displayName": "%manifest.ext.name%",
+	"engines": {
+		"vscode": "^1.70.0",
+		"node": ">=20.0.0"
+	},
+	"homepage": "https://github.com/OffensiveEdge/secrets-le#readme",
+	"icon": "src/assets/images/icon.png",
+	"keywords": [
+		"secrets",
+		"secret",
+		"credentials",
+		"api-key",
+		"api",
+		"token",
+		"password",
+		"detection",
+		"sanitize",
+		"sanitization",
+		"security",
+		"gitguardian",
+		"aws",
+		"azure",
+		"gcp",
+		"private-key",
+		"jwt",
+		"oauth",
+		"detect",
+		"scan",
+		"scanner"
+	],
+	"license": "MIT",
+	"publisher": "OffensiveEdge",
+	"scripts": {
 		"clean": "node -e \"const fs=require('fs');['dist','coverage','release'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
 		"clean:i18n": "node -e \"const fs=require('fs');fs.readdirSync('.').filter(f=>f.startsWith('package.nls.')&&f.endsWith('.json')&&f!=='package.nls.json').forEach(f=>fs.unlinkSync(f))\"",
 		"copy:i18n": "node -e \"const fs=require('fs');fs.readdirSync('src/i18n').forEach(f=>fs.copyFileSync('src/i18n/'+f,f))\"",
@@ -342,22 +354,5 @@
 		"vscode:prepublish": "npm run typecheck && npm run build:prod && npm run check:bundle && npm run copy:i18n",
 		"package": "node -e \"require('fs').mkdirSync('release',{recursive:true})\" && vsce package --allow-package-secrets github --out release/ && npm run clean:i18n",
 		"publish": "vsce publish"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.2.5",
-		"@types/node": "^24.7.1",
-		"@types/vscode": "^1.70.0",
-		"@vscode/test-electron": "^2.3.0",
-		"@vscode/vsce": "^3.6.2",
-		"esbuild": "^0.28.1",
-		"@vitest/coverage-v8": "^3.2.4",
-		"@vitest/ui": "^3.2.4",
-		"tsx": "^4.20.6",
-		"typescript": "^5.9.3",
-		"vitest": "^3.2.4"
-	},
-	"dependencies": {
-		"vscode-nls": "^5.2.0"
 	}
 }
-

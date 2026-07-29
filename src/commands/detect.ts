@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { getConfiguration } from '../config/config';
 import {
 	deduplicateSecrets,
@@ -11,8 +10,6 @@ import type { Notifier } from '../ui/notifier';
 import type { StatusBar } from '../ui/statusBar';
 import type { PerformanceMonitor } from '../utils/performance';
 import { scanWorkspaceForSecrets } from '../utils/workspaceScanner';
-
-const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 /**
  * Register command to detect secrets in workspace
@@ -37,10 +34,7 @@ export function registerDetectCommand(
 				vscode.workspace.workspaceFolders.length === 0
 			) {
 				deps.notifier.showWarning(
-					localize(
-						'runtime.detect.no-workspace',
-						'No workspace open. Please open a workspace folder first.',
-					),
+					'No workspace open. Please open a workspace folder first.',
 				);
 				return;
 			}
@@ -50,10 +44,7 @@ export function registerDetectCommand(
 			// Process with progress indicator
 			try {
 				await deps.notifier.showProgress(
-					localize(
-						'runtime.detect.progress',
-						'Scanning workspace for secrets...',
-					),
+					'Scanning workspace for secrets...',
 					async (progress, token) => {
 						const perfTracker = deps.performanceMonitor.startOperation(
 							'detect',
@@ -152,12 +143,7 @@ export function registerDetectCommand(
 						if (config.copyToClipboardEnabled) {
 							await vscode.env.clipboard.writeText(formattedResult);
 							if (config.notificationsLevel === 'all') {
-								deps.notifier.showInfo(
-									localize(
-										'runtime.detect.copied',
-										'Results copied to clipboard',
-									),
-								);
+								deps.notifier.showInfo('Results copied to clipboard');
 							}
 						}
 
@@ -189,12 +175,7 @@ export function registerDetectCommand(
 
 						// Show completion message based on notification level
 						if (secrets.length > 0) {
-							const message = localize(
-								'runtime.detect.found',
-								'Found {0} potential secret(s) in {1} file(s)',
-								secrets.length,
-								scanResult.filesScanned,
-							);
+							const message = `Found ${secrets.length} potential secret(s) in ${scanResult.filesScanned} file(s)`;
 							if (config.notificationsLevel === 'all') {
 								deps.notifier.showWarning(message);
 							} else if (config.notificationsLevel === 'important') {
@@ -202,11 +183,7 @@ export function registerDetectCommand(
 							}
 						} else if (config.notificationsLevel === 'all') {
 							deps.notifier.showInfo(
-								localize(
-									'runtime.detect.none',
-									'No secrets detected in workspace ({0} files scanned)',
-									scanResult.filesScanned,
-								),
+								`No secrets detected in workspace (${scanResult.filesScanned} files scanned)`,
 							);
 						}
 					},
@@ -218,13 +195,7 @@ export function registerDetectCommand(
 				}
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
-				deps.notifier.showError(
-					localize(
-						'runtime.detect.error',
-						'Detection failed: {0}',
-						errorMessage,
-					),
-				);
+				deps.notifier.showError(`Detection failed: ${errorMessage}`);
 				deps.telemetry.event('detect-failed', {
 					error: errorMessage,
 				});

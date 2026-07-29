@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { getConfiguration } from '../config/config';
 import {
 	detectSecretsInContent,
@@ -11,8 +10,6 @@ import type { Notifier } from '../ui/notifier';
 import type { StatusBar } from '../ui/statusBar';
 import type { PerformanceMonitor } from '../utils/performance';
 import { handleSafetyChecks } from '../utils/safety';
-
-const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 /**
  * Register command to sanitize secrets in active document
@@ -34,10 +31,7 @@ export function registerSanitizeCommand(
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
 				deps.notifier.showWarning(
-					localize(
-						'runtime.sanitize.no-editor',
-						'No active editor. Please open a file first.',
-					),
+					'No active editor. Please open a file first.',
 				);
 				return;
 			}
@@ -68,25 +62,20 @@ export function registerSanitizeCommand(
 
 			// Confirm before sanitizing
 			const confirm = await vscode.window.showWarningMessage(
-				localize(
-					'runtime.sanitize.confirm',
-					'This will replace detected secrets with placeholders. Continue?',
-				),
+				'This will replace detected secrets with placeholders. Continue?',
 				{ modal: true },
-				localize('runtime.sanitize.confirm.yes', 'Yes, Sanitize'),
-				localize('runtime.sanitize.confirm.no', 'Cancel'),
+				'Yes, Sanitize',
+				'Cancel',
 			);
 
-			if (
-				confirm !== localize('runtime.sanitize.confirm.yes', 'Yes, Sanitize')
-			) {
+			if (confirm !== 'Yes, Sanitize') {
 				return;
 			}
 
 			// Process with progress indicator
 			try {
 				await deps.notifier.showProgress(
-					localize('runtime.sanitize.progress', 'Sanitizing content...'),
+					'Sanitizing content...',
 					async (progress, token) => {
 						// Check for cancellation
 						if (token.isCancellationRequested) {
@@ -121,12 +110,7 @@ export function registerSanitizeCommand(
 						}
 
 						if (detectionResult.secrets.length === 0) {
-							deps.notifier.showInfo(
-								localize(
-									'runtime.sanitize.no-secrets',
-									'No secrets found to sanitize.',
-								),
-							);
+							deps.notifier.showInfo('No secrets found to sanitize.');
 							perfTracker.end(0, 0, 0, 0);
 							return;
 						}
@@ -214,11 +198,7 @@ export function registerSanitizeCommand(
 
 						// Show completion message
 						deps.notifier.showInfo(
-							localize(
-								'runtime.sanitize.complete',
-								'Sanitized {0} secret(s)',
-								sanitizationResult.replacements.length,
-							),
+							`Sanitized ${sanitizationResult.replacements.length} secret(s)`,
 						);
 					},
 				);
@@ -229,13 +209,7 @@ export function registerSanitizeCommand(
 				}
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
-				deps.notifier.showError(
-					localize(
-						'runtime.sanitize.error',
-						'Sanitization failed: {0}',
-						errorMessage,
-					),
-				);
+				deps.notifier.showError(`Sanitization failed: ${errorMessage}`);
 				deps.telemetry.event('sanitize-failed', {
 					error: errorMessage,
 				});
