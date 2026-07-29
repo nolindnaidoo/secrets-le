@@ -12,8 +12,7 @@ lerna-debug.log*
 
 # Coverage
 *.lcov
-coverage/*
-!coverage/index.html
+coverage/
 
 # Dependency directories
 node_modules/
@@ -59,9 +58,10 @@ Thumbs.db
 # Release packages
 release/
 
-# Environment files
+# Environment files (integration fixture is intentionally tracked)
 .env
 .env.*
+!test/integration/workspace/.env
 
 # Copied i18n files (generated during build)
 package.nls.de.json
@@ -80,3 +80,5 @@ package.nls.zh-cn.json
 # Keep source i18n files
 !src/i18n/*.*
 
+out-test/
+.vscode-test/
