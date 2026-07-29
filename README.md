@@ -3,359 +3,110 @@
 </p>
 <h1 align="center">Secrets-LE: Zero Hassle Secret Detection</h1>
 <p align="center">
-  <b>Detect and sanitize credentials, tokens, and API keys locally</b><br/>
-  <i>GitGuardian-level security without ever sending data off your machine</i>
+  <b>Find hardcoded credentials across your workspace, then redact them in place</b><br/>
+  <i>API keys, tokens, passwords, private keys — 100% local, nothing leaves your machine</i>
 </p>
 
 <p align="center">
-  <a href="https://open-vsx.org/extension/OffensiveEdge/secrets-le">
+  <a href="https://open-vsx.org/extension/nolindnaidoo/secrets-le">
     <img src="https://img.shields.io/badge/Install%20from-Open%20VSX-blue?style=for-the-badge&logo=visualstudiocode" alt="Install from Open VSX" />
   </a>
   <a href="https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le">
-    <img src="https://img.shields.io/badge/Install%20from-VS%20Code-blue?style=for-the-badge&logo=visualstudiocode" alt="Install from VS Code" />
+    <img src="https://img.shields.io/badge/Install%20from-VS%20Code-blue?style=for-the-badge&logo=visualstudiocode" alt="Install from VS Code Marketplace" />
   </a>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/open-vsx/dt/OffensiveEdge/secrets-le?label=downloads&color=green" alt="Downloads" />
-  <img src="https://img.shields.io/open-vsx/rating/OffensiveEdge/secrets-le?label=rating&color=yellow" alt="Rating" />
-  <img src="https://img.shields.io/badge/Open%20Source-100%25-purple" alt="100% Open Source" />
-  <img src="https://img.shields.io/badge/Vulnerabilities-0%20Critical-brightgreen" alt="Zero Critical Vulnerabilities" />
-</p>
-
 ---
 
 <p align="center">
-  <img src="src/assets/images/demo.gif" alt="Secret Detection Demo" style="max-width: 100%; height: auto;" />
+  <img src="src/assets/images/demo.gif" alt="Secrets-LE Demo" style="max-width: 100%; height: auto;" />
 </p>
 
----
+## What it does
 
-## ⚡ See It In Action
+Open a workspace, press `Ctrl+Alt+S` (`Cmd+Alt+S` on Mac), and every detected secret lands in a results document — grouped by file, with line/column positions pointing at the value itself. Run `Secrets-LE: Sanitize Secrets` to replace the secrets in the active file with a placeholder. Works in VS Code and in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
 
-**Before**: Manually searching for hardcoded secrets across 100+ files (30+ minutes)
+Detection is regex-based over the full text of each file, so it works on any text format — code, configs, `.env` files, YAML, JSON, logs. It is a pre-commit safety net, not a guarantee: a scanner built on patterns can miss secrets and can flag non-secrets. Review the results.
 
-```javascript
-// File: src/config.js
-const apiKey = "AKIAIOSFODNN7EXAMPLE"
+## What gets detected
 
-// File: .env
-DATABASE_PASSWORD=mysecret123
+| Category | Types |
+|---|---|
+| API keys & cloud credentials | Generic API keys (`api_key = …`), AWS Access Key IDs (`AKIA…`, no key name needed), AWS Secret Access Keys, Azure account keys, GCP/Google Cloud keys |
+| Tokens | Generic tokens, bearer tokens, access/refresh tokens, OAuth tokens, JWTs (key-based or bare `eyJ…` form), known prefixes: GitHub `ghp_`/`github_pat_`, Slack `xox?-`, Stripe `sk_live_`/`sk_test_`, Google `AIza…` |
+| Passwords | `password`/`passwd`/`pwd` values, including compound keys (`DATABASE_PASSWORD`) |
+| Private keys | Multi-line PEM blocks — RSA/EC, OpenSSH, PGP |
+| Connection data | Database URLs with embedded `user:pass@` credentials, connection strings, session IDs, cookies |
 
-// File: credentials.json
-{"github_token": "ghp_xxxxx"}
-// ... searching through entire codebase
+Key-based patterns accept quoted and unquoted keys, so JSON (`"apiKey": "…"`), YAML (`api_key: …`), env (`API_KEY=…`), and code (`apiKey = '…'`) all match.
+
+**Intentional non-detections**: template placeholders (`${VAR}`, `{{var}}`, `<your-key>`, `xxxxxxxx`), version numbers and hostnames that merely look dotted (`1.2.3` is not a JWT), GCP project ids (identifiers, not credentials), and database URLs without embedded credentials.
+
+**Known limitations**: detection is pattern-based — obfuscated, split, or unconventionally named secrets are missed; JWTs whose header isn't standard base64 JSON (`eyJ…`) are missed; a high-entropy string without a recognizable key name or prefix is not reported.
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `Secrets-LE: Detect Secrets` (`Ctrl+Alt+S` / `Cmd+Alt+S`) | Scan the workspace and open a results document |
+| `Secrets-LE: Sanitize Secrets` | Replace detected secrets in the active file (asks for confirmation first) |
+| `Secrets-LE: Open Settings` | Open Secrets-LE settings |
+| `Secrets-LE: Help` | Built-in documentation |
+
+## Settings
+
+| Setting | Default | Description |
+|---|---|---|
+| `secrets-le.detection.sensitivity` | `medium` | `low` reports everything, `medium` drops low-confidence matches, `high` keeps only high-confidence ones |
+| `secrets-le.detection.includeApiKeys` | `true` | Detect API keys and cloud credentials |
+| `secrets-le.detection.includePasswords` | `true` | Detect passwords |
+| `secrets-le.detection.includeTokens` | `true` | Detect tokens and JWTs |
+| `secrets-le.detection.includePrivateKeys` | `true` | Detect PEM private-key blocks |
+| `secrets-le.sanitization.replaceWith` | `***REDACTED***` | Replacement text used by Sanitize |
+| `secrets-le.workspace.scanPatterns` | `["**/*"]` | Glob patterns to scan |
+| `secrets-le.workspace.scanExcludes` | node_modules, .git, dist, … | Glob patterns to skip |
+| `secrets-le.workspace.scanMaxFiles` | `10000` | Cap on files scanned per run |
+| `secrets-le.safety.enabled` | `true` | Guardrails for very large files |
+| `secrets-le.safety.fileSizeWarnBytes` | `1000000` | Skip/refuse files above this size |
+| `secrets-le.dedupeEnabled` | `false` | Collapse identical value+type detections in results |
+| `secrets-le.copyToClipboardEnabled` | `false` | Also copy results to the clipboard |
+| `secrets-le.openResultsSideBySide` | `true` | Open results beside the current editor |
+| `secrets-le.notificationsLevel` | `important` | `all` = every notification, `important` = warnings + errors, `silent` = errors only |
+| `secrets-le.statusBar.enabled` | `true` | Show the status bar item |
+| `secrets-le.telemetryEnabled` | `false` | Local-only event log (see Privacy) |
+
+## Privacy & security
+
+- **No network access.** The extension never sends data anywhere. The `telemetryEnabled` setting only writes events to a local Output Channel you can inspect (`Secrets-LE Telemetry`).
+- Error notifications redact home directories and credential-shaped fragments before display.
+- Sanitize always asks for confirmation before editing your file, and edits are normal undo-able document edits.
+
+## Development
+
+```bash
+bun install
+bun run build            # esbuild bundle -> dist/extension.js
+bun run typecheck        # tsc --noEmit (includes tests)
+bun run test             # vitest unit suite
+bun run test:integration # real VS Code extension host
+bun run lint             # biome
+bun run package          # VSIX into release/
 ```
 
-**After**: One command scans entire workspace and detects all secrets automatically
-
-```
-📄 src/config.js (1 secret(s))
-  AWS-KEY (1)
-  - Line 2, Column 14
-    Key: apiKey
-    Confidence: high
-
-📄 .env (1 secret(s))
-  PASSWORD (1)
-  - Line 15, Column 18
-    Key: DATABASE_PASSWORD
-    Confidence: medium
-
-📄 credentials.json (1 secret(s))
-  TOKEN (1)
-  - Line 3, Column 18
-    Key: github_token
-    Confidence: high
-
-... (12 secrets found across 8 files, 247 files scanned)
-```
-
----
-
-## ✅ Why Secrets-LE?
-
-- **19 secret types detected** - API keys, AWS, Azure, GCP, JWT, tokens, passwords, private keys
-- **Workspace-wide scanning** - Scans entire project, not just single files
-- **Zero Config** - Install → Press `Cmd+Alt+S` → Done
-- **100% Local** - No data leaves your machine, ever
-- **GitGuardian-level detection** - Without the cloud dependency
-- **Smart exclusions** - Automatically skips node_modules, .git, dist, and other build artifacts
-
-Perfect for pre-commit checks, security audits, and credential management across entire codebases.
-
----
-
-## 🙏 Thank You
-
-If Secrets-LE saves you time, a quick rating helps other developers discover it:  
-⭐ [Open VSX](https://open-vsx.org/extension/OffensiveEdge/secrets-le) • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le)
-
----
-
-### Key Features
-
-- **Workspace Scanning** - Scans entire project for secrets across all files
-- **Detect Secrets** - Find API keys, tokens, passwords, and private keys
-- **Smart File Filtering** - Automatically excludes node_modules, .git, build artifacts
-- **Sanitize Content** - Automatically replace secrets with safe placeholders
-- **Configurable Sensitivity** - Adjust detection levels (low, medium, high)
-- **Security-First** - Detects AWS, Azure, GCP keys, JWT tokens, and more
-- **Universal Support** - Works on any text file format
-- **4 languages** - English (base), German, Spanish, French
-
-## 🚀 More from the LE Family
-
-- **[String-LE](https://open-vsx.org/extension/OffensiveEdge/string-le)** - Extract user-visible strings for i18n and validation • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.string-le)
-- **[Numbers-LE](https://open-vsx.org/extension/OffensiveEdge/numbers-le)** - Extract and analyze numeric data with statistics • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.numbers-le)
-- **[EnvSync-LE](https://open-vsx.org/extension/OffensiveEdge/envsync-le)** - Keep .env files in sync with visual diffs • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le)
-- **[Paths-LE](https://open-vsx.org/extension/OffensiveEdge/paths-le)** - Extract file paths from imports and dependencies • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.paths-le)
-- **[Regex-LE](https://open-vsx.org/extension/OffensiveEdge/regex-le)** - Test and validate regex patterns with live feedback • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.regex-le)
-- **[Scrape-LE](https://open-vsx.org/extension/OffensiveEdge/scrape-le)** - Validate scraper targets before debugging • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.scrape-le)
-- **[Colors-LE](https://open-vsx.org/extension/OffensiveEdge/colors-le)** - Extract and analyze colors from stylesheets • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.colors-le)
-- **[URLs-LE](https://open-vsx.org/extension/OffensiveEdge/urls-le)** - Extract URLs from any codebase with precision • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.urls-le)
-- **[Dates-LE](https://open-vsx.org/extension/OffensiveEdge/dates-le)** - Extract temporal data from logs and APIs • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.dates-le)
-
-## 💡 Use Cases
-
-- **Pre-Commit Checks** - Scan entire workspace before committing to prevent credential leaks
-- **Security Audits** - Find hardcoded secrets across entire codebase automatically
-- **Project Security** - Scan all files in your workspace for exposed credentials
-- **Config Validation** - Ensure no secrets in config files before deployment
-- **Code Review** - Quick workspace scan during pull request reviews
-- **Compliance** - Regular scans to maintain security standards
-
-### Detecting API Keys & Credentials
-
-Find cloud provider keys and credentials automatically:
-
-```javascript
-// AWS Access Key
-const AWS_KEY = "AKIAIOSFODNN7EXAMPLE" // ✅ Detected
-
-// Azure Key
-const AZURE_KEY = "DefaultEndpointsProtocol=https;AccountKey=..." // ✅ Detected
-
-// GCP Service Account
-const GCP_KEY = '{"type":"service_account",...}' // ✅ Detected
-```
-
----
-
-### Detecting Tokens & Authentication
-
-Find authentication tokens:
-
-```javascript
-// GitHub Personal Access Token
-const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" // ✅ Detected (example pattern)
-
-// JWT Token
-const JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." // ✅ Detected
-
-// Bearer Token
-Authorization: Bearer sk_live_xxxxxxxxxxxx // ✅ Detected
-```
-
----
-
-### Detecting Passwords & Private Keys
-
-Find passwords and private keys:
-
-```env
-# Environment file
-DATABASE_PASSWORD=mysecret123  # ✅ Detected
-API_KEY=sk_live_abcdefgh       # ✅ Detected
-```
-
-```
------BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEA...  # ✅ Detected
------END RSA PRIVATE KEY-----
-```
-
----
-
-## 🚀 Quick Start
-
-1. Install from [Open VSX](https://open-vsx.org/extension/OffensiveEdge/secrets-le) or [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le)
-2. Open a workspace folder in VS Code
-3. Run `Secrets-LE: Detect Secrets` (`Cmd+Alt+S` / `Ctrl+Alt+S`)
-4. Review detected secrets grouped by file and type
-5. Sanitize secrets if needed using the sanitize command
-
-## 📋 Available Commands
-
-Secrets-LE provides **4 commands** accessible via Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`):
-
-### Core Commands
-
-- **Detect Secrets** (`Cmd/Ctrl+Alt+S`) - Scan entire workspace for API keys, tokens, passwords
-- **Sanitize Secrets** - Replace detected secrets with safe placeholders in active file
-
-### Settings & Help
-
-- **Open Settings** - Quick access to extension settings
-- **Help & Troubleshooting** - Comprehensive in-editor documentation
-
-## ⚙️ Configuration
-
-Secrets-LE has minimal configuration to keep things simple. Most settings are available in VS Code's settings UI under "Secrets-LE".
-
-Key settings include:
-
-- **Workspace scanning**:
-  - File patterns to scan (`workspace.scanPatterns`, default: `**/*`)
-  - Exclude patterns (`workspace.scanExcludes`, default: node_modules, .git, dist, etc.)
-  - Maximum files to scan (`workspace.scanMaxFiles`, default: 10000)
-- **Detection**:
-  - Sensitivity (low, medium, high)
-  - Secret type filters (API keys, passwords, tokens, private keys)
-- **Output**:
-  - Sanitization replacement text
-  - Deduplication options
-  - Format preferences (side-by-side, clipboard copy)
-- **Safety**:
-  - File size warnings and thresholds
-  - Notification levels (silent, important, all)
-
-For the complete list of available settings, open VS Code Settings and search for "secrets-le".
-
-## 📁 Supported File Types
-
-**Secrets-LE works universally on any text file in your workspace!** Detection uses regex patterns applied directly to text content. The extension scans your entire workspace and processes all text files by default.
-
-### Workspace Scanning
-
-By default, Secrets-LE scans all files (`**/*`) but automatically excludes:
-- `node_modules/**` - Dependencies
-- `.git/**` - Version control
-- `dist/**`, `build/**` - Build outputs
-- `.next/**`, `coverage/**` - Framework artifacts
-- `*.min.js`, `*.bundle.js` - Minified files
-- Lock files (`package-lock.json`, `yarn.lock`, etc.)
-
-You can customize scan patterns and exclusions in settings.
-
-### File Type Support
-
-| Category          | File Types                                                                          |
-| ----------------- | ----------------------------------------------------------------------------------- |
-| **Programming**   | JavaScript, TypeScript, Python, Ruby, Go, Rust, Java, C/C++, C#, PHP, Swift, Kotlin |
-| **Data Formats**  | JSON, YAML, TOML, XML, CSV                                                          |
-| **Web**           | HTML, CSS, SCSS, LESS, Sass                                                         |
-| **Config**        | .env, .ini, .cfg, .conf                                                             |
-| **Documentation** | Markdown, Plain Text, Log Files                                                     |
-| **Shell**         | Bash, Zsh, PowerShell, Batch                                                        |
-
-**All text files are supported** - Once the extension is activated, it can scan any text file in your workspace.
-
-### What Gets Detected
-
-**API Keys & Credentials**:
-- Generic API keys (`apiKey`, `api_key`)
-- AWS Access Keys (`AKIA...`)
-- AWS Secret Keys (base64 encoded, 40 chars)
-- Azure keys
-- GCP service account keys
-- Database connection strings
-
-**Tokens**:
-- GitHub Personal Access Tokens (`ghp_...`)
-- JWT tokens
-- OAuth tokens
-- Bearer tokens
-- Access/Refresh tokens
-
-**Passwords**:
-- Plaintext passwords
-- Password fields in configs
-
-**Private Keys**:
-- SSH keys (RSA, ED25519)
-- PGP keys
-- Private key files
-
----
-
-## 🌍 Language Support
-
-**13 languages**: English, German, Spanish, French, Indonesian, Italian, Japanese, Korean, Portuguese (Brazil), Russian, Ukrainian, Vietnamese, Chinese (Simplified)
-
-## 🧩 System Requirements
-
-**VS Code** 1.70.0+ • **Platform** Windows, macOS, Linux  
-**Memory** 200MB recommended for large files
-
-## 🔒 Privacy
-
-100% local processing. No data leaves your machine. Optional logging: `secrets-le.telemetryEnabled`
-
-## ⚡ Performance
-
-Secrets-LE includes built-in performance monitoring and configurable thresholds to help track operation speed and resource usage.
-
-For detailed information, see [Performance Monitoring](docs/PERFORMANCE.md).
-
-## 🔧 Troubleshooting
-
-**Not detecting secrets?**  
-- Ensure workspace folder is open (not just a file)
-- Check sensitivity level in settings (try "high" for maximum detection)
-- Verify scan patterns include your file types in settings
-
-**Scanning too many files?**  
-- Adjust `workspace.scanMaxFiles` to limit the number of files scanned
-- Add more exclude patterns to skip build artifacts or generated files
-
-**False positives?**  
-- Lower sensitivity level or disable specific secret types
-- Review detected secrets - some may be example/test values
-
-**Performance issues?**  
-- Reduce `workspace.scanMaxFiles` limit
-- Add more exclude patterns to skip large directories
-- Check [Performance Monitoring](docs/PERFORMANCE.md) for optimization tips
-
-**Need help?**  
-Check [Issues](https://github.com/OffensiveEdge/secrets-le/issues) or enable logging: `secrets-le.telemetryEnabled: true`
-
-## ❓ FAQ
-
-**What secrets are detected?**  
-19 types including API keys, AWS, Azure, GCP, JWT, tokens, passwords, private keys
-
-**Does it send data anywhere?**  
-No! 100% local processing. No network requests ever
-
-**Can I customize detection?**  
-Yes! Adjust sensitivity levels and enable/disable specific secret types
-
-**How accurate is detection?**  
-High accuracy with configurable sensitivity to reduce false positives
-
-**Does it scan the entire workspace?**  
-Yes! By default it scans all files in your workspace, excluding common directories like node_modules and .git. You can customize scan patterns in settings.
-
-## 📊 Testing
-
-**17 unit tests** • Powered by Vitest • Run with `bun run test:coverage`
-
-### Core Principle
-
-**No broken or failed tests are allowed in commits.** All tests must pass before code can be committed or merged.
-
-### Test Suite Highlights
-
-- **Comprehensive secret detection** across 19 types
-- **Sanitization validation** with replacement verification
-- **Error handling** with graceful degradation
-- **Security-focused** testing for edge cases
-
-For detailed testing guidelines, see [Testing Guidelines](docs/TESTING.md).
-
----
-
-Copyright © 2025
-<a href="https://github.com/OffensiveEdge">@OffensiveEdge</a>. All rights reserved.
+Architecture and conventions live in [AGENTS.md](AGENTS.md). Changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+
+## More from the LE Family
+
+- **[String-LE](https://open-vsx.org/extension/nolindnaidoo/string-le)** - Extract user-visible strings for i18n and validation • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.string-le)
+- **[Numbers-LE](https://open-vsx.org/extension/nolindnaidoo/numbers-le)** - Extract and analyze numeric data with statistics • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.numbers-le)
+- **[EnvSync-LE](https://open-vsx.org/extension/nolindnaidoo/envsync-le)** - Keep .env files in sync with visual diffs • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le)
+- **[Paths-LE](https://open-vsx.org/extension/nolindnaidoo/paths-le)** - Extract file paths from imports and dependencies • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.paths-le)
+- **[Regex-LE](https://open-vsx.org/extension/nolindnaidoo/regex-le)** - Test and validate regex patterns with live feedback • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.regex-le)
+- **[Scrape-LE](https://open-vsx.org/extension/nolindnaidoo/scrape-le)** - Validate scraper targets before debugging • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.scrape-le)
+- **[Colors-LE](https://open-vsx.org/extension/nolindnaidoo/colors-le)** - Extract and analyze colors from stylesheets • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.colors-le)
+- **[URLs-LE](https://open-vsx.org/extension/nolindnaidoo/urls-le)** - Extract URLs from any codebase with precision • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.urls-le)
+- **[Dates-LE](https://open-vsx.org/extension/nolindnaidoo/dates-le)** - Extract temporal data from logs and APIs • [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.dates-le)
+
+## License
+
+MIT © [nolindnaidoo](https://github.com/nolindnaidoo)
