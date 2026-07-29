@@ -136,9 +136,7 @@ export function registerDetectCommand(
 						// Copy to clipboard if enabled
 						if (config.copyToClipboardEnabled) {
 							await vscode.env.clipboard.writeText(formattedResult);
-							if (config.notificationsLevel === 'all') {
-								deps.notifier.showInfo('Results copied to clipboard');
-							}
+							deps.notifier.showInfo('Results copied to clipboard');
 						}
 
 						// Check for cancellation
@@ -167,15 +165,12 @@ export function registerDetectCommand(
 							sensitivity: config.detectionSensitivity,
 						});
 
-						// Show completion message based on notification level
+						// Completion message; the notifier applies notificationsLevel
 						if (secrets.length > 0) {
-							const message = `Found ${secrets.length} potential secret(s) in ${scanResult.filesScanned} file(s)`;
-							if (config.notificationsLevel === 'all') {
-								deps.notifier.showWarning(message);
-							} else if (config.notificationsLevel === 'important') {
-								deps.notifier.showWarning(message);
-							}
-						} else if (config.notificationsLevel === 'all') {
+							deps.notifier.showWarning(
+								`Found ${secrets.length} potential secret(s) in ${scanResult.filesScanned} file(s)`,
+							);
+						} else {
 							deps.notifier.showInfo(
 								`No secrets detected in workspace (${scanResult.filesScanned} files scanned)`,
 							);
