@@ -15,7 +15,6 @@ export function activate(context: vscode.ExtensionContext): void {
 	registerCommands(context, {
 		telemetry: services.telemetry,
 		notifier: services.notifier,
-		statusBar: services.statusBar,
 		performanceMonitor: services.performanceMonitor,
 	});
 

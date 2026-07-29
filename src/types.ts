@@ -12,7 +12,6 @@ export interface DetectionResult {
 				readonly totalLines: number;
 				readonly processedLines: number;
 				readonly processingTimeMs: number;
-				readonly performanceMetrics?: PerformanceMetrics | undefined;
 		  }
 		| undefined;
 }
@@ -89,11 +88,9 @@ export interface SecretReplacement {
 }
 
 export interface ParseError {
-	readonly type: 'parse-error' | 'validation-error';
+	readonly type: 'parse-error';
 	readonly message: string;
 	readonly filepath?: string | undefined;
-	readonly line?: number | undefined;
-	readonly column?: number | undefined;
 	readonly context?: string | undefined;
 }
 

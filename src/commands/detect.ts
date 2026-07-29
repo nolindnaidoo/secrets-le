@@ -7,7 +7,7 @@ import {
 import type { Telemetry } from '../telemetry/telemetry';
 import type { DetectionResult } from '../types';
 import type { Notifier } from '../ui/notifier';
-import type { StatusBar } from '../ui/statusBar';
+import { sanitizeErrorMessage } from '../utils/errors';
 import type { PerformanceMonitor } from '../utils/performance';
 import { scanWorkspaceForSecrets } from '../utils/workspaceScanner';
 
@@ -19,7 +19,6 @@ export function registerDetectCommand(
 	deps: {
 		readonly telemetry: Telemetry;
 		readonly notifier: Notifier;
-		readonly statusBar: StatusBar;
 		readonly performanceMonitor: PerformanceMonitor;
 	},
 ): void {
@@ -182,8 +181,9 @@ export function registerDetectCommand(
 				if (error instanceof vscode.CancellationError) {
 					return;
 				}
-				const errorMessage =
-					error instanceof Error ? error.message : String(error);
+				const errorMessage = sanitizeErrorMessage(
+					error instanceof Error ? error.message : String(error),
+				);
 				deps.notifier.showError(`Detection failed: ${errorMessage}`);
 				deps.telemetry.event('detect-failed', {
 					error: errorMessage,

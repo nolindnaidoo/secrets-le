@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
-import { CONFIG_DEFAULTS } from './config';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { _resetMockState, _setConfig } from '../__mocks__/vscode';
+import { CONFIG_DEFAULTS, getConfiguration } from './config';
 
 /**
  * CONFIG_DEFAULTS must stay identical to the defaults declared in
@@ -47,4 +48,51 @@ describe('config defaults parity with package.json', () => {
 			expect(CONFIG_DEFAULTS[defaultsKey]).toEqual(props[manifestKey]?.default);
 		});
 	}
+});
+
+describe('getConfiguration read hardening', () => {
+	beforeEach(() => {
+		_resetMockState();
+	});
+
+	it('returns defaults when nothing is configured', () => {
+		const config = getConfiguration();
+		expect(config.notificationsLevel).toBe('important');
+		expect(config.detectionSensitivity).toBe('medium');
+		expect(config.workspaceScanMaxFiles).toBe(10_000);
+	});
+
+	it('rejects NaN and non-numeric threshold values', () => {
+		_setConfig('secrets-le.safety.fileSizeWarnBytes', 'garbage');
+		_setConfig('secrets-le.workspace.scanMaxFiles', Number.NaN);
+		const config = getConfiguration();
+		expect(config.safetyFileSizeWarnBytes).toBe(1_000_000);
+		expect(config.workspaceScanMaxFiles).toBe(10_000);
+	});
+
+	it('clamps numbers below their manifest minimum', () => {
+		_setConfig('secrets-le.safety.fileSizeWarnBytes', 1);
+		expect(getConfiguration().safetyFileSizeWarnBytes).toBe(1000);
+	});
+
+	it('rejects wrong-typed booleans and strings', () => {
+		_setConfig('secrets-le.copyToClipboardEnabled', 'yes');
+		_setConfig('secrets-le.sanitization.replaceWith', 42);
+		const config = getConfiguration();
+		expect(config.copyToClipboardEnabled).toBe(false);
+		expect(config.sanitizationReplaceWith).toBe('***REDACTED***');
+	});
+
+	it('rejects invalid enum values', () => {
+		_setConfig('secrets-le.notificationsLevel', 'loud');
+		_setConfig('secrets-le.detection.sensitivity', 'extreme');
+		const config = getConfiguration();
+		expect(config.notificationsLevel).toBe('important');
+		expect(config.detectionSensitivity).toBe('medium');
+	});
+
+	it('rejects arrays containing non-strings', () => {
+		_setConfig('secrets-le.workspace.scanPatterns', ['**/*.ts', 42]);
+		expect(getConfiguration().workspaceScanPatterns).toEqual(['**/*']);
+	});
 });

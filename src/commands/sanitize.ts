@@ -7,7 +7,7 @@ import {
 } from '../extraction/extract';
 import type { Telemetry } from '../telemetry/telemetry';
 import type { Notifier } from '../ui/notifier';
-import type { StatusBar } from '../ui/statusBar';
+import { sanitizeErrorMessage } from '../utils/errors';
 import type { PerformanceMonitor } from '../utils/performance';
 import { handleSafetyChecks } from '../utils/safety';
 
@@ -19,7 +19,6 @@ export function registerSanitizeCommand(
 	deps: {
 		readonly telemetry: Telemetry;
 		readonly notifier: Notifier;
-		readonly statusBar: StatusBar;
 		readonly performanceMonitor: PerformanceMonitor;
 	},
 ): void {
@@ -42,11 +41,7 @@ export function registerSanitizeCommand(
 			// Perform safety checks
 			const safetyResult = handleSafetyChecks(document, config);
 			if (!safetyResult.proceed) {
-				if (safetyResult.error) {
-					await deps.notifier.showEnhancedError(safetyResult.error);
-				} else {
-					deps.notifier.showError(safetyResult.message);
-				}
+				deps.notifier.showError(safetyResult.message);
 				deps.telemetry.event('sanitize-blocked-by-safety', {
 					reason: safetyResult.message,
 				});
@@ -213,8 +208,9 @@ export function registerSanitizeCommand(
 				if (error instanceof vscode.CancellationError) {
 					return;
 				}
-				const errorMessage =
-					error instanceof Error ? error.message : String(error);
+				const errorMessage = sanitizeErrorMessage(
+					error instanceof Error ? error.message : String(error),
+				);
 				deps.notifier.showError(`Sanitization failed: ${errorMessage}`);
 				deps.telemetry.event('sanitize-failed', {
 					error: errorMessage,
