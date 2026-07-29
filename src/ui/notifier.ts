@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import type {
 	EnhancedError,
 	ErrorRecoveryOptions,
-	ErrorSummary,
 } from '../utils/errorHandling';
 
 function buildErrorMessage(
@@ -32,7 +31,6 @@ export interface Notifier {
 		error: EnhancedError,
 		options?: ErrorRecoveryOptions,
 	): Promise<void>;
-	showErrorSummary(summary: ErrorSummary): void;
 	showProgress<T>(
 		title: string,
 		task: (
@@ -77,30 +75,6 @@ export function createNotifier(): Notifier {
 			await vscode.window.showInformationMessage(fullMessage, {
 				detail: error.message,
 			});
-		},
-		showErrorSummary(summary: ErrorSummary): void {
-			const hasNoErrors = summary.totalErrors === 0;
-			if (hasNoErrors) {
-				this.showInfo('No errors occurred');
-				return;
-			}
-
-			const criticalCount = summary.severity.high;
-			const message = `Processing completed with ${summary.totalErrors} errors (${criticalCount} critical)`;
-
-			const hasCriticalErrors = criticalCount > 0;
-			if (hasCriticalErrors) {
-				this.showError(message);
-				return;
-			}
-
-			const hasNonRecoverableErrors = summary.nonRecoverableErrors > 0;
-			if (hasNonRecoverableErrors) {
-				this.showWarning(message);
-				return;
-			}
-
-			this.showInfo(message);
 		},
 		async showProgress<T>(
 			title: string,

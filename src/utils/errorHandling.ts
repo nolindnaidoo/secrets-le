@@ -31,17 +31,6 @@ export interface ErrorRecoveryOptions {
 	readonly userAction?: string;
 }
 
-export interface ErrorSummary {
-	readonly totalErrors: number;
-	readonly severity: {
-		readonly low: number;
-		readonly medium: number;
-		readonly high: number;
-	};
-	readonly recoverableErrors: number;
-	readonly nonRecoverableErrors: number;
-}
-
 /**
  * Create an enhanced error with categorization and user-friendly messaging
  */
@@ -219,101 +208,5 @@ export function createErrorHandler(): ErrorHandler {
 		): EnhancedError {
 			return createEnhancedError(error, category, context);
 		},
-	});
-}
-
-/**
- * Create error logger
- */
-export interface ErrorLogger {
-	log(error: EnhancedError): void;
-}
-
-export function createErrorLogger(): ErrorLogger {
-	return Object.freeze({
-		log(error: EnhancedError): void {
-			// In production, this would log to an output channel or telemetry
-			console.error(
-				`[${error.category}] ${error.message}`,
-				error.originalError,
-			);
-		},
-	});
-}
-
-/**
- * Create error notifier
- */
-export interface ErrorNotifier {
-	notify(error: EnhancedError): void;
-}
-
-export function createErrorNotifier(): ErrorNotifier {
-	return Object.freeze({
-		notify(error: EnhancedError): void {
-			// Notifier would be injected in real implementation
-			console.warn(`Error: ${error.userMessage}`);
-		},
-	});
-}
-
-/**
- * Create performance error
- */
-export function createPerformanceError(
-	operation: string,
-	duration: number,
-	threshold: number,
-): EnhancedError {
-	const error = new Error(
-		`Operation "${operation}" exceeded performance threshold (${duration}ms > ${threshold}ms)`,
-	);
-
-	return createEnhancedError(
-		error,
-		'operational',
-		{
-			operation,
-			duration,
-			threshold,
-		},
-		{
-			recoverable: true,
-			severity: 'medium',
-			suggestion:
-				'Consider processing smaller files or adjusting performance settings',
-		},
-	);
-}
-
-/**
- * Create error summary from array of errors
- */
-export function createErrorSummary(
-	errors: readonly EnhancedError[],
-): ErrorSummary {
-	const severityCounts = {
-		low: 0,
-		medium: 0,
-		high: 0,
-	};
-
-	let recoverableCount = 0;
-	let nonRecoverableCount = 0;
-
-	for (const error of errors) {
-		severityCounts[error.severity]++;
-		if (error.recoverable) {
-			recoverableCount++;
-		} else {
-			nonRecoverableCount++;
-		}
-	}
-
-	return Object.freeze({
-		totalErrors: errors.length,
-		severity: Object.freeze(severityCounts),
-		recoverableErrors: recoverableCount,
-		nonRecoverableErrors: nonRecoverableCount,
 	});
 }

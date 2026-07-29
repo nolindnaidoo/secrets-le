@@ -4,7 +4,6 @@ import { getConfiguration } from '../config/config';
 export interface StatusBar {
 	show(): void;
 	hide(): void;
-	updateText(text: string): void;
 	dispose(): void;
 }
 
@@ -29,9 +28,6 @@ export function createStatusBar(_context: vscode.ExtensionContext): StatusBar {
 		},
 		hide(): void {
 			statusBarItem.hide();
-		},
-		updateText(text: string): void {
-			statusBarItem.text = text;
 		},
 		dispose(): void {
 			statusBarItem.dispose();

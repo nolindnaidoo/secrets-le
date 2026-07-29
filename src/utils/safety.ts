@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import type { Configuration } from '../types';
 import { createEnhancedError, type EnhancedError } from './errorHandling';
 
@@ -108,78 +108,4 @@ function collectSafetyWarnings(
 	}
 
 	return warnings;
-}
-
-/**
- * Check output safety before presenting to user
- */
-export function checkOutputSafety(
-	outputLines: readonly string[],
-	config: Configuration,
-): SafetyResult {
-	if (!config.safetyEnabled) {
-		return Object.freeze({
-			proceed: true,
-			message: '',
-			warnings: Object.freeze([]),
-		});
-	}
-
-	const lineCount = outputLines.length;
-	const threshold = config.safetyLargeOutputLinesThreshold;
-
-	// Block extremely large outputs
-	const exceedsThreshold = lineCount > threshold;
-	if (exceedsThreshold) {
-		const error = createEnhancedError(
-			new Error(
-				`Output size (${lineCount} lines) exceeds safety threshold (${threshold} lines)`,
-			),
-			'safety',
-			{
-				outputLines: lineCount,
-				threshold,
-			},
-			{
-				recoverable: true,
-				severity: 'medium',
-				suggestion: 'Consider filtering results or increasing the threshold',
-			},
-		);
-
-		return Object.freeze({
-			proceed: false,
-			message: error.userMessage,
-			error,
-			warnings: Object.freeze([]),
-		});
-	}
-
-	return Object.freeze({
-		proceed: true,
-		message: 'Output safety check passed',
-		warnings: Object.freeze([]),
-	});
-}
-
-/**
- * Ask user for confirmation when processing risky operations
- */
-export async function confirmRiskyOperation(
-	message: string,
-	detail?: string,
-): Promise<boolean> {
-	const proceed = 'Proceed';
-	const cancel = 'Cancel';
-
-	const options =
-		detail !== undefined ? { modal: true, detail } : { modal: true };
-	const result = await vscode.window.showWarningMessage(
-		message,
-		options,
-		proceed,
-		cancel,
-	);
-
-	return result === proceed;
 }
