@@ -385,20 +385,6 @@ exports[`detection characterization > secrets.env with includeApiKeys disabled 1
   "secrets": [
     {
       "confidence": "high",
-      "context": "API_KEY=sk_demo_abcdefghijklmnopqrstuvwxyz123456",
-      "description": "Known token prefix (GitHub/Slack/Stripe/Google)",
-      "end": 74,
-      "key": undefined,
-      "position": {
-        "column": 9,
-        "line": 2,
-      },
-      "start": 34,
-      "type": "token",
-      "value": "sk_demo_abcdefghijklmnopqrstuvwxyz123456",
-    },
-    {
-      "confidence": "high",
       "context": "DATABASE_PASSWORD=hunter2butlonger",
       "description": "Password",
       "end": 109,
