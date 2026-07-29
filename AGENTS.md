@@ -45,6 +45,7 @@ Conventions: factory functions + `Object.freeze` (no classes), early returns, de
 - **Sanitization replaces by offsets** (`start`/`end` on `DetectedSecret`), skips stale offsets, and collapses overlapping spans — never search-and-replace by value.
 - **nls catalogue parity:** `package.nls.json` (root, committed) and `src/i18n/package.nls.json` carry exactly the keys the manifest references. English only — do not claim other languages anywhere.
 - **`vsce package` needs `--allow-package-secrets github`:** the README shows token-shaped examples on purpose; the flag is scoped to that one scanner class, keep it that way.
+- **Fixture values must not match GitHub push-protection patterns.** A `sk_test_`/`sk_live_` prefix with a 24+ alphanumeric payload blocks the push in ANY commit — use `sk_demo_` (the detector's Stripe-prefix support is expressed in the pattern table, not in committed examples). The canonical AWS example pair (`AKIAIOSFODNN7EXAMPLE`) is allow-listed by GitHub and safe.
 
 ## Toolchain
 
