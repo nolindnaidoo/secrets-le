@@ -5,12 +5,7 @@ import type { Notifier } from '../ui/notifier';
 import { createNotifier } from '../ui/notifier';
 import type { StatusBar } from '../ui/statusBar';
 import { createStatusBar } from '../ui/statusBar';
-import {
-	createErrorHandler,
-	createErrorLogger,
-	createErrorNotifier,
-	type ErrorHandler,
-} from '../utils/errorHandling';
+import { createErrorHandler, type ErrorHandler } from '../utils/errorHandling';
 import { createLocalizer, type Localizer } from '../utils/localization';
 import {
 	createPerformanceMonitor,
@@ -52,8 +47,6 @@ export function createServices(
 	context.subscriptions.push(statusBar);
 
 	// Create error handling services
-	const _errorLogger = createErrorLogger();
-	const _errorNotifier = createErrorNotifier();
 	const errorHandler = createErrorHandler();
 
 	return Object.freeze({

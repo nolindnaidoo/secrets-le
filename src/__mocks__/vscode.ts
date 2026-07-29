@@ -28,7 +28,7 @@ export const workspace = {
   openTextDocument: mockFn,
   applyEdit: mockFn,
   getConfiguration: () => ({
-    get: (key: string, defaultValue?: unknown) => defaultValue,
+    get: (_key: string, defaultValue?: unknown) => defaultValue,
   }),
 }
 
