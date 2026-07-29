@@ -2,116 +2,201 @@ import * as vscode from 'vscode';
 import type { Configuration } from '../types';
 
 /**
- * Get extension configuration with validation and defaults
+ * Fallback values, kept identical to the defaults declared in
+ * package.json contributes.configuration. A unit test asserts parity so
+ * the two can never drift again.
  */
+export const CONFIG_DEFAULTS = Object.freeze({
+	copyToClipboardEnabled: false,
+	dedupeEnabled: false,
+	notificationsLevel: 'important' as const,
+	openResultsSideBySide: true,
+	detectionSensitivity: 'medium' as const,
+	detectionIncludeApiKeys: true,
+	detectionIncludePasswords: true,
+	detectionIncludeTokens: true,
+	detectionIncludePrivateKeys: true,
+	sanitizationReplaceWith: '***REDACTED***',
+	safetyEnabled: true,
+	safetyFileSizeWarnBytes: 1_000_000,
+	statusBarEnabled: true,
+	telemetryEnabled: false,
+	workspaceScanPatterns: Object.freeze(['**/*']) as readonly string[],
+	workspaceScanExcludes: Object.freeze([
+		'**/node_modules/**',
+		'**/.git/**',
+		'**/dist/**',
+		'**/build/**',
+		'**/.next/**',
+		'**/coverage/**',
+		'**/*.min.js',
+		'**/*.bundle.js',
+		'**/package-lock.json',
+		'**/yarn.lock',
+		'**/pnpm-lock.yaml',
+	]) as readonly string[],
+	workspaceScanMaxFiles: 10_000,
+});
+
 export function getConfiguration(): Configuration {
 	const config = vscode.workspace.getConfiguration('secrets-le');
 
-	// Validate notification level
-	const notifRaw = config.get(
-		'notificationsLevel',
-		'important',
-	) as unknown as string;
-	const notificationsLevel = isValidNotificationLevel(notifRaw)
-		? notifRaw
-		: 'important';
-
-	// Validate detection sensitivity
-	const sensitivityRaw = config.get(
-		'detection.sensitivity',
-		'medium',
-	) as unknown as string;
-	const detectionSensitivity = isValidSensitivity(sensitivityRaw)
-		? sensitivityRaw
-		: 'medium';
-
 	return Object.freeze({
-		copyToClipboardEnabled: Boolean(
-			config.get('copyToClipboardEnabled', false),
+		copyToClipboardEnabled: readBoolean(
+			config,
+			'copyToClipboardEnabled',
+			CONFIG_DEFAULTS.copyToClipboardEnabled,
 		),
-		dedupeEnabled: Boolean(config.get('dedupeEnabled', false)),
-		notificationsLevel,
-		openResultsSideBySide: Boolean(config.get('openResultsSideBySide', true)),
-		detectionEnabled: Boolean(config.get('detection.enabled', true)),
-		detectionSensitivity,
-		detectionIncludeApiKeys: Boolean(
-			config.get('detection.includeApiKeys', true),
+		dedupeEnabled: readBoolean(
+			config,
+			'dedupeEnabled',
+			CONFIG_DEFAULTS.dedupeEnabled,
 		),
-		detectionIncludePasswords: Boolean(
-			config.get('detection.includePasswords', true),
+		notificationsLevel: readNotificationLevel(config),
+		openResultsSideBySide: readBoolean(
+			config,
+			'openResultsSideBySide',
+			CONFIG_DEFAULTS.openResultsSideBySide,
 		),
-		detectionIncludeTokens: Boolean(
-			config.get('detection.includeTokens', true),
+		detectionSensitivity: readSensitivity(config),
+		detectionIncludeApiKeys: readBoolean(
+			config,
+			'detection.includeApiKeys',
+			CONFIG_DEFAULTS.detectionIncludeApiKeys,
 		),
-		detectionIncludePrivateKeys: Boolean(
-			config.get('detection.includePrivateKeys', true),
+		detectionIncludePasswords: readBoolean(
+			config,
+			'detection.includePasswords',
+			CONFIG_DEFAULTS.detectionIncludePasswords,
 		),
-		sanitizationEnabled: Boolean(config.get('sanitization.enabled', true)),
-		sanitizationReplaceWith: String(
-			config.get('sanitization.replaceWith', '***REDACTED***'),
+		detectionIncludeTokens: readBoolean(
+			config,
+			'detection.includeTokens',
+			CONFIG_DEFAULTS.detectionIncludeTokens,
 		),
-		safetyEnabled: Boolean(config.get('safety.enabled', true)),
-		safetyFileSizeWarnBytes: Math.max(
+		detectionIncludePrivateKeys: readBoolean(
+			config,
+			'detection.includePrivateKeys',
+			CONFIG_DEFAULTS.detectionIncludePrivateKeys,
+		),
+		sanitizationReplaceWith: readString(
+			config,
+			'sanitization.replaceWith',
+			CONFIG_DEFAULTS.sanitizationReplaceWith,
+		),
+		safetyEnabled: readBoolean(
+			config,
+			'safety.enabled',
+			CONFIG_DEFAULTS.safetyEnabled,
+		),
+		safetyFileSizeWarnBytes: readNumber(
+			config,
+			'safety.fileSizeWarnBytes',
+			CONFIG_DEFAULTS.safetyFileSizeWarnBytes,
 			1000,
-			Number(config.get('safety.fileSizeWarnBytes', 1000000)),
 		),
-		safetyLargeOutputLinesThreshold: Math.max(
+		statusBarEnabled: readBoolean(
+			config,
+			'statusBar.enabled',
+			CONFIG_DEFAULTS.statusBarEnabled,
+		),
+		telemetryEnabled: readBoolean(
+			config,
+			'telemetryEnabled',
+			CONFIG_DEFAULTS.telemetryEnabled,
+		),
+		workspaceScanPatterns: readStringArray(
+			config,
+			'workspace.scanPatterns',
+			CONFIG_DEFAULTS.workspaceScanPatterns,
+		),
+		workspaceScanExcludes: readStringArray(
+			config,
+			'workspace.scanExcludes',
+			CONFIG_DEFAULTS.workspaceScanExcludes,
+		),
+		workspaceScanMaxFiles: readNumber(
+			config,
+			'workspace.scanMaxFiles',
+			CONFIG_DEFAULTS.workspaceScanMaxFiles,
 			100,
-			Number(config.get('safety.largeOutputLinesThreshold', 50000)),
-		),
-		safetyManyDocumentsThreshold: Math.max(
-			1,
-			Number(config.get('safety.manyDocumentsThreshold', 8)),
-		),
-		showParseErrors: Boolean(config.get('showParseErrors', false)),
-		statusBarEnabled: Boolean(config.get('statusBar.enabled', true)),
-		telemetryEnabled: Boolean(config.get('telemetryEnabled', false)),
-		performanceEnabled: Boolean(config.get('performance.enabled', true)),
-		performanceMaxDuration: Math.max(
-			1000,
-			Number(config.get('performance.maxDuration', 5000)),
-		),
-		performanceMaxMemoryUsage: Math.max(
-			1048576,
-			Number(config.get('performance.maxMemoryUsage', 104857600)),
-		),
-		performanceMaxCpuUsage: Math.max(
-			100000,
-			Number(config.get('performance.maxCpuUsage', 1000000)),
-		),
-		workspaceScanPatterns: Object.freeze(
-			(config.get('workspace.scanPatterns', ['**/*']) as string[]) || ['**/*'],
-		),
-		workspaceScanExcludes: Object.freeze(
-			(config.get('workspace.scanExcludes', [
-				'**/node_modules/**',
-				'**/.git/**',
-				'**/dist/**',
-				'**/build/**',
-				'**/.next/**',
-				'**/coverage/**',
-				'**/*.min.js',
-				'**/*.bundle.js',
-				'**/package-lock.json',
-				'**/yarn.lock',
-				'**/pnpm-lock.yaml',
-			]) as string[]) || [],
-		),
-		workspaceScanMaxFiles: Math.max(
-			100,
-			Number(config.get('workspace.scanMaxFiles', 10000)),
 		),
 	});
 }
 
+function readBoolean(
+	config: vscode.WorkspaceConfiguration,
+	key: string,
+	defaultValue: boolean,
+): boolean {
+	const value = config.get(key, defaultValue);
+	return typeof value === 'boolean' ? value : defaultValue;
+}
+
+function readNumber(
+	config: vscode.WorkspaceConfiguration,
+	key: string,
+	defaultValue: number,
+	minValue: number,
+): number {
+	const value = Number(config.get(key, defaultValue));
+	if (!Number.isFinite(value)) {
+		return defaultValue;
+	}
+	return Math.max(minValue, value);
+}
+
+function readString(
+	config: vscode.WorkspaceConfiguration,
+	key: string,
+	defaultValue: string,
+): string {
+	const value = config.get(key, defaultValue);
+	return typeof value === 'string' ? value : defaultValue;
+}
+
+function readStringArray(
+	config: vscode.WorkspaceConfiguration,
+	key: string,
+	defaultValue: readonly string[],
+): readonly string[] {
+	const value = config.get(key, defaultValue);
+	if (Array.isArray(value) && value.every((item) => typeof item === 'string')) {
+		return Object.freeze([...value]);
+	}
+	return defaultValue;
+}
+
 export type NotificationLevel = 'all' | 'important' | 'silent';
 
-function isValidNotificationLevel(v: unknown): v is NotificationLevel {
+export function isValidNotificationLevel(v: unknown): v is NotificationLevel {
 	return v === 'all' || v === 'important' || v === 'silent';
+}
+
+function readNotificationLevel(
+	config: vscode.WorkspaceConfiguration,
+): NotificationLevel {
+	const raw = config.get<string>(
+		'notificationsLevel',
+		CONFIG_DEFAULTS.notificationsLevel,
+	);
+	return isValidNotificationLevel(raw)
+		? raw
+		: CONFIG_DEFAULTS.notificationsLevel;
 }
 
 export type DetectionSensitivity = 'low' | 'medium' | 'high';
 
-function isValidSensitivity(v: unknown): v is DetectionSensitivity {
+export function isValidSensitivity(v: unknown): v is DetectionSensitivity {
 	return v === 'low' || v === 'medium' || v === 'high';
+}
+
+function readSensitivity(
+	config: vscode.WorkspaceConfiguration,
+): DetectionSensitivity {
+	const raw = config.get<string>(
+		'detection.sensitivity',
+		CONFIG_DEFAULTS.detectionSensitivity,
+	);
+	return isValidSensitivity(raw) ? raw : CONFIG_DEFAULTS.detectionSensitivity;
 }

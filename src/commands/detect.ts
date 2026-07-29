@@ -65,15 +65,9 @@ export function registerDetectCommand(
 							includeTokens: config.detectionIncludeTokens,
 							includePrivateKeys: config.detectionIncludePrivateKeys,
 							sensitivity: config.detectionSensitivity,
-							...(config.workspaceScanPatterns !== undefined && {
-								patterns: config.workspaceScanPatterns,
-							}),
-							...(config.workspaceScanExcludes !== undefined && {
-								excludes: config.workspaceScanExcludes,
-							}),
-							...(config.workspaceScanMaxFiles !== undefined && {
-								maxFiles: config.workspaceScanMaxFiles,
-							}),
+							patterns: config.workspaceScanPatterns,
+							excludes: config.workspaceScanExcludes,
+							maxFiles: config.workspaceScanMaxFiles,
 							fileSizeLimit: config.safetyFileSizeWarnBytes,
 						});
 

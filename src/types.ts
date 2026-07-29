@@ -99,28 +99,19 @@ export interface Configuration {
 	readonly dedupeEnabled: boolean;
 	readonly notificationsLevel: 'all' | 'important' | 'silent';
 	readonly openResultsSideBySide: boolean;
-	readonly detectionEnabled: boolean;
 	readonly detectionSensitivity: 'low' | 'medium' | 'high';
 	readonly detectionIncludeApiKeys: boolean;
 	readonly detectionIncludePasswords: boolean;
 	readonly detectionIncludeTokens: boolean;
 	readonly detectionIncludePrivateKeys: boolean;
-	readonly sanitizationEnabled: boolean;
 	readonly sanitizationReplaceWith: string;
 	readonly safetyEnabled: boolean;
 	readonly safetyFileSizeWarnBytes: number;
-	readonly safetyLargeOutputLinesThreshold: number;
-	readonly safetyManyDocumentsThreshold: number;
-	readonly showParseErrors: boolean;
 	readonly statusBarEnabled: boolean;
 	readonly telemetryEnabled: boolean;
-	readonly performanceEnabled: boolean;
-	readonly performanceMaxDuration: number;
-	readonly performanceMaxMemoryUsage: number;
-	readonly performanceMaxCpuUsage: number;
-	readonly workspaceScanPatterns?: readonly string[];
-	readonly workspaceScanExcludes?: readonly string[];
-	readonly workspaceScanMaxFiles?: number;
+	readonly workspaceScanPatterns: readonly string[];
+	readonly workspaceScanExcludes: readonly string[];
+	readonly workspaceScanMaxFiles: number;
 }
 
 export interface PerformanceMetrics {
