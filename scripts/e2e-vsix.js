@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+/**
+ * Installed-VSIX end-to-end test: installs release/<name>-<version>.vsix
+ * into a CLEAN VS Code profile (fresh extensions + user-data dirs) and
+ * drives it as a real installed extension — the exact artifact users
+ * get, not the dev folder.
+ *
+ * Usage: npm run package && node scripts/e2e-vsix.js
+ *
+ * Note: the profile dirs must be SHORT paths — macOS caps the
+ * user-data-dir socket path (~103 chars); deep temp dirs fail with a
+ * cryptic `claimInstance` error at startup.
+ */
+const cp = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const {
+	downloadAndUnzipVSCode,
+	resolveCliArgsFromVSCodeExecutablePath,
+	runTests,
+} = require('@vscode/test-electron');
+
+const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const extensionId = `${manifest.publisher}.${manifest.name}`;
+const vsixPath = path.resolve(
+	'release',
+	`${manifest.name}-${manifest.version}.vsix`,
+);
+
+if (!fs.existsSync(vsixPath)) {
+	console.error(`FAIL: ${vsixPath} not found — run \`npm run package\` first`);
+	process.exit(1);
+}
+
+const profileRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vsix-e2e-'));
+const extensionsDir = path.join(profileRoot, 'ext');
+const userDataDir = path.join(profileRoot, 'usr');
+
+// Scan target: a tiny workspace with known fake secrets.
+const workspaceDir = path.join(profileRoot, 'ws');
+fs.mkdirSync(workspaceDir, { recursive: true });
+fs.writeFileSync(
+	path.join(workspaceDir, '.env'),
+	[
+		'# fixture (fake values)',
+		'API_KEY=sk_demo_abcdefghijklmnopqrstuvwxyz123456',
+		'DATABASE_PASSWORD=hunter2butlonger',
+		'',
+	].join('\n'),
+);
+
+// Probe extension: a no-op dev extension whose test suite exercises the
+// INSTALLED extension under test.
+const probeDir = path.join(profileRoot, 'probe');
+fs.mkdirSync(probeDir, { recursive: true });
+fs.writeFileSync(
+	path.join(probeDir, 'package.json'),
+	JSON.stringify({
+		name: 'vsix-e2e-probe',
+		publisher: 'local',
+		version: '0.0.1',
+		engines: { vscode: manifest.engines.vscode },
+		main: './extension.js',
+	}),
+);
+fs.writeFileSync(
+	path.join(probeDir, 'extension.js'),
+	'module.exports = { activate() {}, deactivate() {} };\n',
+);
+fs.writeFileSync(
+	path.join(probeDir, 'suite.js'),
+	`const vscode = require('vscode');
+const assert = require('assert');
+exports.run = async function run() {
+	const ext = vscode.extensions.getExtension(${JSON.stringify(extensionId)});
+	assert.ok(ext, 'installed ${extensionId} not found');
+	await ext.activate();
+	assert.strictEqual(ext.isActive, true, 'extension failed to activate');
+
+	// Smoke the primary command end to end: scan the fixture workspace.
+	assert.ok(
+		vscode.workspace.workspaceFolders?.length,
+		'no workspace folder open',
+	);
+	await vscode.commands.executeCommand('secrets-le.detect');
+	const result = vscode.workspace.textDocuments.find(
+		(d) =>
+			d.languageId === 'markdown' &&
+			d.getText().includes('# Secrets Detection Results'),
+	);
+	assert.ok(result, 'no results document produced');
+	const text = result.getText();
+	assert.ok(text.includes('.env'), 'results not grouped by file');
+	assert.ok(/API-KEY/.test(text), 'api key not detected');
+	assert.ok(/PASSWORD/.test(text), 'password not detected');
+	console.log('VSIX E2E OK: detect reported the fixture secrets');
+};
+`,
+);
+
+(async () => {
+	const vscodeExecutablePath = await downloadAndUnzipVSCode('stable');
+	const [cli, ...args] =
+		resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+
+	cp.execFileSync(
+		cli,
+		[
+			...args,
+			'--extensions-dir',
+			extensionsDir,
+			'--user-data-dir',
+			userDataDir,
+			'--install-extension',
+			vsixPath,
+		],
+		{ stdio: 'inherit' },
+	);
+
+	await runTests({
+		vscodeExecutablePath,
+		extensionDevelopmentPath: probeDir,
+		extensionTestsPath: path.join(probeDir, 'suite.js'),
+		launchArgs: [
+			workspaceDir,
+			'--extensions-dir',
+			extensionsDir,
+			'--user-data-dir',
+			userDataDir,
+		],
+	});
+	console.log(`INSTALLED-VSIX TEST: PASS (${path.basename(vsixPath)})`);
+})()
+	.catch((error) => {
+		console.error('INSTALLED-VSIX TEST: FAIL', error);
+		process.exitCode = 1;
+	})
+	.finally(() => {
+		fs.rmSync(profileRoot, { recursive: true, force: true });
+	});
