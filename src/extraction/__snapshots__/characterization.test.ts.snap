@@ -1,0 +1,852 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`detection characterization > empty content 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 1,
+    "processingTimeMs": 0,
+    "totalLines": 1,
+  },
+  "secrets": [],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > jwt-lookalikes.txt with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 5,
+    "processingTimeMs": 0,
+    "totalLines": 5,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "package version 1.2.3 released",
+      "description": "JWT token (format only)",
+      "key": undefined,
+      "position": {
+        "column": 17,
+        "line": 1,
+      },
+      "type": "jwt",
+      "value": "1.2.3",
+    },
+    {
+      "confidence": "high",
+      "context": "visit docs.example.com for info",
+      "description": "JWT token (format only)",
+      "key": undefined,
+      "position": {
+        "column": 7,
+        "line": 2,
+      },
+      "type": "jwt",
+      "value": "docs.example.com",
+    },
+    {
+      "confidence": "high",
+      "context": "loaded module lodash.debounce.min",
+      "description": "JWT token (format only)",
+      "key": undefined,
+      "position": {
+        "column": 15,
+        "line": 3,
+      },
+      "type": "jwt",
+      "value": "lodash.debounce.min",
+    },
+    {
+      "confidence": "high",
+      "context": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJVadQssw5c",
+      "description": "JWT token (format only)",
+      "key": undefined,
+      "position": {
+        "column": 1,
+        "line": 4,
+      },
+      "type": "jwt",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJVadQssw5c",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > jwt-lookalikes.txt with includeTokens disabled 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 5,
+    "processingTimeMs": 0,
+    "totalLines": 5,
+  },
+  "secrets": [],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > multiline-key.pem with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 7,
+    "processingTimeMs": 0,
+    "totalLines": 7,
+  },
+  "secrets": [],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.env at high sensitivity 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 9,
+    "processingTimeMs": 0,
+    "totalLines": 9,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "API_KEY=sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+      "description": "Generic API key",
+      "key": "api_key",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "type": "api-key",
+      "value": "sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_PASSWORD=hunter2butlonger",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 10,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "hunter2butlonger",
+    },
+    {
+      "confidence": "high",
+      "context": "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE",
+      "description": "AWS Access Key ID",
+      "key": "aws_access_key_id",
+      "position": {
+        "column": 1,
+        "line": 4,
+      },
+      "type": "aws-key",
+      "value": "AKIAIOSFODNN7EXAMPLE",
+    },
+    {
+      "confidence": "high",
+      "context": "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "description": "AWS Secret Access Key",
+      "key": "aws_secret_access_key",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "type": "aws-secret",
+      "value": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+      "description": "Database connection URL",
+      "key": "database_url",
+      "position": {
+        "column": 1,
+        "line": 6,
+      },
+      "type": "database-url",
+      "value": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.env at low sensitivity 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 9,
+    "processingTimeMs": 0,
+    "totalLines": 9,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "API_KEY=sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+      "description": "Generic API key",
+      "key": "api_key",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "type": "api-key",
+      "value": "sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_PASSWORD=hunter2butlonger",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 10,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "hunter2butlonger",
+    },
+    {
+      "confidence": "high",
+      "context": "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE",
+      "description": "AWS Access Key ID",
+      "key": "aws_access_key_id",
+      "position": {
+        "column": 1,
+        "line": 4,
+      },
+      "type": "aws-key",
+      "value": "AKIAIOSFODNN7EXAMPLE",
+    },
+    {
+      "confidence": "high",
+      "context": "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "description": "AWS Secret Access Key",
+      "key": "aws_secret_access_key",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "type": "aws-secret",
+      "value": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+      "description": "Database connection URL",
+      "key": "database_url",
+      "position": {
+        "column": 1,
+        "line": 6,
+      },
+      "type": "database-url",
+      "value": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+    },
+    {
+      "confidence": "medium",
+      "context": "SESSION_ID=abcdef1234567890abcdef",
+      "description": "Session ID",
+      "key": "session_id",
+      "position": {
+        "column": 1,
+        "line": 7,
+      },
+      "type": "session-id",
+      "value": "abcdef1234567890abcdef",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.env with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 9,
+    "processingTimeMs": 0,
+    "totalLines": 9,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "API_KEY=sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+      "description": "Generic API key",
+      "key": "api_key",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "type": "api-key",
+      "value": "sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_PASSWORD=hunter2butlonger",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 10,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "hunter2butlonger",
+    },
+    {
+      "confidence": "high",
+      "context": "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE",
+      "description": "AWS Access Key ID",
+      "key": "aws_access_key_id",
+      "position": {
+        "column": 1,
+        "line": 4,
+      },
+      "type": "aws-key",
+      "value": "AKIAIOSFODNN7EXAMPLE",
+    },
+    {
+      "confidence": "high",
+      "context": "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "description": "AWS Secret Access Key",
+      "key": "aws_secret_access_key",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "type": "aws-secret",
+      "value": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+      "description": "Database connection URL",
+      "key": "database_url",
+      "position": {
+        "column": 1,
+        "line": 6,
+      },
+      "type": "database-url",
+      "value": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+    },
+    {
+      "confidence": "medium",
+      "context": "SESSION_ID=abcdef1234567890abcdef",
+      "description": "Session ID",
+      "key": "session_id",
+      "position": {
+        "column": 1,
+        "line": 7,
+      },
+      "type": "session-id",
+      "value": "abcdef1234567890abcdef",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.env with includeApiKeys disabled 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 9,
+    "processingTimeMs": 0,
+    "totalLines": 9,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "DATABASE_PASSWORD=hunter2butlonger",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 10,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "hunter2butlonger",
+    },
+    {
+      "confidence": "high",
+      "context": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+      "description": "Database connection URL",
+      "key": "database_url",
+      "position": {
+        "column": 1,
+        "line": 6,
+      },
+      "type": "database-url",
+      "value": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+    },
+    {
+      "confidence": "medium",
+      "context": "SESSION_ID=abcdef1234567890abcdef",
+      "description": "Session ID",
+      "key": "session_id",
+      "position": {
+        "column": 1,
+        "line": 7,
+      },
+      "type": "session-id",
+      "value": "abcdef1234567890abcdef",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.ini with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 6,
+    "processingTimeMs": 0,
+    "totalLines": 6,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "password = supersecretpassword123",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "type": "password",
+      "value": "supersecretpassword123",
+    },
+    {
+      "confidence": "medium",
+      "context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secret123x;",
+      "description": "Password",
+      "key": "pwd",
+      "position": {
+        "column": 56,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "secret123x;",
+    },
+    {
+      "confidence": "medium",
+      "context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secret123x;",
+      "description": "Connection string",
+      "key": "connection_string",
+      "position": {
+        "column": 1,
+        "line": 3,
+      },
+      "type": "connection-string",
+      "value": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secret123x;",
+    },
+    {
+      "confidence": "high",
+      "context": "api_key = 0123456789abcdef0123456789abcdef",
+      "description": "Generic API key",
+      "key": "api_key",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "type": "api-key",
+      "value": "0123456789abcdef0123456789abcdef",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.ini with includePasswords disabled 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 6,
+    "processingTimeMs": 0,
+    "totalLines": 6,
+  },
+  "secrets": [
+    {
+      "confidence": "medium",
+      "context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secret123x;",
+      "description": "Connection string",
+      "key": "connection_string",
+      "position": {
+        "column": 1,
+        "line": 3,
+      },
+      "type": "connection-string",
+      "value": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secret123x;",
+    },
+    {
+      "confidence": "high",
+      "context": "api_key = 0123456789abcdef0123456789abcdef",
+      "description": "Generic API key",
+      "key": "api_key",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "type": "api-key",
+      "value": "0123456789abcdef0123456789abcdef",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.js with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 13,
+    "processingTimeMs": 0,
+    "totalLines": 13,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "const apiKey = 'sk_demo_abcdefghijklmnopqrst1234';",
+      "description": "Generic API key",
+      "key": "apikey",
+      "position": {
+        "column": 7,
+        "line": 1,
+      },
+      "type": "api-key",
+      "value": "sk_demo_abcdefghijklmnopqrst1234",
+    },
+    {
+      "confidence": "high",
+      "context": "password: 'n0tS0Secr3tP@ss',",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 2,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "n0tS0Secr3tP@ss",
+    },
+    {
+      "confidence": "high",
+      "context": "'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.dozjgNryP4J3jVmNHl0w5NXgL0n3I9PlFUP0THsR8U',",
+      "description": "Bearer token",
+      "key": undefined,
+      "position": {
+        "column": 5,
+        "line": 9,
+      },
+      "type": "bearer-token",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.dozjgNryP4J3jVmNHl0w5NXgL0n3I9PlFUP0THsR8U",
+    },
+    {
+      "confidence": "high",
+      "context": "const version = '1.2.3';",
+      "description": "JWT token (format only)",
+      "key": undefined,
+      "position": {
+        "column": 17,
+        "line": 12,
+      },
+      "type": "jwt",
+      "value": "1.2.3",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.json with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 9,
+    "processingTimeMs": 0,
+    "totalLines": 9,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": ""connectionString": "Server=db;User=sa;Password=Sup3rSecret!x;Encrypt=true"",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 41,
+        "line": 7,
+      },
+      "type": "password",
+      "value": "Sup3rSecret!x;Encrypt=true",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.py with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 4,
+    "processingTimeMs": 0,
+    "totalLines": 4,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "API_KEY = "AIzaSyAabcdefghijklmnopqrstuvwxyz123"",
+      "description": "Generic API key",
+      "key": "api_key",
+      "position": {
+        "column": 1,
+        "line": 1,
+      },
+      "type": "api-key",
+      "value": "AIzaSyAabcdefghijklmnopqrstuvwxyz123",
+    },
+    {
+      "confidence": "high",
+      "context": "db_password = "postgres_pw_123456"",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 4,
+        "line": 2,
+      },
+      "type": "password",
+      "value": "postgres_pw_123456",
+    },
+    {
+      "confidence": "medium",
+      "context": "SECRET_TOKEN = "tok_abcdefghijklmnopqrstuv"",
+      "description": "Generic token",
+      "key": "secret_token",
+      "position": {
+        "column": 1,
+        "line": 3,
+      },
+      "type": "token",
+      "value": "tok_abcdefghijklmnopqrstuv",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`detection characterization > secrets.yaml with default options 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "processedLines": 6,
+    "processingTimeMs": 0,
+    "totalLines": 6,
+  },
+  "secrets": [
+    {
+      "confidence": "high",
+      "context": "aws_access_key_id: AKIAIOSFODNN7EXAMPLE",
+      "description": "AWS Access Key ID",
+      "key": "aws_access_key_id",
+      "position": {
+        "column": 1,
+        "line": 1,
+      },
+      "type": "aws-key",
+      "value": "AKIAIOSFODNN7EXAMPLE",
+    },
+    {
+      "confidence": "high",
+      "context": "azure_account_key: YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo0NTY3ODk=",
+      "description": "Azure account key",
+      "key": "azure_account_key",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "type": "azure-key",
+      "value": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo0NTY3ODk=",
+    },
+    {
+      "confidence": "high",
+      "context": "password: correcthorsebatterystaple",
+      "description": "Password",
+      "key": "password",
+      "position": {
+        "column": 1,
+        "line": 3,
+      },
+      "type": "password",
+      "value": "correcthorsebatterystaple",
+    },
+    {
+      "confidence": "medium",
+      "context": "gcp_key: my-project-key-12345",
+      "description": "GCP/Google Cloud key",
+      "key": "gcp_key",
+      "position": {
+        "column": 1,
+        "line": 4,
+      },
+      "type": "gcp-key",
+      "value": "my-project-key-12345",
+    },
+    {
+      "confidence": "medium",
+      "context": "oauth_token: ya29a0AfH6SMBx7abcdefghijklmnop",
+      "description": "Generic token",
+      "key": "token",
+      "position": {
+        "column": 7,
+        "line": 5,
+      },
+      "type": "token",
+      "value": "ya29a0AfH6SMBx7abcdefghijklmnop",
+    },
+  ],
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`sanitization characterization > secrets.env with default replacement 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "originalLength": 319,
+    "processingTimeMs": 0,
+    "replacementsCount": 6,
+    "sanitizedLength": 208,
+  },
+  "replacements": [
+    {
+      "original": "abcdef1234567890abcdef",
+      "position": {
+        "column": 1,
+        "line": 7,
+      },
+      "replaced": "***REDACTED***",
+      "type": "session-id",
+    },
+    {
+      "original": "DATABASE_URL=postgres://admin:s3cret@db.internal:5432/app",
+      "position": {
+        "column": 1,
+        "line": 6,
+      },
+      "replaced": "***REDACTED***",
+      "type": "database-url",
+    },
+    {
+      "original": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "replaced": "***REDACTED***",
+      "type": "aws-secret",
+    },
+    {
+      "original": "AKIAIOSFODNN7EXAMPLE",
+      "position": {
+        "column": 1,
+        "line": 4,
+      },
+      "replaced": "***REDACTED***",
+      "type": "aws-key",
+    },
+    {
+      "original": "hunter2butlonger",
+      "position": {
+        "column": 10,
+        "line": 3,
+      },
+      "replaced": "***REDACTED***",
+      "type": "password",
+    },
+    {
+      "original": "sk_demo_abcdefghijklmnopqrstuvwxyz123456",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "replaced": "***REDACTED***",
+      "type": "api-key",
+    },
+  ],
+  "sanitizedContent": "# Application environment
+API_KEY=***REDACTED***
+DATABASE_PASSWORD=***REDACTED***
+AWS_ACCESS_KEY_ID=***REDACTED***
+AWS_SECRET_ACCESS_KEY=***REDACTED***
+***REDACTED***
+SESSION_ID=***REDACTED***
+SHORT_PWD=tiny
+",
+  "success": true,
+  "warnings": [],
+}
+`;
+
+exports[`sanitization characterization > secrets.ini with custom replacement 1`] = `
+{
+  "errors": [],
+  "metadata": {
+    "originalLength": 165,
+    "processingTimeMs": 0,
+    "replacementsCount": 3,
+    "sanitizedLength": 118,
+  },
+  "replacements": [
+    {
+      "original": "0123456789abcdef0123456789abcdef",
+      "position": {
+        "column": 1,
+        "line": 5,
+      },
+      "replaced": "[GONE]",
+      "type": "api-key",
+    },
+    {
+      "original": "secret123x;",
+      "position": {
+        "column": 56,
+        "line": 3,
+      },
+      "replaced": "[GONE]",
+      "type": "password",
+    },
+    {
+      "original": "supersecretpassword123",
+      "position": {
+        "column": 1,
+        "line": 2,
+      },
+      "replaced": "[GONE]",
+      "type": "password",
+    },
+  ],
+  "sanitizedContent": "[database]
+password = [GONE]
+connection_string = Server=prod;Database=app;Uid=admin;Pwd=[GONE]
+[api]
+api_key = [GONE]
+",
+  "success": true,
+  "warnings": [],
+}
+`;

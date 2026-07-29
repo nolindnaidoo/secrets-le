@@ -7,7 +7,13 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["src/**/*.ts", "!src/**/__mocks__", "!src/**/sample"]
+		"includes": [
+			"src/**/*.ts",
+			"!src/**/__mocks__",
+			"!src/**/sample",
+			"!src/**/__fixtures__",
+			"!src/**/__snapshots__"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -28,6 +34,18 @@
 		}
 	},
 	"overrides": [
+		{
+			"includes": ["**/__fixtures__/**", "**/__snapshots__/**"],
+			"linter": {
+				"enabled": false
+			},
+			"formatter": {
+				"enabled": false
+			},
+			"assist": {
+				"enabled": false
+			}
+		},
 		{
 			"includes": ["**/*.test.ts", "**/__mocks__/**"],
 			"linter": {
