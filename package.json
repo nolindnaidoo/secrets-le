@@ -13,7 +13,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.5",
 		"@types/node": "^24.7.1",
-		"@types/vscode": "^1.70.0",
+		"@types/vscode": "^1.90.0",
 		"@vitest/coverage-v8": "^3.2.4",
 		"@vscode/vsce": "^3.6.2",
 		"esbuild": "^0.28.1",
@@ -21,10 +21,6 @@
 		"vitest": "^3.2.4"
 	},
 	"activationEvents": [
-		"onCommand:secrets-le.detect",
-		"onCommand:secrets-le.sanitize",
-		"onCommand:secrets-le.openSettings",
-		"onCommand:secrets-le.help",
 		"onLanguage:javascript",
 		"onLanguage:javascriptreact",
 		"onLanguage:typescript",
@@ -153,11 +149,6 @@
 					"default": true,
 					"description": "%manifest.settings.open.side-by-side.desc%"
 				},
-				"secrets-le.detection.enabled": {
-					"type": "boolean",
-					"default": true,
-					"description": "%manifest.settings.detection.enabled.desc%"
-				},
 				"secrets-le.detection.sensitivity": {
 					"type": "string",
 					"default": "medium",
@@ -193,11 +184,6 @@
 					"default": true,
 					"description": "%manifest.settings.detection.include.private-keys.desc%"
 				},
-				"secrets-le.sanitization.enabled": {
-					"type": "boolean",
-					"default": true,
-					"description": "%manifest.settings.sanitization.enabled.desc%"
-				},
 				"secrets-le.sanitization.replaceWith": {
 					"type": "string",
 					"default": "***REDACTED***",
@@ -214,23 +200,6 @@
 					"minimum": 1000,
 					"description": "%manifest.settings.safety.warn.file-size.desc%"
 				},
-				"secrets-le.safety.largeOutputLinesThreshold": {
-					"type": "number",
-					"default": 50000,
-					"minimum": 100,
-					"description": "%manifest.settings.safety.warn.large-output.desc%"
-				},
-				"secrets-le.safety.manyDocumentsThreshold": {
-					"type": "number",
-					"default": 8,
-					"minimum": 1,
-					"description": "%manifest.settings.safety.warn.many-documents.desc%"
-				},
-				"secrets-le.showParseErrors": {
-					"type": "boolean",
-					"default": false,
-					"description": "%manifest.settings.parse-errors.desc%"
-				},
 				"secrets-le.statusBar.enabled": {
 					"type": "boolean",
 					"default": true,
@@ -240,29 +209,6 @@
 					"type": "boolean",
 					"default": false,
 					"description": "%manifest.settings.telemetry.desc%"
-				},
-				"secrets-le.performance.enabled": {
-					"type": "boolean",
-					"default": true,
-					"description": "%manifest.settings.performance.enabled.desc%"
-				},
-				"secrets-le.performance.maxDuration": {
-					"type": "number",
-					"default": 5000,
-					"minimum": 1000,
-					"description": "%manifest.settings.performance.max-duration.desc%"
-				},
-				"secrets-le.performance.maxMemoryUsage": {
-					"type": "number",
-					"default": 104857600,
-					"minimum": 1048576,
-					"description": "%manifest.settings.performance.max-memory.desc%"
-				},
-				"secrets-le.performance.maxCpuUsage": {
-					"type": "number",
-					"default": 1000000,
-					"minimum": 100000,
-					"description": "%manifest.settings.performance.max-cpu.desc%"
 				},
 				"secrets-le.workspace.scanPatterns": {
 					"type": "array",
@@ -304,7 +250,7 @@
 	"description": "%manifest.ext.description%",
 	"displayName": "%manifest.ext.name%",
 	"engines": {
-		"vscode": "^1.70.0",
+		"vscode": "^1.90.0",
 		"node": ">=20.0.0"
 	},
 	"homepage": "https://github.com/OffensiveEdge/secrets-le#readme",
