@@ -7,8 +7,7 @@ export interface StatusBar {
 	dispose(): void;
 }
 
-export function createStatusBar(_context: vscode.ExtensionContext): StatusBar {
-	const config = getConfiguration();
+export function createStatusBar(context: vscode.ExtensionContext): StatusBar {
 	const statusBarItem = vscode.window.createStatusBarItem(
 		vscode.StatusBarAlignment.Right,
 		100,
@@ -17,10 +16,24 @@ export function createStatusBar(_context: vscode.ExtensionContext): StatusBar {
 	statusBarItem.text = '$(symbol-misc) Secrets-LE';
 	statusBarItem.tooltip = 'Click to detect secrets';
 	statusBarItem.command = 'secrets-le.detect';
+	context.subscriptions.push(statusBarItem);
 
-	if (config.statusBarEnabled) {
-		statusBarItem.show();
-	}
+	const applyVisibility = (): void => {
+		if (getConfiguration().statusBarEnabled) {
+			statusBarItem.show();
+		} else {
+			statusBarItem.hide();
+		}
+	};
+	applyVisibility();
+
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeConfiguration((event) => {
+			if (event.affectsConfiguration('secrets-le.statusBar.enabled')) {
+				applyVisibility();
+			}
+		}),
+	);
 
 	return Object.freeze({
 		show(): void {
