@@ -1,6 +1,6 @@
 {
 	"manifest.ext.name": "Secrets-LE",
-	"manifest.ext.description": "Zero-Hassle Secrets Detection & Sanitization - Detect and sanitize credentials, tokens, and API keys locally — before you commit. GitGuardian-level security without ever sending data off your machine.",
+	"manifest.ext.description": "Detect and sanitize credentials, tokens, API keys, and private keys locally — before you commit. 100% local processing; nothing leaves your machine.",
 	"manifest.command.category": "Secrets-LE",
 	"manifest.command.detect.title": "Detect Secrets",
 	"manifest.command.sanitize.title": "Sanitize Secrets",

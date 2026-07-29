@@ -2,12 +2,12 @@
 	"name": "secrets-le",
 	"version": "1.7.1",
 	"author": {
-		"name": "OffensiveEdge",
-		"url": "https://github.com/OffensiveEdge"
+		"name": "nolindnaidoo",
+		"url": "https://github.com/nolindnaidoo"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/OffensiveEdge/secrets-le.git"
+		"url": "https://github.com/nolindnaidoo/secrets-le.git"
 	},
 	"main": "./dist/extension.js",
 	"devDependencies": {
@@ -44,7 +44,7 @@
 		"onLanguage:plaintext"
 	],
 	"bugs": {
-		"url": "https://github.com/OffensiveEdge/secrets-le/issues"
+		"url": "https://github.com/nolindnaidoo/secrets-le/issues"
 	},
 	"capabilities": {
 		"virtualWorkspaces": {
@@ -220,7 +220,9 @@
 					"items": {
 						"type": "string"
 					},
-					"default": ["**/*"],
+					"default": [
+						"**/*"
+					],
 					"description": "%manifest.settings.workspace.scan-patterns.desc%"
 				},
 				"secrets-le.workspace.scanExcludes": {
@@ -258,7 +260,7 @@
 		"vscode": "^1.90.0",
 		"node": ">=20.0.0"
 	},
-	"homepage": "https://github.com/OffensiveEdge/secrets-le#readme",
+	"homepage": "https://github.com/nolindnaidoo/secrets-le#readme",
 	"icon": "src/assets/images/icon.png",
 	"keywords": [
 		"secrets",
@@ -272,7 +274,6 @@
 		"sanitize",
 		"sanitization",
 		"security",
-		"gitguardian",
 		"aws",
 		"azure",
 		"gcp",
@@ -284,7 +285,7 @@
 		"scanner"
 	],
 	"license": "MIT",
-	"publisher": "OffensiveEdge",
+	"publisher": "nolindnaidoo",
 	"scripts": {
 		"clean": "node -e \"const fs=require('fs');['dist','coverage','release'].forEach(d=>fs.rmSync(d,{recursive:true,force:true}))\"",
 		"clean:i18n": "node -e \"const fs=require('fs');fs.readdirSync('.').filter(f=>f.startsWith('package.nls.')&&f.endsWith('.json')&&f!=='package.nls.json').forEach(f=>fs.unlinkSync(f))\"",
