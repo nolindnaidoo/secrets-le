@@ -55,6 +55,10 @@ Key settings: Detection sensitivity, sanitization placeholder, safety checks
 
 ## Support
 
-GitHub Issues: https://github.com/nolindnaidoo/secrets-le/issues
+- GitHub Issues: https://github.com/nolindnaidoo/secrets-le/issues
+- Documentation: https://github.com/nolindnaidoo/secrets-le#readme
+- LE Tools: https://letools.dev
+
+Built by nolindnaidoo (https://github.com/nolindnaidoo) — MIT licensed.
 `;
 }
