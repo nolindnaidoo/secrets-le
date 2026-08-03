@@ -59,8 +59,7 @@
 	"categories": [
 		"Other",
 		"Programming Languages",
-		"Linters",
-		"Security"
+		"Linters"
 	],
 	"contributes": {
 		"commands": [
