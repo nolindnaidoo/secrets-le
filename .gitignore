@@ -82,3 +82,4 @@ package.nls.zh-cn.json
 
 out-test/
 .vscode-test/
+benchmark-results.json
