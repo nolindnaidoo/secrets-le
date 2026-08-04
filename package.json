@@ -313,7 +313,7 @@
 		"lint": "biome check src/",
 		"lint:fix": "biome check --write src/",
 		"vscode:prepublish": "npm run typecheck && npm run build:prod && npm run check:bundle && npm run copy:i18n",
-		"package": "node -e \"require('fs').mkdirSync('release',{recursive:true})\" && vsce package --allow-package-secrets github --out release/ && npm run clean:i18n",
+		"package": "node -e \"require('fs').mkdirSync('release',{recursive:true})\" && vsce package --no-dependencies --allow-package-secrets github --out release/ && npm run clean:i18n",
 		"publish": "vsce publish"
 	}
 }
