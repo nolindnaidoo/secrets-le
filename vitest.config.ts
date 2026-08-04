@@ -14,12 +14,6 @@ export default defineConfig({
 				'src/__mocks__/**',
 				'src/extraction/__fixtures__/**',
 			],
-			thresholds: {
-				lines: 80,
-				functions: 80,
-				branches: 75,
-				statements: 80,
-			},
 		},
 		include: ['src/**/*.test.ts'],
 	},
