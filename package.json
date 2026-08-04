@@ -310,8 +310,8 @@
 		"test:coverage": "vitest run --coverage --pool=threads",
 		"test:integration": "npm run build && tsc -p tsconfig.it.json && vscode-test",
 		"test:e2e-vsix": "node scripts/e2e-vsix.js",
-		"lint": "biome check src/",
-		"lint:fix": "biome check --write src/",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
 		"vscode:prepublish": "npm run typecheck && npm run build:prod && npm run check:bundle && npm run copy:i18n",
 		"package": "node -e \"require('fs').mkdirSync('release',{recursive:true})\" && vsce package --no-dependencies --allow-package-secrets github --out release/ && npm run clean:i18n",
 		"publish": "vsce publish"
