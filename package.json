@@ -57,9 +57,10 @@
 		}
 	},
 	"categories": [
-		"Other",
-		"Programming Languages",
-		"Linters"
+		"Linters",
+		"SCM Providers",
+		"Testing",
+		"Programming Languages"
 	],
 	"contributes": {
 		"commands": [
