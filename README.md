@@ -22,6 +22,11 @@
   <img src="src/assets/images/demo.gif" alt="Secrets-LE Demo" style="max-width: 100%; height: auto;" />
 </p>
 
+> **Useful?** A star or rating is how other developers find it —
+> [★ GitHub](https://github.com/nolindnaidoo/secrets-le) ·
+> [★ Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le&ssr=false#review-details) ·
+> [★ Open VSX](https://open-vsx.org/extension/OffensiveEdge/secrets-le/reviews)
+
 ## What it does
 
 Open a workspace, press `Ctrl+Alt+S` (`Cmd+Alt+S` on Mac), and every detected secret lands in a results document — grouped by file, with line/column positions pointing at the value itself. Run `Secrets-LE: Sanitize Secrets` to replace the secrets in the active file with a placeholder. Works in VS Code and in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
@@ -144,6 +149,16 @@ Every tool in the family, one page: **[letools.dev](https://letools.dev)**
 - **[Colors-LE](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.colors-le)** - Extract and analyze colors from CSS, SCSS, LESS, Stylus, HTML, JS/TS, and SVG
 - **[URLs-LE](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.urls-le)** - Extract URLs from documentation, configs, and code
 - **[Dates-LE](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.dates-le)** - Extract and analyze dates from logs, configs, and code
+
+## Also by nolindnaidoo
+
+**Rust** — [pixelcoords](https://github.com/nolindnaidoo/pixelcoords) marks pixel-exact
+coordinates machines can use · [pixelactions](https://github.com/nolindnaidoo/pixelactions)
+performs and verifies the interaction ·
+[pixelcoords.dev](https://pixelcoords.dev) · [pixelactions.dev](https://pixelactions.dev)
+
+**Elsewhere** — [GitHub](https://github.com/nolindnaidoo) ·
+[LinkedIn](https://www.linkedin.com/in/nolindnaidoo/)
 
 ## License
 
