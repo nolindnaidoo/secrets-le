@@ -8,10 +8,10 @@ export const config = {
   github: {
     token: 'ghp_1234567890abcdefghijklmnopqrstuvwxyz',
   },
-  // Deliberately not a real vendor prefix: GitHub's push protection rejects
-  // recognisable provider keys even in samples, and bypassing that to commit
-  // a demo file is the wrong habit. This still trips the extension's
-  // generic-credential heuristics, which is what the demo needs.
+  // Not a real vendor prefix on purpose. GitHub push protection rejects
+  // recognisable provider keys even inside samples/ — it does not honour the
+  // paths-ignore in .github/secret_scanning.yml, which scopes alerts only.
+  // This still trips the extension's generic-credential heuristics.
   service: {
     apiKey: 'svc_live_9f2b7c41d8e6a35b0c4718de9a2f6b83',
   },
