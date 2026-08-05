@@ -11,6 +11,12 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le">
     <img src="https://img.shields.io/badge/Install%20from-VS%20Code-blue?style=for-the-badge&logo=visualstudiocode" alt="Install from VS Code Marketplace" />
   </a>
+  <a href="https://open-vsx.org/extension/OffensiveEdge/secrets-le">
+    <img src="https://img.shields.io/open-vsx/dt/OffensiveEdge/secrets-le?style=for-the-badge&label=Open%20VSX&color=blue" alt="Open VSX downloads" />
+  </a>
+  <a href="https://www.npmjs.com/package/secrets-le-mcp">
+    <img src="https://img.shields.io/npm/v/secrets-le-mcp?style=for-the-badge&label=MCP%20server&color=blue&logo=npm" alt="secrets-le-mcp on npm" />
+  </a>
   <a href="https://letools.dev">
     <img src="https://img.shields.io/badge/LE%20Tools-letools.dev-blue?style=for-the-badge" alt="LE Tools" />
   </a>
@@ -32,6 +38,67 @@
 Open a workspace, press `Ctrl+Alt+S` (`Cmd+Alt+S` on Mac), and every detected secret lands in a results document — grouped by file, with line/column positions pointing at the value itself. Run `Secrets-LE: Sanitize Secrets` to replace the secrets in the active file with a placeholder. Works in VS Code and in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
 
 Detection is regex-based over the full text of each file, so it works on any text format — code, configs, `.env` files, YAML, JSON, logs. It is a pre-commit safety net, not a guarantee: a scanner built on patterns can miss secrets and can flag non-secrets. Review the results.
+
+## Use it from an AI agent
+
+The same engine runs as an [MCP](https://modelcontextprotocol.io) server, so an agent can call it directly instead of you running a command.
+
+| Editor | How |
+|---|---|
+| **VS Code** 1.101+ | Nothing to install — the extension registers `detect_secrets` with agent mode |
+| **Zed** | [Secrets-LE](https://github.com/zed-industries/extensions/pull/7085) — *pending review* |
+| **Claude Code** | `claude mcp add secrets-le -- npx -y secrets-le-mcp` |
+| **Cursor, Windsurf, anything else** | point it at `npx secrets-le-mcp` |
+
+```
+detect_secrets(content, sensitivity?, includeApiKeys?, includePasswords?, includeTokens?, includePrivateKeys?, maxResults?)
+```
+
+Reports each finding by type, confidence, key name and 1-based position. **Values are never returned** — previews are truncated and length-annotated, and the context line has the secret masked out, so a finding can be located without the credential leaving the machine it was found on.
+
+The server takes content and returns data — it reads no files and makes no network requests of its own. Published as [`secrets-le-mcp`](https://www.npmjs.com/package/secrets-le-mcp) on npm and as `io.github.nolindnaidoo/secrets-le` in the [MCP registry](https://registry.modelcontextprotocol.io).
+
+<details>
+<summary><b>Configuring it by hand</b> — any host with an MCP config file</summary>
+
+Most hosts read a JSON config. Add one entry:
+
+```json
+{
+  "mcpServers": {
+    "secrets-le": {
+      "command": "npx",
+      "args": ["-y", "secrets-le-mcp"]
+    }
+  }
+}
+```
+
+`-y` skips the install prompt on first run. Pin a version if you would rather not track releases — `secrets-le-mcp@2.2.1`.
+
+Prefer not to go through `npx` on every launch? Install it once and point at the binary instead:
+
+```bash
+npm install -g secrets-le-mcp
+```
+
+```json
+{
+  "mcpServers": {
+    "secrets-le": { "command": "secrets-le-mcp" }
+  }
+}
+```
+
+It speaks MCP over stdio and needs no environment variables, no API key and no configuration of its own. To check it before wiring it into anything:
+
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | npx -y secrets-le-mcp
+```
+
+That prints the tool list and exits — if you see `detect_secrets`, the server works.
+
+</details>
 
 ## What gets detected
 
@@ -96,6 +163,7 @@ setting of its own.
 ## Privacy & security
 
 - **No network access.** The extension never sends data anywhere. The `telemetryEnabled` setting only writes events to a local Output Channel you can inspect (`Secrets-LE Telemetry`).
+- **The MCP server never returns a secret.** Its output goes to whatever model called it, so previews are truncated and length-annotated and the surrounding context line is masked, using the same `utils/mask` helpers as the report. There is no argument that turns this off, and the bundle gate fails the build if a value ever appears in a response — verified by making the tool leak on purpose and watching the gate catch it.
 - Error notifications redact home directories and credential-shaped fragments before display.
 - Sanitize always asks for confirmation before editing your file, and edits are normal undo-able document edits.
 
@@ -153,6 +221,8 @@ run. Reproduce with `bun run test:coverage`.
 
 Every tool in the family, one page: **[letools.dev](https://letools.dev)**
 
+All ten also ship as MCP servers — `npx <name>-mcp` gives any agent the same engine.
+
 - **[String-LE](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.string-le)** - Extract string values for i18n from JSON, YAML, CSV, TOML, INI, and .env
 - **[Numbers-LE](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.numbers-le)** - Extract numeric values from JSON, YAML, CSV, TOML, INI, and .env
 - **[EnvSync-LE](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le)** - Spot missing keys across your .env files, with a markdown report
@@ -167,8 +237,10 @@ Every tool in the family, one page: **[letools.dev](https://letools.dev)**
 
 **Rust**
 
-- **[pixelcoords](https://github.com/nolindnaidoo/pixelcoords)** - Mark pixel-exact coordinates machines can use · [pixelcoords.dev](https://pixelcoords.dev)
-- **[pixelactions](https://github.com/nolindnaidoo/pixelactions)** - Perform the interaction and confirm it landed · [pixelactions.dev](https://pixelactions.dev)
+- **[pixelcoords](https://github.com/nolindnaidoo/pixelcoords)** — Freeze your screen, mark regions, get pixel-exact coordinates and crops
+  [pixelcoords.dev](https://pixelcoords.dev) · [crates.io](https://crates.io/crates/pixelcoords) · [docs.rs](https://docs.rs/pixelcoords)
+- **[pixelactions](https://github.com/nolindnaidoo/pixelactions)** — Consume human-verified coordinates, perform the interaction, confirm it landed
+  [pixelactions.dev](https://pixelactions.dev) · [crates.io](https://crates.io/crates/pixelactions) · [docs.rs](https://docs.rs/pixelactions)
 
 **Contact Developer** — [GitHub](https://github.com/nolindnaidoo) · [LinkedIn](https://www.linkedin.com/in/nolindnaidoo/)
 
