@@ -176,9 +176,10 @@ export function registerSanitizeCommand(
 							throw new vscode.CancellationError();
 						}
 
-						// Replace current document. Range(0,0,lineCount,0) misses the
-						// final line's content when the file lacks a trailing newline;
-						// use the real end position instead.
+						// Replace current document. The end position is the real end of
+						// the last line rather than Range(0,0,lineCount,0); both cover the
+						// whole document — VS Code clamps the out-of-range position — but
+						// this one says what it means without relying on that.
 						const edit = new vscode.WorkspaceEdit();
 						const fullRange = new vscode.Range(
 							document.positionAt(0),
