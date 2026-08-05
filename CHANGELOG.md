@@ -65,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Every `else` block is gone (9 of them), replaced by guard clauses and value
-  expressions, per the fleet standard in `../AGENTS.md`.
+  expressions, per the code style in `AGENTS.md`.
 - Report rendering moved out of `extraction/extract.ts` to `report/format.ts`.
   Building the markdown a user reads is presentation and was sitting next to
   the detection logic; the two change for different reasons. Extraction drops
