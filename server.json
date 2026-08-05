@@ -1,7 +1,7 @@
 {
 	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
 	"name": "io.github.nolindnaidoo/secrets-le",
-	"description": "Detect hardcoded secrets in source and config, reporting masked previews and never the values themselves.",
+	"description": "Detect hardcoded secrets in source and config. Reports masked previews, never the values.",
 	"repository": {
 		"url": "https://github.com/nolindnaidoo/secrets-le",
 		"source": "github"
