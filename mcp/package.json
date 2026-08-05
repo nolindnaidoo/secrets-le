@@ -1,6 +1,6 @@
 {
 	"name": "secrets-le-mcp",
-	"version": "2.2.1",
+	"version": "2.2.2",
 	"mcpName": "io.github.nolindnaidoo/secrets-le",
 	"description": "Detect hardcoded secrets in source and config, reporting masked previews and never the values themselves.",
 	"keywords": [
