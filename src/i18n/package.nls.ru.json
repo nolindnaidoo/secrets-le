@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Шаблоны Glob для файлов, подлежащих сканированию в рабочей области (например, «**/*» для всех файлов)",
 	"manifest.settings.workspace.scan-excludes.desc": "Шаблоны «Glob» для файлов, которые следует исключить из сканирования рабочей области",
 	"manifest.settings.workspace.scan-max-files.desc": "Максимальное количество файлов для сканирования при выполнении операций в рабочей области",
-	"manifest.capability.untrusted-workspaces.desc": "Ограниченная функциональность в ненадежных рабочих средах"
+	"manifest.capability.untrusted-workspaces.desc": "Ограниченная функциональность в ненадежных рабочих средах",
+	"manifest.mcp.label": "Secrets-LE: инструменты для обнаружения секретов в режиме агента"
 }

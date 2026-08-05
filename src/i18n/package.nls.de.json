@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Glob-Muster für Dateien, die im Arbeitsbereich gescannt werden sollen (z. B. „**/*“ für alle Dateien)",
 	"manifest.settings.workspace.scan-excludes.desc": "Glob-Muster für Dateien, die von Arbeitsbereichsscans ausgeschlossen werden sollen",
 	"manifest.settings.workspace.scan-max-files.desc": "Maximale Anzahl der zu scannenden Dateien bei Arbeitsbereichsvorgängen",
-	"manifest.capability.untrusted-workspaces.desc": "Eingeschränkte Funktionalität in nicht vertrauenswürdigen Arbeitsbereichen"
+	"manifest.capability.untrusted-workspaces.desc": "Eingeschränkte Funktionalität in nicht vertrauenswürdigen Arbeitsbereichen",
+	"manifest.mcp.label": "Secrets-LE – Tools zur Erkennung von Geheimnissen im Agentenmodus"
 }

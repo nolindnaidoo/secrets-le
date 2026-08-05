@@ -1,0 +1,38 @@
+{
+	"name": "secrets-le-mcp",
+	"version": "2.2.1",
+	"mcpName": "io.github.nolindnaidoo/secrets-le",
+	"description": "Detect hardcoded secrets in source and config, reporting masked previews and never the values themselves.",
+	"keywords": [
+		"mcp",
+		"modelcontextprotocol",
+		"model-context-protocol",
+		"secrets-le"
+	],
+	"license": "MIT",
+	"author": {
+		"name": "nolindnaidoo",
+		"url": "https://github.com/nolindnaidoo"
+	},
+	"homepage": "https://letools.dev",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nolindnaidoo/secrets-le.git",
+		"directory": "mcp"
+	},
+	"bugs": {
+		"url": "https://github.com/nolindnaidoo/secrets-le/issues"
+	},
+	"type": "commonjs",
+	"bin": {
+		"secrets-le-mcp": "server.js"
+	},
+	"files": [
+		"server.js",
+		"README.md",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=20"
+	}
+}

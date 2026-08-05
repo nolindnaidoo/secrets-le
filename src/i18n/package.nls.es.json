@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Patrones globales para los archivos que se van a escanear en el espacio de trabajo (por ejemplo, «**/*» para todos los archivos)",
 	"manifest.settings.workspace.scan-excludes.desc": "Patrones globales para los archivos que se deben excluir de los análisis del espacio de trabajo",
 	"manifest.settings.workspace.scan-max-files.desc": "Número máximo de archivos que se pueden analizar en las operaciones del espacio de trabajo",
-	"manifest.capability.untrusted-workspaces.desc": "Funcionalidad limitada en entornos de trabajo no fiables"
+	"manifest.capability.untrusted-workspaces.desc": "Funcionalidad limitada en entornos de trabajo no fiables",
+	"manifest.mcp.label": "Secrets-LE: herramientas de detección de secretos para el modo agente"
 }

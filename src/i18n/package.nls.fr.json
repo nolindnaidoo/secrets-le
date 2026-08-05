@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Modèles globaux pour les fichiers à analyser dans l'espace de travail (par exemple, « **/* » pour tous les fichiers)",
 	"manifest.settings.workspace.scan-excludes.desc": "Modèles globaux pour les fichiers à exclure des analyses de l'espace de travail",
 	"manifest.settings.workspace.scan-max-files.desc": "Nombre maximal de fichiers à analyser dans les opérations de l'espace de travail",
-	"manifest.capability.untrusted-workspaces.desc": "Fonctionnalités limitées dans les espaces de travail non fiables"
+	"manifest.capability.untrusted-workspaces.desc": "Fonctionnalités limitées dans les espaces de travail non fiables",
+	"manifest.mcp.label": "Secrets-LE : outils de détection des secrets en mode agent"
 }

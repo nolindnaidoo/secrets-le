@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Modelli glob per i file da scansionare nell'area di lavoro (ad es., '**/*' per tutti i file)",
 	"manifest.settings.workspace.scan-excludes.desc": "Modelli \"Glob\" per i file da escludere dalle scansioni dell'area di lavoro",
 	"manifest.settings.workspace.scan-max-files.desc": "Numero massimo di file da scansionare nelle operazioni dell'area di lavoro",
-	"manifest.capability.untrusted-workspaces.desc": "Funzionalità limitate negli spazi di lavoro non attendibili"
+	"manifest.capability.untrusted-workspaces.desc": "Funzionalità limitate negli spazi di lavoro non attendibili",
+	"manifest.mcp.label": "Secrets-LE: strumenti di rilevamento dei segreti per la modalità agente"
 }

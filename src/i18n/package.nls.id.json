@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Pola glob untuk file yang akan dipindai di ruang kerja (misalnya, '**/*' untuk semua file)",
 	"manifest.settings.workspace.scan-excludes.desc": "Pola glob untuk berkas yang akan dikecualikan dari pemindaian ruang kerja",
 	"manifest.settings.workspace.scan-max-files.desc": "Jumlah maksimum berkas yang akan dipindai dalam operasi ruang kerja",
-	"manifest.capability.untrusted-workspaces.desc": "Fungsionalitas terbatas di ruang kerja yang tidak tepercaya"
+	"manifest.capability.untrusted-workspaces.desc": "Fungsionalitas terbatas di ruang kerja yang tidak tepercaya",
+	"manifest.mcp.label": "Secrets-LE: alat pendeteksi rahasia untuk mode agen"
 }

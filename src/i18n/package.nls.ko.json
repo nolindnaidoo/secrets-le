@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "작업 공간에서 스캔할 파일의 글로브 패턴 (예: 모든 파일을 나타내는 '**/*')",
 	"manifest.settings.workspace.scan-excludes.desc": "작업 공간 스캔에서 제외할 파일에 대한 Glob 패턴",
 	"manifest.settings.workspace.scan-max-files.desc": "작업 공간 작업에서 스캔할 수 있는 최대 파일 수",
-	"manifest.capability.untrusted-workspaces.desc": "신뢰할 수 없는 작업 공간에서의 제한된 기능"
+	"manifest.capability.untrusted-workspaces.desc": "신뢰할 수 없는 작업 공간에서의 제한된 기능",
+	"manifest.mcp.label": "Secrets-LE: 에이전트 모드용 비밀 정보 탐지 도구"
 }

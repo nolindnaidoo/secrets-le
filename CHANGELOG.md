@@ -5,6 +5,76 @@ All notable changes to Secrets-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2026-08-05
+
+### Changed
+
+- **VS Code 1.101 is now the minimum.** `engines.vscode` moves from `^1.90.0`
+  to `^1.101.0` and `@types/vscode` is pinned exactly to the new floor, per the
+  rule that the declared floor and the type surface must match. 1.101 is the
+  first stable release carrying `registerMcpServerDefinitionProvider`, which
+  the MCP integration needs — declaring the contribution point against an older
+  floor would be a claim the code could not honour. Cursor and VSCodium track
+  well past this; Cursor 3.6.21 reports 1.105.1.
+
+### Added
+
+- An MCP server, shipped inside the VSIX as `dist/mcp-server.js`. It exposes
+  `detect_secrets` over stdio, so an agent can pull every secret out of a document
+  with its 1-based position.
+
+  It imports the extraction engine and nothing from `vscode` —
+  `check:mcp-bundle` fails the build if that stops being true, because the
+  server has to run in Zed, in Claude Code, and from `npx`.
+
+- The extension now offers that server to VS Code's agent mode, so installing
+  it adds `detect_secrets` to the agent's tools alongside the existing commands.
+  Nothing is downloaded at runtime: the server is the copy inside the VSIX.
+  The registration is skipped on editors that do not implement the API, which
+  is not an error — an editor without agent mode is not a broken install.
+
+- The server is on npm as [`secrets-le-mcp`](https://www.npmjs.com/package/secrets-le-mcp),
+  so `npx secrets-le-mcp` gives the same tool to Claude Code, Cursor, Windsurf or
+  anything else that speaks MCP. It is the same build the VSIX carries, and its
+  version is written from this manifest rather than maintained separately.
+
+- A **Zed extension**, under `zed/`. Zed's extension API has no way to read the
+  active buffer or register a command, so this extension could never be ported
+  there in any language; a context server is the surface that fits. The crate
+  is a launcher — it installs `secrets-le-mcp` and starts it with Zed's Node — so
+  there is no second implementation to keep in agreement with the goldens.
+
+  **This server never returns a secret.** Everything else in the family hands
+  back what it extracted; here that would mean posting live credentials to
+  whatever cloud model called the tool, which is the opposite of what this
+  extension is for. `DetectedSecret.value` is the raw match and `context` is
+  the raw source line containing it, so both go through `utils/mask` — the same
+  masking the detection report already uses — and there is no option, flag or
+  code path that turns it off. The tool schema is closed, so an
+  `unmasked: true` argument is rejected rather than ignored.
+
+  A finding stays actionable without its value: type, confidence, key name and
+  1-based position locate it in a file the caller already has.
+
+  The bundle gates assert the inverse of every other repo's — that the value is
+  **absent** from the response. A server that leaked the credential would sail
+  through any did-it-find-something check, so absence is what has to be proven,
+  and it was verified by making the tool leak on purpose and watching the gate
+  fail.
+
+### Fixed
+
+- The coverage gate could pass against a stale summary. `coverage-readme.js`
+  reads `coverage/coverage-summary.json` rather than running coverage, so when
+  that file was older than the code both modes lied — the rewrite reproduced
+  stale numbers and `--check` then compared the README against the same stale
+  file and reported it current. Both modes now refuse a summary older than
+  `src/`.
+
+- The manifest placeholder gate only inspected `contributes.commands`, so a
+  `%key%` on any other contribution point could ship as literal text. It now
+  walks the whole `contributes` tree.
+
 ## [2.1.0] - 2026-08-05
 
 ### Added

@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Glob patterns for files to scan in workspace (e.g., '**/*' for all files)",
 	"manifest.settings.workspace.scan-excludes.desc": "Glob patterns for files to exclude from workspace scans",
 	"manifest.settings.workspace.scan-max-files.desc": "Maximum number of files to scan in workspace operations",
-	"manifest.capability.untrusted-workspaces.desc": "Limited functionality in untrusted workspaces"
+	"manifest.capability.untrusted-workspaces.desc": "Limited functionality in untrusted workspaces",
+	"manifest.mcp.label": "Secrets-LE secret detection tools for agent mode"
 }

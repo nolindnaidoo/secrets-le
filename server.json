@@ -1,0 +1,20 @@
+{
+	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+	"name": "io.github.nolindnaidoo/secrets-le",
+	"description": "Detect hardcoded secrets in source and config, reporting masked previews and never the values themselves.",
+	"repository": {
+		"url": "https://github.com/nolindnaidoo/secrets-le",
+		"source": "github"
+	},
+	"version": "2.2.1",
+	"packages": [
+		{
+			"registryType": "npm",
+			"identifier": "secrets-le-mcp",
+			"version": "2.2.1",
+			"transport": {
+				"type": "stdio"
+			}
+		}
+	]
+}

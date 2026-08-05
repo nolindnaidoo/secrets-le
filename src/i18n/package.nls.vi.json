@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "Các mẫu toàn cục cho các tệp cần quét trong không gian làm việc (ví dụ: '**/*' để quét tất cả các tệp)",
 	"manifest.settings.workspace.scan-excludes.desc": "Các mẫu Glob cho các tệp cần loại trừ khỏi quá trình quét không gian làm việc",
 	"manifest.settings.workspace.scan-max-files.desc": "Số lượng tệp tối đa được quét trong các thao tác trên không gian làm việc",
-	"manifest.capability.untrusted-workspaces.desc": "Chức năng bị hạn chế trong các không gian làm việc không đáng tin cậy"
+	"manifest.capability.untrusted-workspaces.desc": "Chức năng bị hạn chế trong các không gian làm việc không đáng tin cậy",
+	"manifest.mcp.label": "Secrets-LE: Công cụ phát hiện bí mật dành cho chế độ tác nhân"
 }

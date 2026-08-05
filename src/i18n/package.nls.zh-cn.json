@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "工作区中待扫描文件的通配符模式（例如，“**/*”表示所有文件）",
 	"manifest.settings.workspace.scan-excludes.desc": "用于将文件从工作区扫描中排除的全局模式",
 	"manifest.settings.workspace.scan-max-files.desc": "工作区操作中要扫描的文件最大数量",
-	"manifest.capability.untrusted-workspaces.desc": "在不受信任的工作区中功能受限"
+	"manifest.capability.untrusted-workspaces.desc": "在不受信任的工作区中功能受限",
+	"manifest.mcp.label": "Secrets-LE 代理模式下的秘密检测工具"
 }

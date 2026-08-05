@@ -30,5 +30,6 @@
 	"manifest.settings.workspace.scan-patterns.desc": "ワークスペース内でスキャンするファイルのグローバルパターン（例：すべてのファイルを表す「**/*」）",
 	"manifest.settings.workspace.scan-excludes.desc": "ワークスペースのスキャンから除外するファイルのGlobパターン",
 	"manifest.settings.workspace.scan-max-files.desc": "ワークスペース操作でスキャンできるファイルの最大数",
-	"manifest.capability.untrusted-workspaces.desc": "信頼できないワークスペースでの機能制限"
+	"manifest.capability.untrusted-workspaces.desc": "信頼できないワークスペースでの機能制限",
+	"manifest.mcp.label": "Secrets-LE：エージェントモード用の秘密情報検出ツール"
 }
