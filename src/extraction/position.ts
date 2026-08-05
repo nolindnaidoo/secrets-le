@@ -29,9 +29,9 @@ export function createPositionIndex(content: string): PositionIndex {
 			const start = lineStarts[mid];
 			if (start !== undefined && start <= clamped) {
 				low = mid;
-			} else {
-				high = mid - 1;
+				continue;
 			}
+			high = mid - 1;
 		}
 
 		const lineStart = lineStarts[low] ?? 0;

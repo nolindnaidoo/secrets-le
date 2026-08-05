@@ -64,6 +64,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Every `else` block is gone (9 of them), replaced by guard clauses and value
+  expressions, per the fleet standard in `../AGENTS.md`.
+- Report rendering moved out of `extraction/extract.ts` to `report/format.ts`.
+  Building the markdown a user reads is presentation and was sitting next to
+  the detection logic; the two change for different reasons. Extraction drops
+  from 390 lines to 157.
+
 - Test coverage raised from 74.58% to 76.58% of branches (83.92% to 86.63% of
   statements). Three files sat below one of the repo's own floors; none do
   now. Both commands check for cancellation between every step of their

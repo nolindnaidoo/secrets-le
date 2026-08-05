@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import {
+	formatDetectionResults,
+	formatSanitizationResults,
+} from '../report/format';
 import type { DetectedSecret } from '../types';
 import {
 	deduplicateSecrets,
 	detectSecretsInContent,
-	formatDetectionResults,
-	formatSanitizationResults,
 	sanitizeContent,
 } from './extract';
 

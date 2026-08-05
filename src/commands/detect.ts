@@ -1,9 +1,7 @@
 import * as vscode from 'vscode';
 import { getConfiguration } from '../config/config';
-import {
-	deduplicateSecrets,
-	formatDetectionResults,
-} from '../extraction/extract';
+import { deduplicateSecrets } from '../extraction/extract';
+import { formatDetectionResults } from '../report/format';
 import type { Telemetry } from '../telemetry/telemetry';
 import type { DetectionResult } from '../types';
 import type { Notifier } from '../ui/notifier';
@@ -195,11 +193,11 @@ export function registerDetectCommand(
 							deps.notifier.showWarning(
 								`Found ${secrets.length} potential secret(s) in ${scanResult.filesScanned} file(s)`,
 							);
-						} else {
-							deps.notifier.showInfo(
-								`No secrets detected in workspace (${scanResult.filesScanned} files scanned)`,
-							);
+							return;
 						}
+						deps.notifier.showInfo(
+							`No secrets detected in workspace (${scanResult.filesScanned} files scanned)`,
+						);
 					},
 				);
 			} catch (error) {

@@ -1,10 +1,7 @@
 import * as vscode from 'vscode';
 import { getConfiguration } from '../config/config';
-import {
-	detectSecretsInContent,
-	formatSanitizationResults,
-	sanitizeContent,
-} from '../extraction/extract';
+import { detectSecretsInContent, sanitizeContent } from '../extraction/extract';
+import { formatSanitizationResults } from '../report/format';
 import type { Telemetry } from '../telemetry/telemetry';
 import type { Notifier } from '../ui/notifier';
 import { sanitizeErrorMessage } from '../utils/errors';
