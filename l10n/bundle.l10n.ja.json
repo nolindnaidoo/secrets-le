@@ -1,0 +1,19 @@
+{
+	"No secrets found to sanitize.": "消去すべき秘密は見つかりませんでした。",
+	"Sanitization failed: {0}": "サニタイゼーションに失敗しました：{0}",
+	"Results copied to clipboard": "結果がクリップボードにコピーされました",
+	"Detection failed: {0}": "検出に失敗しました：{0}",
+	"Complete": "完了",
+	"Detecting secrets...": "秘密を検知中……",
+	"Finding files...": "ファイルを検索中...",
+	"Found {0} secret(s)...": "{0}の秘密を件見つけました...",
+	"Preparing output...": "出力の準備中...",
+	"Preparing sanitized content...": "消毒済みのコンテンツを準備中...",
+	"Removing duplicates...": "重複を削除中...",
+	"Scanned {0} files...": "{0}のファイルをスキャンしました...",
+	"Cancel": "キャンセル",
+	"No active editor. Please open a file first.": "アクティブなエディタがありません。まずファイルを開いてください。",
+	"No workspace open. Please open a workspace folder first.": "ワークスペースが開かれていません。まずワークスペースフォルダを開いてください。",
+	"This will replace detected secrets with placeholders. Continue?": "これにより、検出された機密情報がプレースホルダーに置き換えられます。続行しますか？",
+	"Yes, Sanitize": "はい、除菌してください"
+}

@@ -1,14 +1,46 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
 	_createExtensionContext,
+	_registeredCommands,
 	_resetMockState,
 	_setConfig,
 } from '../__mocks__/vscode';
+import { activate, deactivate } from '../extension';
 import { createTelemetry } from '../telemetry/telemetry';
 import { createServices } from './serviceFactory';
 
 beforeEach(() => {
 	_resetMockState();
+});
+
+describe('activate', () => {
+	it('registers every declared command', () => {
+		// The activation entry point was the only file in the fleet at 0%
+		// coverage; the other nine cover it from here. A command declared in the
+		// manifest but never registered fails at the moment a user runs it.
+		const context = _createExtensionContext();
+		activate(context as never);
+
+		const declared = [
+			'secrets-le.detect',
+			'secrets-le.sanitize',
+			'secrets-le.openSettings',
+			'secrets-le.help',
+		];
+		for (const command of declared) {
+			expect(_registeredCommands().has(command)).toBe(true);
+		}
+	});
+
+	it('pushes disposables onto the context so they are cleaned up', () => {
+		const context = _createExtensionContext();
+		activate(context as never);
+		expect(context.subscriptions.length).toBeGreaterThan(0);
+	});
+
+	it('deactivate is a no-op that does not throw', () => {
+		expect(() => deactivate()).not.toThrow();
+	});
 });
 
 describe('createServices', () => {

@@ -5,6 +5,8 @@ import type {
 	SanitizationResult,
 	SecretReplacement,
 } from '../types';
+
+import { maskSecretValue, maskWithin } from '../utils/mask';
 import { detectSecrets } from './detectors';
 
 /**
@@ -214,14 +216,10 @@ export function formatDetectionResults(result: DetectionResult): string {
 							lines.push(`  Type: ${secret.description}`);
 						}
 						lines.push(`  Confidence: ${secret.confidence}`);
-						lines.push(
-							`  Value: ${secret.value.substring(0, 20)}${secret.value.length > 20 ? '...' : ''}`,
-						);
+						lines.push(`  Value: ${maskSecretValue(secret.value)}`);
 						if (secret.context) {
 							lines.push(
-								`  Context: ${secret.context.substring(0, 80)}${
-									secret.context.length > 80 ? '...' : ''
-								}`,
+								`  Context: ${maskWithin(secret.context, secret.value).substring(0, 80)}`,
 							);
 						}
 						lines.push('');
@@ -256,14 +254,10 @@ export function formatDetectionResults(result: DetectionResult): string {
 						lines.push(`  Type: ${secret.description}`);
 					}
 					lines.push(`  Confidence: ${secret.confidence}`);
-					lines.push(
-						`  Value: ${secret.value.substring(0, 20)}${secret.value.length > 20 ? '...' : ''}`,
-					);
+					lines.push(`  Value: ${maskSecretValue(secret.value)}`);
 					if (secret.context) {
 						lines.push(
-							`  Context: ${secret.context.substring(0, 80)}${
-								secret.context.length > 80 ? '...' : ''
-							}`,
+							`  Context: ${maskWithin(secret.context, secret.value).substring(0, 80)}`,
 						);
 					}
 					lines.push('');

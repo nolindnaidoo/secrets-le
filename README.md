@@ -80,6 +80,19 @@ Key-based patterns accept quoted and unquoted keys, so JSON (`"apiKey": "…"`),
 | `secrets-le.statusBar.enabled` | `true` | Show the status bar item |
 | `secrets-le.telemetryEnabled` | `false` | Local-only event log (see Privacy) |
 
+## Languages
+
+Twelve languages besides English:
+
+German · Spanish · French · Indonesian · Italian · Japanese · Korean ·
+Portuguese (Brazil) · Russian · Ukrainian · Vietnamese · Chinese (Simplified)
+
+Both halves are covered — the manifest (command titles, setting names and
+descriptions) and everything shown while the extension runs (notifications,
+the status bar, quick-picks and prompts). The extension follows VS Code's
+display language, so it matches whatever the editor is already set to; no
+setting of its own.
+
 ## Privacy & security
 
 - **No network access.** The extension never sends data anywhere. The `telemetryEnabled` setting only writes events to a local Output Channel you can inspect (`Secrets-LE Telemetry`).
@@ -122,12 +135,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 82.90% |
-| Branches | 73.08% |
-| Functions | 89.33% |
-| Lines | 83.62% |
+| Statements | 86.63% |
+| Branches | 76.58% |
+| Functions | 96.10% |
+| Lines | 87.47% |
 
-82 test cases across 10 files, plus an integration suite that runs
+106 test cases across 12 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

@@ -1,0 +1,19 @@
+{
+  "No active editor. Please open a file first.": "No active editor. Please open a file first.",
+  "Yes, Sanitize": "Yes, Sanitize",
+  "This will replace detected secrets with placeholders. Continue?": "This will replace detected secrets with placeholders. Continue?",
+  "Cancel": "Cancel",
+  "Detecting secrets...": "Detecting secrets...",
+  "No secrets found to sanitize.": "No secrets found to sanitize.",
+  "Found {0} secret(s)...": "Found {0} secret(s)...",
+  "Preparing sanitized content...": "Preparing sanitized content...",
+  "Complete": "Complete",
+  "Sanitization failed: {0}": "Sanitization failed: {0}",
+  "No workspace open. Please open a workspace folder first.": "No workspace open. Please open a workspace folder first.",
+  "Finding files...": "Finding files...",
+  "Scanned {0} files...": "Scanned {0} files...",
+  "Removing duplicates...": "Removing duplicates...",
+  "Preparing output...": "Preparing output...",
+  "Results copied to clipboard": "Results copied to clipboard",
+  "Detection failed: {0}": "Detection failed: {0}"
+}

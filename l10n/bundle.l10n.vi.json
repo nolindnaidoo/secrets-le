@@ -1,0 +1,19 @@
+{
+	"No secrets found to sanitize.": "Không tìm thấy bí mật nào cần xóa.",
+	"Sanitization failed: {0}": "Quá trình khử trùng không thành công: {0}",
+	"Results copied to clipboard": "Kết quả đã được sao chép vào khay nhớ tạm",
+	"Detection failed: {0}": "Không phát hiện được: {0}",
+	"Complete": "Hoàn tất",
+	"Detecting secrets...": "Phát hiện bí mật...",
+	"Finding files...": "Đang tìm kiếm tệp...",
+	"Found {0} secret(s)...": "Đã tìm thấy ({0}) bí mật(s)...",
+	"Preparing output...": "Đang chuẩn bị kết quả...",
+	"Preparing sanitized content...": "Đang chuẩn bị nội dung đã được khử trùng...",
+	"Removing duplicates...": "Loại bỏ các bản trùng lặp...",
+	"Scanned {0} files...": "Đã quét các tệp{0}...",
+	"Cancel": "Hủy",
+	"No active editor. Please open a file first.": "Hiện không có trình soạn thảo nào đang hoạt động. Vui lòng mở một tệp trước.",
+	"No workspace open. Please open a workspace folder first.": "Chưa có thư mục không gian làm việc nào được mở. Vui lòng mở một thư mục không gian làm việc trước.",
+	"This will replace detected secrets with placeholders. Continue?": "Thao tác này sẽ thay thế các thông tin bí mật được phát hiện bằng các ký hiệu giữ chỗ. Bạn có muốn tiếp tục không?",
+	"Yes, Sanitize": "Đúng vậy, khử trùng"
+}

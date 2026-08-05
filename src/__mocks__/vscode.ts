@@ -313,7 +313,23 @@ export const window = {
 			token: { isCancellationRequested: boolean },
 		) => Promise<T>,
 	): Promise<T> =>
-		task({ report: () => {} }, { isCancellationRequested: false }),
+		task(
+			{
+				report: (value: unknown) => {
+					progressReports.push(value);
+					// Lets a test cancel partway through a long operation, which is
+					// the only way to reach the cancellation checks a progress task
+					// makes between its steps.
+					if (
+						cancelAfterReports !== undefined &&
+						progressReports.length >= cancelAfterReports
+					) {
+						cancellationToken.isCancellationRequested = true;
+					}
+				},
+			},
+			cancellationToken,
+		),
 	createOutputChannel: (_name: string) => {
 		const linesOut: string[] = [];
 		return {
@@ -415,7 +431,30 @@ export const FileType = {
 };
 
 /** Reset all mutable mock state between tests. */
+/** Progress values reported by the most recent withProgress task. */
+const progressReports: unknown[] = [];
+
+export function _progressReports(): readonly unknown[] {
+	return progressReports;
+}
+
+const cancellationToken = { isCancellationRequested: false };
+let cancelAfterReports: number | undefined;
+
+/** Cancel the operation once it has reported progress `n` times. */
+export function _cancelAfterProgress(n: number | undefined): void {
+	cancelAfterReports = n;
+}
+
+/** Cancel before the task starts. */
+export function _setCancelled(value: boolean): void {
+	cancellationToken.isCancellationRequested = value;
+}
+
 export function _resetMockState(): void {
+	progressReports.length = 0;
+	cancelAfterReports = undefined;
+	cancellationToken.isCancellationRequested = false;
 	configStore.clear();
 	configUpdates.length = 0;
 	configListeners.length = 0;
@@ -429,3 +468,18 @@ export function _resetMockState(): void {
 	clipboard.value = '';
 	workspace.workspaceFolders = undefined;
 }
+
+export const l10n = {
+	t(message: string, ...args: unknown[]): string {
+		if (args.length === 1 && typeof args[0] === 'object' && args[0] !== null) {
+			const named = args[0] as Record<string, unknown>;
+			return message.replace(/\{(\w+)\}/g, (whole, key) =>
+				key in named ? String(named[key]) : whole,
+			);
+		}
+		return message.replace(/\{(\d+)\}/g, (whole, index) => {
+			const value = args[Number(index)];
+			return value === undefined ? whole : String(value);
+		});
+	},
+};

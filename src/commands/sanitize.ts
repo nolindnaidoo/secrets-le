@@ -30,7 +30,7 @@ export function registerSanitizeCommand(
 			const editor = vscode.window.activeTextEditor;
 			if (!editor) {
 				deps.notifier.showWarning(
-					'No active editor. Please open a file first.',
+					vscode.l10n.t('No active editor. Please open a file first.'),
 				);
 				return;
 			}
@@ -56,14 +56,21 @@ export function registerSanitizeCommand(
 			}
 
 			// Confirm before sanitizing
+			// Bound once and compared by reference. showWarningMessage returns the
+			// label that was clicked, so a localized label compared against an
+			// English literal reads as "declined" in every other language — here
+			// that would make sanitizing impossible outside English.
+			const confirmLabel = vscode.l10n.t('Yes, Sanitize');
 			const confirm = await vscode.window.showWarningMessage(
-				'This will replace detected secrets with placeholders. Continue?',
+				vscode.l10n.t(
+					'This will replace detected secrets with placeholders. Continue?',
+				),
 				{ modal: true },
-				'Yes, Sanitize',
-				'Cancel',
+				confirmLabel,
+				vscode.l10n.t('Cancel'),
 			);
 
-			if (confirm !== 'Yes, Sanitize') {
+			if (confirm !== confirmLabel) {
 				return;
 			}
 
@@ -83,7 +90,10 @@ export function registerSanitizeCommand(
 							content.length,
 						);
 
-						progress.report({ message: 'Detecting secrets...', increment: 30 });
+						progress.report({
+							message: vscode.l10n.t('Detecting secrets...'),
+							increment: 30,
+						});
 
 						// Check for cancellation
 						if (token.isCancellationRequested) {
@@ -105,13 +115,18 @@ export function registerSanitizeCommand(
 						}
 
 						if (detectionResult.secrets.length === 0) {
-							deps.notifier.showInfo('No secrets found to sanitize.');
+							deps.notifier.showInfo(
+								vscode.l10n.t(vscode.l10n.t('No secrets found to sanitize.')),
+							);
 							perfTracker.end(0, 0, 0, 0);
 							return;
 						}
 
 						progress.report({
-							message: `Found ${detectionResult.secrets.length} secret(s)...`,
+							message: vscode.l10n.t(
+								'Found {0} secret(s)...',
+								detectionResult.secrets.length,
+							),
 							increment: 30,
 						});
 
@@ -128,7 +143,7 @@ export function registerSanitizeCommand(
 						);
 
 						progress.report({
-							message: 'Preparing sanitized content...',
+							message: vscode.l10n.t('Preparing sanitized content...'),
 							increment: 30,
 						});
 
@@ -188,7 +203,10 @@ export function registerSanitizeCommand(
 							await vscode.env.clipboard.writeText(formattedReport);
 						}
 
-						progress.report({ message: 'Complete', increment: 10 });
+						progress.report({
+							message: vscode.l10n.t('Complete'),
+							increment: 10,
+						});
 
 						// Track success
 						deps.telemetry.event('sanitize-completed', {
@@ -211,7 +229,9 @@ export function registerSanitizeCommand(
 				const errorMessage = sanitizeErrorMessage(
 					error instanceof Error ? error.message : String(error),
 				);
-				deps.notifier.showError(`Sanitization failed: ${errorMessage}`);
+				deps.notifier.showError(
+					vscode.l10n.t('Sanitization failed: {0}', errorMessage),
+				);
 				deps.telemetry.event('sanitize-failed', {
 					error: errorMessage,
 				});

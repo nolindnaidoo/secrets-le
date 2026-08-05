@@ -5,14 +5,61 @@ All notable changes to Secrets-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.2] - 2026-08-04
+## [2.1.0] - 2026-08-04
 
 ### Added
+
+- Runtime strings are localized, and this time they render. All 4 of them —
+  notifications, status bar, quick-picks and prompts — go through
+  `vscode.l10n` and ship as twelve translated bundles in `l10n/`. The v1.x
+  line carried manifest catalogues that worked and runtime catalogues that
+  never reached the screen: `vscode-nls` was configured without
+  `__filename`, so every runtime string fell back to English while the VSIX
+  looked correct.
+- An integration test covering both localization mechanisms — manifest
+  substitution, key parity across all thirteen catalogues, and placeholder
+  integrity in every translation. A translation that silently drops `{0}`
+  now fails the build instead of shipping a message with the value missing.
 
 - Dependency review on pull requests, failing on a high-severity addition
   before Dependabot's auto-merge can act.
 
+### Fixed
+
+- The detection report wrote detected secrets into the results document. The
+  value line was `substring(0, 20)`, which is a partial disclosure for a
+  40-character AWS secret but the *entire* value for anything shorter — and
+  the password detector matches from eight characters, so most passwords
+  appeared in full, with no ellipsis to suggest otherwise. The context line
+  was worse: it is the raw source line, so `DATABASE_PASSWORD=hunter2hunter2`
+  was reproduced verbatim. Both are now capped at eight characters and at half
+  the value's length, always marked as elided, and the value is redacted from
+  its own context line. The report still identifies every finding by file,
+  line, column, key name, type and confidence — none of which required the
+  credential itself.
+- The activation entry point had no test and was the only file in the fleet at
+  0% coverage; the other nine cover it from `services.test.ts`. A command
+  declared in the manifest but never registered would have failed at the
+  moment a user ran it. Now 100%.
+- The sanitize confirmation, the workspace and editor guards and their button
+  labels were never localized. The confirm label is now bound to a constant
+  and compared by reference: `showWarningMessage` returns the label that was
+  clicked, so localizing it without binding would have made sanitizing
+  impossible to confirm outside English.
+- The eight progress messages were never localized — progress text goes
+  through `progress.report()` rather than a property the localization pass
+  inspected.
+
 ### Changed
+
+- Test coverage raised from 74.58% to 76.58% of branches (83.92% to 86.63% of
+  statements). Three files sat below one of the repo's own floors; none do
+  now. Both commands check for cancellation between every step of their
+  progress task — that is what keeps a workspace scan interruptible — and none
+  of those checks were reachable, because the tests supplied a notifier
+  without `showProgress` and so never ran the task at all. The status bar's
+  show, hide and dispose had never been called either.
+
 
 - CI gains fleet-wide checks that no single repo can perform: shared config is
   compared across all ten extensions, and every README link is verified —

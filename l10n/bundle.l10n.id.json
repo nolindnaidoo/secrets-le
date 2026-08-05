@@ -1,0 +1,19 @@
+{
+	"No secrets found to sanitize.": "Tidak ditemukan rahasia yang perlu dibersihkan.",
+	"Sanitization failed: {0}": "Proses sanitasi gagal: {0}",
+	"Results copied to clipboard": "Hasil telah disalin ke papan klip",
+	"Detection failed: {0}": "Deteksi gagal: {0}",
+	"Complete": "Selesai",
+	"Detecting secrets...": "Mendeteksi rahasia...",
+	"Finding files...": "Mencari berkas...",
+	"Found {0} secret(s)...": "Ditemukan 1 rahasi{0}...",
+	"Preparing output...": "Sedang menyiapkan hasil...",
+	"Preparing sanitized content...": "Sedang menyiapkan konten yang telah disterilkan...",
+	"Removing duplicates...": "Menghapus data duplikat...",
+	"Scanned {0} files...": "Berkas-berkas yang telah dipindai dari {0}...",
+	"Cancel": "Batal",
+	"No active editor. Please open a file first.": "Tidak ada editor yang aktif. Silakan buka file terlebih dahulu.",
+	"No workspace open. Please open a workspace folder first.": "Tidak ada folder ruang kerja yang terbuka. Silakan buka folder ruang kerja terlebih dahulu.",
+	"This will replace detected secrets with placeholders. Continue?": "Tindakan ini akan mengganti informasi rahasia yang terdeteksi dengan tempat penanda. Lanjutkan?",
+	"Yes, Sanitize": "Ya, Sterilkan"
+}

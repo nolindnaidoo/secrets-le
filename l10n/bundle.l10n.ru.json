@@ -1,0 +1,19 @@
+{
+	"No secrets found to sanitize.": "Не обнаружено секретов, которые необходимо очистить.",
+	"Sanitization failed: {0}": "Ошибка при очистке: {0}",
+	"Results copied to clipboard": "Результаты скопированы в буфер обмена",
+	"Detection failed: {0}": "Ошибка обнаружения: {0}",
+	"Complete": "Завершить",
+	"Detecting secrets...": "Обнаружение секретов...",
+	"Finding files...": "Поиск файлов...",
+	"Found {0} secret(s)...": "Найдено {0} секрет(ов)...",
+	"Preparing output...": "Подготовка результатов...",
+	"Preparing sanitized content...": "Подготовка обеззараженного контента...",
+	"Removing duplicates...": "Удаление дубликатов...",
+	"Scanned {0} files...": "Просканированы файлы формата «{0}»...",
+	"Cancel": "Отменить",
+	"No active editor. Please open a file first.": "Редактор не запущен. Сначала откройте файл.",
+	"No workspace open. Please open a workspace folder first.": "Рабочая область не открыта. Сначала откройте папку рабочей области.",
+	"This will replace detected secrets with placeholders. Continue?": "При этом обнаруженные секретные данные будут заменены заполнителями. Продолжить?",
+	"Yes, Sanitize": "Да, продезинфицировать"
+}

@@ -33,7 +33,9 @@ export function registerDetectCommand(
 				vscode.workspace.workspaceFolders.length === 0
 			) {
 				deps.notifier.showWarning(
-					'No workspace open. Please open a workspace folder first.',
+					vscode.l10n.t(
+						'No workspace open. Please open a workspace folder first.',
+					),
 				);
 				return;
 			}
@@ -50,7 +52,10 @@ export function registerDetectCommand(
 							0,
 						);
 
-						progress.report({ message: 'Finding files...', increment: 10 });
+						progress.report({
+							message: vscode.l10n.t('Finding files...'),
+							increment: 10,
+						});
 
 						// Check for cancellation
 						if (token.isCancellationRequested) {
@@ -71,7 +76,10 @@ export function registerDetectCommand(
 						});
 
 						progress.report({
-							message: `Scanned ${scanResult.filesScanned} files...`,
+							message: vscode.l10n.t(
+								'Scanned {0} files...',
+								scanResult.filesScanned,
+							),
 							increment: 40,
 						});
 
@@ -85,7 +93,7 @@ export function registerDetectCommand(
 						if (config.dedupeEnabled && secrets.length > 0) {
 							secrets = deduplicateSecrets(secrets);
 							progress.report({
-								message: 'Removing duplicates...',
+								message: vscode.l10n.t('Removing duplicates...'),
 								increment: 20,
 							});
 						}
@@ -117,7 +125,10 @@ export function registerDetectCommand(
 						// Format results
 						const formattedResult = formatDetectionResults(result);
 
-						progress.report({ message: 'Preparing output...', increment: 20 });
+						progress.report({
+							message: vscode.l10n.t('Preparing output...'),
+							increment: 20,
+						});
 
 						// End performance tracking
 						const metrics = perfTracker.end(
@@ -135,7 +146,9 @@ export function registerDetectCommand(
 						// Copy to clipboard if enabled
 						if (config.copyToClipboardEnabled) {
 							await vscode.env.clipboard.writeText(formattedResult);
-							deps.notifier.showInfo('Results copied to clipboard');
+							deps.notifier.showInfo(
+								vscode.l10n.t(vscode.l10n.t('Results copied to clipboard')),
+							);
 						}
 
 						// Check for cancellation
@@ -184,7 +197,9 @@ export function registerDetectCommand(
 				const errorMessage = sanitizeErrorMessage(
 					error instanceof Error ? error.message : String(error),
 				);
-				deps.notifier.showError(`Detection failed: ${errorMessage}`);
+				deps.notifier.showError(
+					vscode.l10n.t('Detection failed: {0}', errorMessage),
+				);
 				deps.telemetry.event('detect-failed', {
 					error: errorMessage,
 				});

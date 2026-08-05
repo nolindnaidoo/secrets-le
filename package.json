@@ -1,6 +1,6 @@
 {
 	"name": "secrets-le",
-	"version": "2.0.2",
+	"version": "2.1.0",
 	"author": {
 		"name": "nolindnaidoo",
 		"url": "https://github.com/nolindnaidoo"
@@ -9,6 +9,7 @@
 		"type": "git",
 		"url": "https://github.com/nolindnaidoo/secrets-le.git"
 	},
+	"l10n": "./l10n",
 	"main": "./dist/extension.js",
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.7",

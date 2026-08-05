@@ -1,0 +1,19 @@
+{
+	"No secrets found to sanitize.": "Es wurden keine Geheimnisse gefunden, die bereinigt werden müssten.",
+	"Sanitization failed: {0}": "Sanitisierung fehlgeschlagen: {0}",
+	"Results copied to clipboard": "Ergebnisse in die Zwischenablage kopiert",
+	"Detection failed: {0}": "Erkennung fehlgeschlagen: {0}",
+	"Complete": "Fertig",
+	"Detecting secrets...": "Geheimnisse aufspüren...",
+	"Finding files...": "Dateien werden gesucht...",
+	"Found {0} secret(s)...": "{0}-Geheimnis(se) gefunden...",
+	"Preparing output...": "Ausgabe wird vorbereitet...",
+	"Preparing sanitized content...": "Desinfizierte Inhalte werden vorbereitet...",
+	"Removing duplicates...": "Duplikate werden entfernt...",
+	"Scanned {0} files...": "{0}-Dateien gescannt...",
+	"Cancel": "Abbrechen",
+	"No active editor. Please open a file first.": "Es ist kein Editor geöffnet. Bitte öffnen Sie zunächst eine Datei.",
+	"No workspace open. Please open a workspace folder first.": "Es ist kein Arbeitsbereich geöffnet. Bitte öffnen Sie zunächst einen Arbeitsbereichsordner.",
+	"This will replace detected secrets with placeholders. Continue?": "Dadurch werden erkannte geheime Angaben durch Platzhalter ersetzt. Möchten Sie fortfahren?",
+	"Yes, Sanitize": "Ja, desinfizieren"
+}

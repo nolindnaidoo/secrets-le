@@ -1,0 +1,19 @@
+{
+	"No secrets found to sanitize.": "未找到需要清理的秘密。",
+	"Sanitization failed: {0}": "数据净化失败：{0}",
+	"Results copied to clipboard": "结果已复制到剪贴板",
+	"Detection failed: {0}": "检测失败：{0}",
+	"Complete": "完成",
+	"Detecting secrets...": "检测秘密……",
+	"Finding files...": "正在查找文件...",
+	"Found {0} secret(s)...": "已找到{0}个秘密……",
+	"Preparing output...": "正在准备输出...",
+	"Preparing sanitized content...": "正在准备经过净化处理的内容...",
+	"Removing duplicates...": "正在删除重复项...",
+	"Scanned {0} files...": "已扫描{0}文件……",
+	"Cancel": "取消",
+	"No active editor. Please open a file first.": "当前没有正在使用的编辑器。请先打开一个文件。",
+	"No workspace open. Please open a workspace folder first.": "未打开任何工作区。请先打开一个工作区文件夹。",
+	"This will replace detected secrets with placeholders. Continue?": "这将把检测到的机密信息替换为占位符。继续吗？",
+	"Yes, Sanitize": "是的，进行消毒"
+}
