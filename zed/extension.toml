@@ -1,7 +1,7 @@
 id = "secrets-le"
 name = "Secrets-LE"
 description = "Detect hardcoded secrets in source and config, reporting masked previews and never the values themselves."
-version = "2.2.2"
+version = "2.2.3"
 schema_version = 1
 authors = ["nolindnaidoo"]
 repository = "https://github.com/nolindnaidoo/secrets-le"

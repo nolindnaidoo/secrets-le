@@ -26,7 +26,17 @@ export interface EnvelopeMeta {
 	readonly truncated: boolean;
 }
 
-/** Above this an unbounded scan would flood an agent's context window. */
+/**
+ * Result caps, in units of "what fits in a context window".
+ *
+ * Not a performance limit. The consumer is a language model with a finite
+ * context, and an unbounded result is the difference between a useful answer
+ * and a conversation that dies mid-sentence. 500 rows is roughly a few thousand
+ * tokens; the 5,000 ceiling is where no realistic context survives the response.
+ *
+ * The default is a starting point rather than a policy: a caller who has read
+ * `meta.truncated` and genuinely wants more can ask for it, up to the ceiling.
+ */
 export const DEFAULT_MAX_RESULTS = 500;
 export const MAX_MAX_RESULTS = 5000;
 
@@ -58,7 +68,15 @@ export function toDiagnostics(result: DetectionResult): readonly Diagnostic[] {
 	return [...errors, ...warnings];
 }
 
-/** Apply the result cap, reporting honestly whether anything was dropped. */
+/**
+ * Apply the result cap, reporting honestly whether anything was dropped.
+ *
+ * The `truncated` flag matters more than the cap. Silently returning the first
+ * 500 of 900 matches produces an answer that is wrong in the most expensive
+ * way: confidently incomplete, with nothing to indicate it. A model told the
+ * result was truncated can narrow its input or raise the cap; one that is not
+ * told will state a count that is simply false.
+ */
 export function capped<T>(
 	items: readonly T[],
 	maxResults: number,
@@ -84,7 +102,15 @@ export function envelope<T>(
 	};
 }
 
-/** Read a bounded integer argument, rejecting values a tool cannot honour. */
+/**
+ * Read a bounded integer argument, rejecting values a tool cannot honour.
+ *
+ * Note the asymmetry: a nonsensical value (zero, negative, fractional, a
+ * string) throws, while a merely excessive one is clamped. The first is a bug
+ * in the caller that it needs to hear about; the second is a caller asking for
+ * everything, which is reasonable, and refusing it would be pedantry that costs
+ * a round trip. Clamp quietly, reject loudly.
+ */
 export function readMaxResults(args: Record<string, unknown>): number {
 	const raw = args.maxResults;
 	if (raw === undefined) return DEFAULT_MAX_RESULTS;
@@ -94,7 +120,13 @@ export function readMaxResults(args: Record<string, unknown>): number {
 	return Math.min(raw, MAX_MAX_RESULTS);
 }
 
-/** Read a required string argument with a message naming the argument. */
+/**
+ * Read a required string argument with a message naming the argument.
+ *
+ * The message names the argument because the caller is a model choosing what to
+ * send next. "content is required and must be a string" is actionable;
+ * "invalid arguments" costs an entire retry to learn nothing.
+ */
 export function readString(
 	args: Record<string, unknown>,
 	name: string,
