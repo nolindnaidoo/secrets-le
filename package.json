@@ -202,7 +202,7 @@
 				},
 				"secrets-le.safety.fileSizeWarnBytes": {
 					"type": "number",
-					"default": 1e6,
+					"default": 1000000.0,
 					"minimum": 1000,
 					"description": "%manifest.settings.safety.warn.file-size.desc%"
 				},
@@ -248,7 +248,7 @@
 				},
 				"secrets-le.workspace.scanMaxFiles": {
 					"type": "number",
-					"default": 1e4,
+					"default": 10000.0,
 					"minimum": 100,
 					"description": "%manifest.settings.workspace.scan-max-files.desc%"
 				}
@@ -319,6 +319,9 @@
 		"lint:fix": "biome check --write .",
 		"vscode:prepublish": "npm run typecheck && npm run build:prod && npm run check:bundle && npm run copy:i18n",
 		"package": "node -e \"require('fs').mkdirSync('release',{recursive:true})\" && vsce package --no-dependencies --allow-package-secrets github --out release/ && npm run clean:i18n",
-		"publish": "vsce publish"
+		"publish": "vsce publish",
+		"hooks:install": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
+		"lint:commits": "node scripts/commit-lint.js --range origin/main..HEAD",
+		"prepare": "bun run hooks:install"
 	}
 }
