@@ -6,9 +6,9 @@ import {
 	_resetMockState,
 	_respondToWarning,
 	_setActiveEditor,
+	_setApplyEditResult,
 	_setConfig,
 	_setWorkspaceFiles,
-	_shownMessages,
 } from '../__mocks__/vscode';
 import { createStatusBar } from '../ui/statusBar';
 import { registerDetectCommand } from './detect';
@@ -188,6 +188,37 @@ describe('sanitize: guards and cancellation', () => {
 		_setActiveEditor(_createDocument({ content: 'nothing sensitive here' }));
 		await runCommand('secrets-le.sanitize');
 		expect(events.length).toBeGreaterThan(0);
+	});
+});
+
+describe('sanitize: rejected edit', () => {
+	it('reports a failure instead of claiming the file was sanitized', async () => {
+		// applyEdit resolves false for a read-only document, or one that changed
+		// underneath the command. The result was discarded, so sanitize announced
+		// "Sanitized N secret(s)" over a file that still held every credential —
+		// a user could commit it believing it was scrubbed.
+		const events: string[] = [];
+		registerSanitizeCommand(makeContext(), makeDeps(events));
+		_setApplyEditResult(false);
+		_setActiveEditor(_createDocument({ content: WITH_SECRETS }));
+		_respondToWarning((items) =>
+			items.find((i) => String(i).includes('Sanitize')),
+		);
+		await runCommand('secrets-le.sanitize');
+		expect(events.some((e) => e.startsWith('error:'))).toBe(true);
+		expect(events.some((e) => e.startsWith('info:Sanitized'))).toBe(false);
+	});
+
+	it('announces the result when the edit is applied', async () => {
+		const events: string[] = [];
+		registerSanitizeCommand(makeContext(), makeDeps(events));
+		_setActiveEditor(_createDocument({ content: WITH_SECRETS }));
+		_respondToWarning((items) =>
+			items.find((i) => String(i).includes('Sanitize')),
+		);
+		await runCommand('secrets-le.sanitize');
+		expect(events.some((e) => e.startsWith('info:Sanitized'))).toBe(true);
+		expect(events.some((e) => e.startsWith('error:'))).toBe(false);
 	});
 });
 

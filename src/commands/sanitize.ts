@@ -189,7 +189,19 @@ export function registerSanitizeCommand(
 							fullRange,
 							sanitizationResult.sanitizedContent,
 						);
-						await vscode.workspace.applyEdit(edit);
+						// applyEdit resolves false when the edit is rejected — a
+						// read-only document, or one that changed underneath the
+						// command. Dropping that value meant reporting "Sanitized N
+						// secret(s)" over a file that still contains every credential,
+						// which a user may then commit believing it was scrubbed.
+						const applied = await vscode.workspace.applyEdit(edit);
+						if (!applied) {
+							throw new Error(
+								vscode.l10n.t(
+									'Could not sanitize the document: the edit was rejected. The file still contains the detected secrets.',
+								),
+							);
+						}
 
 						// Check for cancellation
 						if (token.isCancellationRequested) {

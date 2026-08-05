@@ -26,6 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Sanitize could report success over a file it had not touched.
+  `vscode.workspace.applyEdit` resolves `false` when an edit is rejected — a
+  read-only document, or one that changed underneath the command — and that
+  value was discarded, so "Sanitized N secret(s)" was shown for a file that
+  still contained every credential. A user could reasonably commit it
+  believing it was scrubbed. The rejection is now reported as a failure that
+  says the secrets are still present.
 - The detection report wrote detected secrets into the results document. The
   value line was `substring(0, 20)`, which is a partial disclosure for a
   40-character AWS secret but the *entire* value for anything shorter — and

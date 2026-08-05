@@ -248,12 +248,21 @@ export const workspace = {
 		});
 	},
 	applyEdit: async (edit: WorkspaceEdit) => {
+		// A hardcoded true made the rejected-edit path untestable, and that is
+		// the path where sanitize would claim to have scrubbed a file it never
+		// touched.
 		appliedEdits.push(edit);
-		return true;
+		return applyEditResult;
 	},
 };
 
 export const appliedEdits: WorkspaceEdit[] = [];
+let applyEditResult = true;
+
+/** Make applyEdit resolve false, as it does for a read-only document. */
+export function _setApplyEditResult(value: boolean): void {
+	applyEditResult = value;
+}
 
 // ------------------------------------------------------------ window
 
@@ -452,6 +461,7 @@ export function _setCancelled(value: boolean): void {
 }
 
 export function _resetMockState(): void {
+	applyEditResult = true;
 	progressReports.length = 0;
 	cancelAfterReports = undefined;
 	cancellationToken.isCancellationRequested = false;
