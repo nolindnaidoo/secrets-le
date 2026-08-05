@@ -14,6 +14,61 @@ import { maskSecretValue, maskWithin } from '../utils/mask';
  * into the document the user reads — the two change for different reasons.
  */
 
+/** Group items by a derived key, preserving insertion order. */
+function groupBy<T>(
+	items: readonly T[],
+	key: (item: T) => string,
+): Map<string, T[]> {
+	const grouped = new Map<string, T[]>();
+	for (const item of items) {
+		const k = key(item);
+		const existing = grouped.get(k) ?? [];
+		existing.push(item);
+		grouped.set(k, existing);
+	}
+	return grouped;
+}
+
+/** The lines describing one finding. */
+function secretLines(secret: DetectedSecret): readonly string[] {
+	const lines: string[] = [
+		secret.position
+			? `- Line ${secret.position.line}, Column ${secret.position.column}`
+			: '- Found',
+	];
+	if (secret.key) lines.push(`  Key: ${secret.key}`);
+	if (secret.description) lines.push(`  Type: ${secret.description}`);
+	lines.push(`  Confidence: ${secret.confidence}`);
+	lines.push(`  Value: ${maskSecretValue(secret.value)}`);
+	if (secret.context) {
+		lines.push(
+			`  Context: ${maskWithin(secret.context, secret.value).substring(0, 80)}`,
+		);
+	}
+	lines.push('');
+	return lines;
+}
+
+/**
+ * Type sections for a set of findings.
+ *
+ * Both the per-file and single-file arms rendered this identically, one copy
+ * each, nested four levels deep inside the caller.
+ */
+function appendTypeGroups(
+	lines: string[],
+	secrets: readonly DetectedSecret[],
+	heading: '##' | '###',
+): void {
+	for (const [type, group] of groupBy(secrets, (s) => s.type)) {
+		lines.push(`${heading} ${type.toUpperCase()} (${group.length})`);
+		lines.push('');
+		for (const secret of group) {
+			lines.push(...secretLines(secret));
+		}
+	}
+}
+
 /**
  * Formats detection results for display
  */
@@ -31,95 +86,20 @@ export function formatDetectionResults(result: DetectionResult): string {
 		lines.push(`⚠️ Found ${result.secrets.length} potential secret(s):`);
 		lines.push('');
 
-		// Group by filepath (if workspace scan) or by type (if single file)
+		// Group by filepath (workspace scan) or by type (single file).
 		const hasFilePaths = result.secrets.some((s) => s.filepath);
 
 		if (hasFilePaths) {
-			// Group by filepath first, then by type
-			const byFile = new Map<string, DetectedSecret[]>();
-			for (const secret of result.secrets) {
-				const filepath = secret.filepath ?? '<unknown>';
-				const existing = byFile.get(filepath) ?? [];
-				existing.push(secret);
-				byFile.set(filepath, existing);
-			}
-
-			for (const [filepath, fileSecrets] of byFile.entries()) {
+			const byFile = groupBy(result.secrets, (s) => s.filepath ?? '<unknown>');
+			for (const [filepath, fileSecrets] of byFile) {
 				lines.push(`## 📄 ${filepath} (${fileSecrets.length} secret(s))`);
 				lines.push('');
-
-				// Group secrets in this file by type
-				const byType = new Map<string, DetectedSecret[]>();
-				for (const secret of fileSecrets) {
-					const existing = byType.get(secret.type) ?? [];
-					existing.push(secret);
-					byType.set(secret.type, existing);
-				}
-
-				for (const [type, secrets] of byType.entries()) {
-					lines.push(`### ${type.toUpperCase()} (${secrets.length})`);
-					lines.push('');
-
-					for (const secret of secrets) {
-						lines.push(
-							secret.position
-								? `- Line ${secret.position.line}, Column ${secret.position.column}`
-								: '- Found',
-						);
-						if (secret.key) {
-							lines.push(`  Key: ${secret.key}`);
-						}
-						if (secret.description) {
-							lines.push(`  Type: ${secret.description}`);
-						}
-						lines.push(`  Confidence: ${secret.confidence}`);
-						lines.push(`  Value: ${maskSecretValue(secret.value)}`);
-						if (secret.context) {
-							lines.push(
-								`  Context: ${maskWithin(secret.context, secret.value).substring(0, 80)}`,
-							);
-						}
-						lines.push('');
-					}
-				}
+				appendTypeGroups(lines, fileSecrets, '###');
 			}
 		}
 
 		if (!hasFilePaths) {
-			// Group by type (single file mode)
-			const byType = new Map<string, DetectedSecret[]>();
-			for (const secret of result.secrets) {
-				const existing = byType.get(secret.type) ?? [];
-				existing.push(secret);
-				byType.set(secret.type, existing);
-			}
-
-			for (const [type, secrets] of byType.entries()) {
-				lines.push(`## ${type.toUpperCase()} (${secrets.length})`);
-				lines.push('');
-
-				for (const secret of secrets) {
-					lines.push(
-						secret.position
-							? `- Line ${secret.position.line}, Column ${secret.position.column}`
-							: '- Found',
-					);
-					if (secret.key) {
-						lines.push(`  Key: ${secret.key}`);
-					}
-					if (secret.description) {
-						lines.push(`  Type: ${secret.description}`);
-					}
-					lines.push(`  Confidence: ${secret.confidence}`);
-					lines.push(`  Value: ${maskSecretValue(secret.value)}`);
-					if (secret.context) {
-						lines.push(
-							`  Context: ${maskWithin(secret.context, secret.value).substring(0, 80)}`,
-						);
-					}
-					lines.push('');
-				}
-			}
+			appendTypeGroups(lines, result.secrets, '##');
 		}
 	}
 
