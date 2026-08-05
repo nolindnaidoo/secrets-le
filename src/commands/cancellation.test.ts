@@ -7,6 +7,7 @@ import {
 	_respondToWarning,
 	_setActiveEditor,
 	_setApplyEditResult,
+	_setClipboardError,
 	_setConfig,
 	_setWorkspaceFiles,
 } from '../__mocks__/vscode';
@@ -230,5 +231,36 @@ describe('status bar', () => {
 		expect(() => bar.show()).not.toThrow();
 		expect(() => bar.hide()).not.toThrow();
 		expect(() => bar.dispose()).not.toThrow();
+	});
+});
+
+describe('clipboard failure', () => {
+	// The scan report and the sanitized document are both already delivered by
+	// the time the copy runs, so an unavailable clipboard — a remote or
+	// headless session — must not be reported as the whole command failing.
+
+	it('detect warns instead of failing the scan', async () => {
+		const events: string[] = [];
+		registerDetectCommand(makeContext(), makeDeps(events));
+		_setConfig('secrets-le.copyToClipboardEnabled', true);
+		_setClipboardError(new Error('clipboard unavailable'));
+		_setWorkspaceFiles([{ path: '/workspace/.env', content: WITH_SECRETS }]);
+		await runCommand('secrets-le.detect');
+		expect(events.some((e) => e.startsWith('warn:'))).toBe(true);
+		expect(events.some((e) => e.startsWith('error:'))).toBe(false);
+	});
+
+	it('sanitize warns instead of failing the sanitization', async () => {
+		const events: string[] = [];
+		registerSanitizeCommand(makeContext(), makeDeps(events));
+		_setConfig('secrets-le.copyToClipboardEnabled', true);
+		_setClipboardError(new Error('clipboard unavailable'));
+		_setActiveEditor(_createDocument({ content: WITH_SECRETS }));
+		_respondToWarning((items) =>
+			items.find((i) => String(i).includes('Sanitize')),
+		);
+		await runCommand('secrets-le.sanitize');
+		expect(events.some((e) => e.startsWith('warn:'))).toBe(true);
+		expect(events.some((e) => e.startsWith('error:'))).toBe(false);
 	});
 });

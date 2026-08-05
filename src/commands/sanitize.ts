@@ -213,7 +213,20 @@ export function registerSanitizeCommand(
 						if (config.copyToClipboardEnabled) {
 							const formattedReport =
 								formatSanitizationResults(sanitizationResult);
-							await vscode.env.clipboard.writeText(formattedReport);
+							// The document is already sanitized at this point, so a failed
+							// clipboard copy must not be reported as "Sanitization failed".
+							try {
+								await vscode.env.clipboard.writeText(formattedReport);
+							} catch (error) {
+								const message =
+									error instanceof Error ? error.message : 'Unknown error';
+								deps.notifier.showWarning(
+									vscode.l10n.t(
+										'Could not copy the report to the clipboard: {0}',
+										message,
+									),
+								);
+							}
 						}
 
 						progress.report({

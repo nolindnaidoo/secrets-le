@@ -26,6 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- A clipboard that could not be written failed the whole command. The report
+  and the sanitized document are both already delivered by the time the copy
+  runs, so an unavailable clipboard — a remote or headless session — was
+  reported as "Detection failed" or "Sanitization failed". Both are now
+  warnings.
 - Sanitize could report success over a file it had not touched.
   `vscode.workspace.applyEdit` resolves `false` when an edit is rejected — a
   read-only document, or one that changed underneath the command — and that

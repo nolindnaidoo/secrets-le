@@ -145,10 +145,23 @@ export function registerDetectCommand(
 
 						// Copy to clipboard if enabled
 						if (config.copyToClipboardEnabled) {
-							await vscode.env.clipboard.writeText(formattedResult);
-							deps.notifier.showInfo(
-								vscode.l10n.t(vscode.l10n.t('Results copied to clipboard')),
-							);
+							// A clipboard that is unavailable must not fail the scan; the
+							// report still opens below.
+							try {
+								await vscode.env.clipboard.writeText(formattedResult);
+								deps.notifier.showInfo(
+									vscode.l10n.t('Results copied to clipboard'),
+								);
+							} catch (error) {
+								const message =
+									error instanceof Error ? error.message : 'Unknown error';
+								deps.notifier.showWarning(
+									vscode.l10n.t(
+										'Could not copy the results to the clipboard: {0}',
+										message,
+									),
+								);
+							}
 						}
 
 						// Check for cancellation
