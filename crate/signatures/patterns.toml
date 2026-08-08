@@ -1,0 +1,176 @@
+# The detection table, mirrored out of src/extraction/detectors.ts.
+#
+# ORDER IS LOAD-BEARING. Specific key patterns run before the generic
+# token pattern, and the first pattern to claim a span wins the dedupe.
+# Reordering this file changes what the scanner reports.
+#
+# `confidence` is a rule rather than the lambda the extension holds,
+# because a function cannot be mirrored into data and checked. The
+# parity script evaluates both over probe values and fails when they
+# disagree — so changing a threshold in the code without changing it
+# here breaks a build.
+
+[[pattern]]
+type = "aws-secret"
+description = "AWS Secret Access Key"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9/+=]{40})(?!['\"A-Za-z0-9/+=])"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "access-token"
+description = "Access token"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:access[_-]?token))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_\\-.]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "refresh-token"
+description = "Refresh token"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:refresh[_-]?token))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_\\-.]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "oauth-token"
+description = "OAuth token"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:oauth[_-]?(?:2[_-]?)?token))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_\\-.]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "jwt"
+description = "JWT token"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:jwt|json[_-]?web[_-]?token))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_\\-.]{50,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "jwt", matched = "high", unmatched = "medium" }
+
+[[pattern]]
+type = "api-key"
+description = "Generic API key"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:api[_-]?key|apikey))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_-]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "length", high = 32, medium = 20 }
+
+[[pattern]]
+type = "token"
+description = "Generic token"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:token|secret[_-]?token))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_\\-.]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "length", high = 32, medium = 20 }
+
+[[pattern]]
+type = "password"
+description = "Password"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:password|passwd|pwd))\\b['\"]?\\s*[:=]\\s*['\"]?([^\\s'\";]{8,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "length", high = 12, medium = 8 }
+
+[[pattern]]
+type = "azure-key"
+description = "Azure account key"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:azure[_-]?(?:account[_-]?)?key|accountkey))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9+/]{32,}={0,2})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "gcp-key"
+description = "GCP/Google Cloud key"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:gcp[_-]?key|google[_-]?cloud[_-]?key))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_-]{12,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "medium" }
+
+[[pattern]]
+type = "session-id"
+description = "Session ID"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:session[_-]?id|sessionid))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9_-]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "medium" }
+
+[[pattern]]
+type = "cookie"
+description = "Cookie value"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:cookie|set-cookie))\\b['\"]?\\s*[:=]\\s*['\"]?([^\\s'\";]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "low" }
+
+[[pattern]]
+type = "connection-string"
+description = "Connection string"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:connection[_-]?string|conn[_-]?string))\\b['\"]?\\s*[:=]\\s*['\"]?([^\\s'\"]{20,})"
+flags = "dgi"
+key_group = 1
+value_group = 2
+confidence = { kind = "fixed", level = "medium" }
+
+[[pattern]]
+type = "aws-key"
+description = "AWS Access Key ID"
+regex = "\\b(AKIA[0-9A-Z]{16})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "token"
+description = "Known token prefix (GitHub/Slack/Stripe/Google)"
+regex = "\\b(ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_-]{35})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "bearer-token"
+description = "Bearer token"
+regex = "\\bbearer\\s+([A-Za-z0-9_\\-.=]{20,})"
+flags = "dgi"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "jwt"
+description = "JWT token (format only)"
+regex = "\\b(eyJ[A-Za-z0-9_-]{6,}\\.[A-Za-z0-9_-]{6,}\\.[A-Za-z0-9_-]{6,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "database-url"
+description = "Database URL with embedded credentials"
+regex = "\\b((?:postgres(?:ql)?|mysql|mongodb(?:\\+srv)?|redis|rediss|amqp):\\/\\/[^\\s'\"@]+:[^\\s'\"@]+@[^\\s'\"]+)"
+flags = "dgi"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "private-key"
+description = "Private key block (PEM)"
+regex = "-----BEGIN\\s+(?:[A-Z][A-Z ]*\\s+)?PRIVATE\\s+KEY(?:\\s+BLOCK)?-----[\\s\\S]+?-----END\\s+(?:[A-Z][A-Z ]*\\s+)?PRIVATE\\s+KEY(?:\\s+BLOCK)?-----"
+flags = "dg"
+value_group = 0
+confidence = { kind = "fixed", level = "high" }

@@ -1,0 +1,66 @@
+{
+	"maskSecretValue": [
+		{
+			"input": "",
+			"expected": "(empty)"
+		},
+		{
+			"input": "a",
+			"expected": "(1 chars)"
+		},
+		{
+			"input": "ab",
+			"expected": "(2 chars)"
+		},
+		{
+			"input": "abc",
+			"expected": "a… (3 chars)"
+		},
+		{
+			"input": "abcd",
+			"expected": "ab… (4 chars)"
+		},
+		{
+			"input": "hunter2hunter2",
+			"expected": "hunter2… (14 chars)"
+		},
+		{
+			"input": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+			"expected": "wJalrXUt… (40 chars)"
+		},
+		{
+			"input": "AKIAIOSFODNN7EXAMPLE",
+			"expected": "AKIAIOSF… (20 chars)"
+		},
+		{
+			"input": "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+			"expected": "ghp_1234… (40 chars)"
+		},
+		{
+			"input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"expected": "xxxxxxxx… (200 chars)"
+		}
+	],
+	"maskWithin": [
+		{
+			"context": "DATABASE_PASSWORD=hunter2hunter2",
+			"value": "hunter2hunter2",
+			"expected": "DATABASE_PASSWORD=hunter2… (14 chars)"
+		},
+		{
+			"context": "a=secret and again secret",
+			"value": "secret",
+			"expected": "a=sec… (6 chars) and again sec… (6 chars)"
+		},
+		{
+			"context": "nothing to mask here",
+			"value": "absent",
+			"expected": "nothing to mask here"
+		},
+		{
+			"context": "empty value",
+			"value": "",
+			"expected": "empty value"
+		}
+	]
+}

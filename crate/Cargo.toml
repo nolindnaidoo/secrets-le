@@ -1,0 +1,78 @@
+[package]
+name = "secrets-le"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+readme = "README.md"
+description = "Find hardcoded credentials in a codebase, and never print one"
+authors = ["Nolin D Naidoo"]
+homepage = "https://letools.dev/tools/secrets-le"
+repository = "https://github.com/nolindnaidoo/secrets-le"
+keywords = ["secrets", "credentials", "security", "scanner", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+# What a consumer gets, and why.
+#
+# Ships: src/, Cargo.toml, Cargo.lock, LICENSE, README.md — needed to
+# build the binary. SPEC.md and CHANGELOG.md — the behavioural contract
+# someone scripting against the exit codes needs. signatures/, tests/
+# and fixtures/ — not needed to build, but needed to verify: `cargo
+# test` on the unpacked tarball runs the full corpus, so the parity
+# claims and the never-leak property are checkable by whoever installed
+# it rather than taken on trust. That matters more here than anywhere
+# else in the family.
+#
+# Excluded: AGENTS.md and CLAUDE.md are how this repo is worked on, not
+# how the tool is used. rust-toolchain.toml is a convenience for
+# contributors to *this* checkout; shipped, it would pin the toolchain
+# of anyone who unpacks or vendors the crate.
+exclude = ["AGENTS.md", "CLAUDE.md", "rust-toolchain.toml"]
+
+[[bin]]
+name = "secrets-le"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# The pattern table is TOML by design — reviewable by someone who does
+# not read Rust, and mirrored from the extension's own table by a parity
+# script that checks both directions.
+toml = "1"
+# `fancy-regex` rather than `regex`: one pattern in the table uses a
+# negative lookahead, which `regex` cannot express. Rewriting it would
+# change the pattern and therefore what the scanner finds, which is the
+# one thing a security tool must not do quietly. `regex` comes along
+# beneath it and is named directly for the patterns that need no
+# backtracking.
+regex = "1"
+fancy-regex = "0.19"
+# The walker. `ignore` is ripgrep's, so "what this tool scans" and "what
+# ripgrep scans" are the same answer.
+ignore = "0.4"
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 1
+# A wrapped number here is a miscounted finding or a preview that runs
+# past the end of a value. Overflow keeps panicking in release, as it
+# does in debug. (Same rule as pixelcoords, pixelactions, scrape-le and
+# paths-le.)
+overflow-checks = true
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+# Deliberate relaxations, same policy as the other crates: no inline
+# #[allow] anywhere (CI enforces); anything relaxed must be listed here.
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_sign_loss = "allow"
+cast_precision_loss = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"

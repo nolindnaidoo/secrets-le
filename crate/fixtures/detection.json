@@ -1,0 +1,1090 @@
+{
+	"documents": [
+		{
+			"name": "jwt-lookalikes.txt at low sensitivity",
+			"file": "jwt-lookalikes.txt",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "jwt",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci… (107 chars)",
+					"context": "eyJhbGci… (107 chars)",
+					"line": 4,
+					"column": 1,
+					"description": "JWT token (format only)"
+				}
+			]
+		},
+		{
+			"name": "jwt-lookalikes.txt at medium sensitivity",
+			"file": "jwt-lookalikes.txt",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "jwt",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci… (107 chars)",
+					"context": "eyJhbGci… (107 chars)",
+					"line": 4,
+					"column": 1,
+					"description": "JWT token (format only)"
+				}
+			]
+		},
+		{
+			"name": "jwt-lookalikes.txt at high sensitivity",
+			"file": "jwt-lookalikes.txt",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "jwt",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci… (107 chars)",
+					"context": "eyJhbGci… (107 chars)",
+					"line": 4,
+					"column": 1,
+					"description": "JWT token (format only)"
+				}
+			]
+		},
+		{
+			"name": "multiline-key.pem at low sensitivity",
+			"file": "multiline-key.pem",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "private-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "-----BEG… (321 chars)",
+					"context": "-----BEGIN RSA PRIVATE KEY-----",
+					"line": 1,
+					"column": 1,
+					"description": "Private key block (PEM)"
+				}
+			]
+		},
+		{
+			"name": "multiline-key.pem at medium sensitivity",
+			"file": "multiline-key.pem",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "private-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "-----BEG… (321 chars)",
+					"context": "-----BEGIN RSA PRIVATE KEY-----",
+					"line": 1,
+					"column": 1,
+					"description": "Private key block (PEM)"
+				}
+			]
+		},
+		{
+			"name": "multiline-key.pem at high sensitivity",
+			"file": "multiline-key.pem",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "private-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "-----BEG… (321 chars)",
+					"context": "-----BEGIN RSA PRIVATE KEY-----",
+					"line": 1,
+					"column": 1,
+					"description": "Private key block (PEM)"
+				}
+			]
+		},
+		{
+			"name": "secrets.env at low sensitivity",
+			"file": "secrets.env",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "sk_demo_… (40 chars)",
+					"context": "API_KEY=sk_demo_… (40 chars)",
+					"line": 2,
+					"column": 9,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "database_password",
+					"preview": "hunter2b… (16 chars)",
+					"context": "DATABASE_PASSWORD=hunter2b… (16 chars)",
+					"line": 3,
+					"column": 19,
+					"description": "Password"
+				},
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "AKIAIOSF… (20 chars)",
+					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF… (20 chars)",
+					"line": 4,
+					"column": 19,
+					"description": "AWS Access Key ID"
+				},
+				{
+					"type": "aws-secret",
+					"confidence": "high",
+					"key": "aws_secret_access_key",
+					"preview": "wJalrXUt… (40 chars)",
+					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)",
+					"line": 5,
+					"column": 23,
+					"description": "AWS Secret Access Key"
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"key": null,
+					"preview": "postgres… (44 chars)",
+					"context": "DATABASE_URL=postgres… (44 chars)",
+					"line": 6,
+					"column": 14,
+					"description": "Database URL with embedded credentials"
+				},
+				{
+					"type": "session-id",
+					"confidence": "medium",
+					"key": "session_id",
+					"preview": "abcdef12… (22 chars)",
+					"context": "SESSION_ID=abcdef12… (22 chars)",
+					"line": 7,
+					"column": 12,
+					"description": "Session ID"
+				}
+			]
+		},
+		{
+			"name": "secrets.env at medium sensitivity",
+			"file": "secrets.env",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "sk_demo_… (40 chars)",
+					"context": "API_KEY=sk_demo_… (40 chars)",
+					"line": 2,
+					"column": 9,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "database_password",
+					"preview": "hunter2b… (16 chars)",
+					"context": "DATABASE_PASSWORD=hunter2b… (16 chars)",
+					"line": 3,
+					"column": 19,
+					"description": "Password"
+				},
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "AKIAIOSF… (20 chars)",
+					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF… (20 chars)",
+					"line": 4,
+					"column": 19,
+					"description": "AWS Access Key ID"
+				},
+				{
+					"type": "aws-secret",
+					"confidence": "high",
+					"key": "aws_secret_access_key",
+					"preview": "wJalrXUt… (40 chars)",
+					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)",
+					"line": 5,
+					"column": 23,
+					"description": "AWS Secret Access Key"
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"key": null,
+					"preview": "postgres… (44 chars)",
+					"context": "DATABASE_URL=postgres… (44 chars)",
+					"line": 6,
+					"column": 14,
+					"description": "Database URL with embedded credentials"
+				},
+				{
+					"type": "session-id",
+					"confidence": "medium",
+					"key": "session_id",
+					"preview": "abcdef12… (22 chars)",
+					"context": "SESSION_ID=abcdef12… (22 chars)",
+					"line": 7,
+					"column": 12,
+					"description": "Session ID"
+				}
+			]
+		},
+		{
+			"name": "secrets.env at high sensitivity",
+			"file": "secrets.env",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "sk_demo_… (40 chars)",
+					"context": "API_KEY=sk_demo_… (40 chars)",
+					"line": 2,
+					"column": 9,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "database_password",
+					"preview": "hunter2b… (16 chars)",
+					"context": "DATABASE_PASSWORD=hunter2b… (16 chars)",
+					"line": 3,
+					"column": 19,
+					"description": "Password"
+				},
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "AKIAIOSF… (20 chars)",
+					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF… (20 chars)",
+					"line": 4,
+					"column": 19,
+					"description": "AWS Access Key ID"
+				},
+				{
+					"type": "aws-secret",
+					"confidence": "high",
+					"key": "aws_secret_access_key",
+					"preview": "wJalrXUt… (40 chars)",
+					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)",
+					"line": 5,
+					"column": 23,
+					"description": "AWS Secret Access Key"
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"key": null,
+					"preview": "postgres… (44 chars)",
+					"context": "DATABASE_URL=postgres… (44 chars)",
+					"line": 6,
+					"column": 14,
+					"description": "Database URL with embedded credentials"
+				}
+			]
+		},
+		{
+			"name": "secrets.ini at low sensitivity",
+			"file": "secrets.ini",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "supersec… (22 chars)",
+					"context": "password = supersec… (22 chars)",
+					"line": 2,
+					"column": 12,
+					"description": "Password"
+				},
+				{
+					"type": "connection-string",
+					"confidence": "medium",
+					"key": "connection_string",
+					"preview": "Server=p… (50 chars)",
+					"context": "connection_string = Server=p… (50 chars)",
+					"line": 3,
+					"column": 21,
+					"description": "Connection string"
+				},
+				{
+					"type": "password",
+					"confidence": "medium",
+					"key": "pwd",
+					"preview": "secre… (10 chars)",
+					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre… (10 chars);",
+					"line": 3,
+					"column": 60,
+					"description": "Password"
+				},
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "01234567… (32 chars)",
+					"context": "api_key = 01234567… (32 chars)",
+					"line": 5,
+					"column": 11,
+					"description": "Generic API key"
+				}
+			]
+		},
+		{
+			"name": "secrets.ini at medium sensitivity",
+			"file": "secrets.ini",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "supersec… (22 chars)",
+					"context": "password = supersec… (22 chars)",
+					"line": 2,
+					"column": 12,
+					"description": "Password"
+				},
+				{
+					"type": "connection-string",
+					"confidence": "medium",
+					"key": "connection_string",
+					"preview": "Server=p… (50 chars)",
+					"context": "connection_string = Server=p… (50 chars)",
+					"line": 3,
+					"column": 21,
+					"description": "Connection string"
+				},
+				{
+					"type": "password",
+					"confidence": "medium",
+					"key": "pwd",
+					"preview": "secre… (10 chars)",
+					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre… (10 chars);",
+					"line": 3,
+					"column": 60,
+					"description": "Password"
+				},
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "01234567… (32 chars)",
+					"context": "api_key = 01234567… (32 chars)",
+					"line": 5,
+					"column": 11,
+					"description": "Generic API key"
+				}
+			]
+		},
+		{
+			"name": "secrets.ini at high sensitivity",
+			"file": "secrets.ini",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "supersec… (22 chars)",
+					"context": "password = supersec… (22 chars)",
+					"line": 2,
+					"column": 12,
+					"description": "Password"
+				},
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "01234567… (32 chars)",
+					"context": "api_key = 01234567… (32 chars)",
+					"line": 5,
+					"column": 11,
+					"description": "Generic API key"
+				}
+			]
+		},
+		{
+			"name": "secrets.js at low sensitivity",
+			"file": "secrets.js",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "apikey",
+					"preview": "sk_demo_… (32 chars)",
+					"context": "const apiKey = 'sk_demo_… (32 chars)';",
+					"line": 1,
+					"column": 17,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "n0tS0Se… (15 chars)",
+					"context": "password: 'n0tS0Se… (15 chars)',",
+					"line": 3,
+					"column": 13,
+					"description": "Password"
+				},
+				{
+					"type": "bearer-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci… (79 chars)",
+					"context": "'Bearer eyJhbGci… (79 chars)',",
+					"line": 9,
+					"column": 12,
+					"description": "Bearer token"
+				}
+			]
+		},
+		{
+			"name": "secrets.js at medium sensitivity",
+			"file": "secrets.js",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "apikey",
+					"preview": "sk_demo_… (32 chars)",
+					"context": "const apiKey = 'sk_demo_… (32 chars)';",
+					"line": 1,
+					"column": 17,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "n0tS0Se… (15 chars)",
+					"context": "password: 'n0tS0Se… (15 chars)',",
+					"line": 3,
+					"column": 13,
+					"description": "Password"
+				},
+				{
+					"type": "bearer-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci… (79 chars)",
+					"context": "'Bearer eyJhbGci… (79 chars)',",
+					"line": 9,
+					"column": 12,
+					"description": "Bearer token"
+				}
+			]
+		},
+		{
+			"name": "secrets.js at high sensitivity",
+			"file": "secrets.js",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "apikey",
+					"preview": "sk_demo_… (32 chars)",
+					"context": "const apiKey = 'sk_demo_… (32 chars)';",
+					"line": 1,
+					"column": 17,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "n0tS0Se… (15 chars)",
+					"context": "password: 'n0tS0Se… (15 chars)',",
+					"line": 3,
+					"column": 13,
+					"description": "Password"
+				},
+				{
+					"type": "bearer-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci… (79 chars)",
+					"context": "'Bearer eyJhbGci… (79 chars)',",
+					"line": 9,
+					"column": 12,
+					"description": "Bearer token"
+				}
+			]
+		},
+		{
+			"name": "secrets.json at low sensitivity",
+			"file": "secrets.json",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "apikey",
+					"preview": "a1b2c3d4… (32 chars)",
+					"context": "\"apiKey\": \"a1b2c3d4… (32 chars)\",",
+					"line": 2,
+					"column": 13,
+					"description": "Generic API key"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": "token",
+					"preview": "ghp_abcd… (40 chars)",
+					"context": "\"token\": \"ghp_abcd… (40 chars)\",",
+					"line": 4,
+					"column": 13,
+					"description": "Generic token"
+				},
+				{
+					"type": "refresh-token",
+					"confidence": "high",
+					"key": "refresh_token",
+					"preview": "rt_abcde… (27 chars)",
+					"context": "\"refresh_token\": \"rt_abcde… (27 chars)\"",
+					"line": 5,
+					"column": 21,
+					"description": "Refresh token"
+				},
+				{
+					"type": "connection-string",
+					"confidence": "medium",
+					"key": "connectionstring",
+					"preview": "Server=d… (53 chars)",
+					"context": "\"connectionString\": \"Server=d… (53 chars)\"",
+					"line": 7,
+					"column": 23,
+					"description": "Connection string"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "Sup3rS… (13 chars)",
+					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true\"",
+					"line": 7,
+					"column": 50,
+					"description": "Password"
+				}
+			]
+		},
+		{
+			"name": "secrets.json at medium sensitivity",
+			"file": "secrets.json",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "apikey",
+					"preview": "a1b2c3d4… (32 chars)",
+					"context": "\"apiKey\": \"a1b2c3d4… (32 chars)\",",
+					"line": 2,
+					"column": 13,
+					"description": "Generic API key"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": "token",
+					"preview": "ghp_abcd… (40 chars)",
+					"context": "\"token\": \"ghp_abcd… (40 chars)\",",
+					"line": 4,
+					"column": 13,
+					"description": "Generic token"
+				},
+				{
+					"type": "refresh-token",
+					"confidence": "high",
+					"key": "refresh_token",
+					"preview": "rt_abcde… (27 chars)",
+					"context": "\"refresh_token\": \"rt_abcde… (27 chars)\"",
+					"line": 5,
+					"column": 21,
+					"description": "Refresh token"
+				},
+				{
+					"type": "connection-string",
+					"confidence": "medium",
+					"key": "connectionstring",
+					"preview": "Server=d… (53 chars)",
+					"context": "\"connectionString\": \"Server=d… (53 chars)\"",
+					"line": 7,
+					"column": 23,
+					"description": "Connection string"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "Sup3rS… (13 chars)",
+					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true\"",
+					"line": 7,
+					"column": 50,
+					"description": "Password"
+				}
+			]
+		},
+		{
+			"name": "secrets.json at high sensitivity",
+			"file": "secrets.json",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "apikey",
+					"preview": "a1b2c3d4… (32 chars)",
+					"context": "\"apiKey\": \"a1b2c3d4… (32 chars)\",",
+					"line": 2,
+					"column": 13,
+					"description": "Generic API key"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": "token",
+					"preview": "ghp_abcd… (40 chars)",
+					"context": "\"token\": \"ghp_abcd… (40 chars)\",",
+					"line": 4,
+					"column": 13,
+					"description": "Generic token"
+				},
+				{
+					"type": "refresh-token",
+					"confidence": "high",
+					"key": "refresh_token",
+					"preview": "rt_abcde… (27 chars)",
+					"context": "\"refresh_token\": \"rt_abcde… (27 chars)\"",
+					"line": 5,
+					"column": 21,
+					"description": "Refresh token"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "Sup3rS… (13 chars)",
+					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true\"",
+					"line": 7,
+					"column": 50,
+					"description": "Password"
+				}
+			]
+		},
+		{
+			"name": "secrets.py at low sensitivity",
+			"file": "secrets.py",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "AIzaSyAa… (36 chars)",
+					"context": "API_KEY = \"AIzaSyAa… (36 chars)\"",
+					"line": 1,
+					"column": 12,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "db_password",
+					"preview": "postgres… (18 chars)",
+					"context": "db_password = \"postgres… (18 chars)\"",
+					"line": 2,
+					"column": 16,
+					"description": "Password"
+				},
+				{
+					"type": "token",
+					"confidence": "medium",
+					"key": "secret_token",
+					"preview": "tok_abcd… (26 chars)",
+					"context": "SECRET_TOKEN = \"tok_abcd… (26 chars)\"",
+					"line": 3,
+					"column": 17,
+					"description": "Generic token"
+				}
+			]
+		},
+		{
+			"name": "secrets.py at medium sensitivity",
+			"file": "secrets.py",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "AIzaSyAa… (36 chars)",
+					"context": "API_KEY = \"AIzaSyAa… (36 chars)\"",
+					"line": 1,
+					"column": 12,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "db_password",
+					"preview": "postgres… (18 chars)",
+					"context": "db_password = \"postgres… (18 chars)\"",
+					"line": 2,
+					"column": 16,
+					"description": "Password"
+				},
+				{
+					"type": "token",
+					"confidence": "medium",
+					"key": "secret_token",
+					"preview": "tok_abcd… (26 chars)",
+					"context": "SECRET_TOKEN = \"tok_abcd… (26 chars)\"",
+					"line": 3,
+					"column": 17,
+					"description": "Generic token"
+				}
+			]
+		},
+		{
+			"name": "secrets.py at high sensitivity",
+			"file": "secrets.py",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"key": "api_key",
+					"preview": "AIzaSyAa… (36 chars)",
+					"context": "API_KEY = \"AIzaSyAa… (36 chars)\"",
+					"line": 1,
+					"column": 12,
+					"description": "Generic API key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "db_password",
+					"preview": "postgres… (18 chars)",
+					"context": "db_password = \"postgres… (18 chars)\"",
+					"line": 2,
+					"column": 16,
+					"description": "Password"
+				}
+			]
+		},
+		{
+			"name": "secrets.yaml at low sensitivity",
+			"file": "secrets.yaml",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "AKIAIOSF… (20 chars)",
+					"context": "aws_access_key_id: AKIAIOSF… (20 chars)",
+					"line": 1,
+					"column": 20,
+					"description": "AWS Access Key ID"
+				},
+				{
+					"type": "azure-key",
+					"confidence": "high",
+					"key": "azure_account_key",
+					"preview": "YWJjZGVm… (44 chars)",
+					"context": "azure_account_key: YWJjZGVm… (44 chars)",
+					"line": 2,
+					"column": 20,
+					"description": "Azure account key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "correcth… (25 chars)",
+					"context": "password: correcth… (25 chars)",
+					"line": 3,
+					"column": 11,
+					"description": "Password"
+				},
+				{
+					"type": "gcp-key",
+					"confidence": "medium",
+					"key": "gcp_key",
+					"preview": "my-proje… (20 chars)",
+					"context": "gcp_key: my-proje… (20 chars)",
+					"line": 4,
+					"column": 10,
+					"description": "GCP/Google Cloud key"
+				},
+				{
+					"type": "oauth-token",
+					"confidence": "high",
+					"key": "oauth_token",
+					"preview": "ya29a0Af… (31 chars)",
+					"context": "oauth_token: ya29a0Af… (31 chars)",
+					"line": 5,
+					"column": 14,
+					"description": "OAuth token"
+				}
+			]
+		},
+		{
+			"name": "secrets.yaml at medium sensitivity",
+			"file": "secrets.yaml",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "AKIAIOSF… (20 chars)",
+					"context": "aws_access_key_id: AKIAIOSF… (20 chars)",
+					"line": 1,
+					"column": 20,
+					"description": "AWS Access Key ID"
+				},
+				{
+					"type": "azure-key",
+					"confidence": "high",
+					"key": "azure_account_key",
+					"preview": "YWJjZGVm… (44 chars)",
+					"context": "azure_account_key: YWJjZGVm… (44 chars)",
+					"line": 2,
+					"column": 20,
+					"description": "Azure account key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "correcth… (25 chars)",
+					"context": "password: correcth… (25 chars)",
+					"line": 3,
+					"column": 11,
+					"description": "Password"
+				},
+				{
+					"type": "gcp-key",
+					"confidence": "medium",
+					"key": "gcp_key",
+					"preview": "my-proje… (20 chars)",
+					"context": "gcp_key: my-proje… (20 chars)",
+					"line": 4,
+					"column": 10,
+					"description": "GCP/Google Cloud key"
+				},
+				{
+					"type": "oauth-token",
+					"confidence": "high",
+					"key": "oauth_token",
+					"preview": "ya29a0Af… (31 chars)",
+					"context": "oauth_token: ya29a0Af… (31 chars)",
+					"line": 5,
+					"column": 14,
+					"description": "OAuth token"
+				}
+			]
+		},
+		{
+			"name": "secrets.yaml at high sensitivity",
+			"file": "secrets.yaml",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "AKIAIOSF… (20 chars)",
+					"context": "aws_access_key_id: AKIAIOSF… (20 chars)",
+					"line": 1,
+					"column": 20,
+					"description": "AWS Access Key ID"
+				},
+				{
+					"type": "azure-key",
+					"confidence": "high",
+					"key": "azure_account_key",
+					"preview": "YWJjZGVm… (44 chars)",
+					"context": "azure_account_key: YWJjZGVm… (44 chars)",
+					"line": 2,
+					"column": 20,
+					"description": "Azure account key"
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"key": "password",
+					"preview": "correcth… (25 chars)",
+					"context": "password: correcth… (25 chars)",
+					"line": 3,
+					"column": 11,
+					"description": "Password"
+				},
+				{
+					"type": "oauth-token",
+					"confidence": "high",
+					"key": "oauth_token",
+					"preview": "ya29a0Af… (31 chars)",
+					"context": "oauth_token: ya29a0Af… (31 chars)",
+					"line": 5,
+					"column": 14,
+					"description": "OAuth token"
+				}
+			]
+		}
+	],
+	"toggles": [
+		{
+			"name": "api keys excluded",
+			"file": "secrets.env",
+			"options": {
+				"includeApiKeys": false
+			},
+			"expected": [
+				{
+					"type": "password",
+					"confidence": "high",
+					"line": 3
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"line": 6
+				},
+				{
+					"type": "session-id",
+					"confidence": "medium",
+					"line": 7
+				}
+			]
+		},
+		{
+			"name": "passwords excluded",
+			"file": "secrets.env",
+			"options": {
+				"includePasswords": false
+			},
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"line": 2
+				},
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"line": 4
+				},
+				{
+					"type": "aws-secret",
+					"confidence": "high",
+					"line": 5
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"line": 6
+				},
+				{
+					"type": "session-id",
+					"confidence": "medium",
+					"line": 7
+				}
+			]
+		},
+		{
+			"name": "tokens excluded",
+			"file": "secrets.env",
+			"options": {
+				"includeTokens": false
+			},
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"line": 2
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"line": 3
+				},
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"line": 4
+				},
+				{
+					"type": "aws-secret",
+					"confidence": "high",
+					"line": 5
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"line": 6
+				},
+				{
+					"type": "session-id",
+					"confidence": "medium",
+					"line": 7
+				}
+			]
+		},
+		{
+			"name": "private keys excluded",
+			"file": "secrets.env",
+			"options": {
+				"includePrivateKeys": false
+			},
+			"expected": [
+				{
+					"type": "api-key",
+					"confidence": "high",
+					"line": 2
+				},
+				{
+					"type": "password",
+					"confidence": "high",
+					"line": 3
+				},
+				{
+					"type": "aws-key",
+					"confidence": "high",
+					"line": 4
+				},
+				{
+					"type": "aws-secret",
+					"confidence": "high",
+					"line": 5
+				},
+				{
+					"type": "database-url",
+					"confidence": "high",
+					"line": 6
+				},
+				{
+					"type": "session-id",
+					"confidence": "medium",
+					"line": 7
+				}
+			]
+		}
+	]
+}
