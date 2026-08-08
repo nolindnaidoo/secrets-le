@@ -51,6 +51,12 @@ const DOCUMENTS: [(&str, &str); 8] = [
     ),
 ];
 
+/// Every embedded document, for the property tests that scan all of
+/// them rather than a named one.
+pub(crate) fn documents() -> impl Iterator<Item = (&'static str, &'static str)> {
+    DOCUMENTS.into_iter()
+}
+
 pub(crate) fn document(name: &str) -> &'static str {
     DOCUMENTS
         .iter()

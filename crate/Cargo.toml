@@ -76,3 +76,8 @@ cast_precision_loss = "allow"
 must_use_candidate = "allow"
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
+# `Options` carries the extension's four detector-family switches. They
+# are four independent booleans in the manifest, in the MCP schema and on
+# the command line; collapsing them into a bitflag or a struct-of-one
+# would make the port diverge from the thing it mirrors.
+struct_excessive_bools = "allow"

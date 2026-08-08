@@ -73,6 +73,20 @@ impl<'a> PositionIndex<'a> {
     }
 }
 
+/// The full text of the line containing `offset`, without its newline.
+/// Used to attach human-readable context to a detection — which is then
+/// masked before anyone sees it.
+pub(crate) fn line_text_at(content: &str, offset: usize) -> &str {
+    let clamped = offset.min(content.len());
+    let start = content[..clamped]
+        .rfind('\n')
+        .map_or(0, |newline| newline + 1);
+    let end = content[clamped..]
+        .find('\n')
+        .map_or(content.len(), |newline| clamped + newline);
+    &content[start..end]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -152,18 +166,4 @@ mod tests {
         assert_eq!(index.at(1), Position { line: 1, column: 2 });
         assert_eq!(index.at(3), Position { line: 2, column: 1 });
     }
-}
-
-/// The full text of the line containing `offset`, without its newline.
-/// Used to attach human-readable context to a detection — which is then
-/// masked before anyone sees it.
-pub(crate) fn line_text_at(content: &str, offset: usize) -> &str {
-    let clamped = offset.min(content.len());
-    let start = content[..clamped]
-        .rfind('\n')
-        .map_or(0, |newline| newline + 1);
-    let end = content[clamped..]
-        .find('\n')
-        .map_or(content.len(), |newline| clamped + newline);
-    &content[start..end]
 }

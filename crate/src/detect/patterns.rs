@@ -89,13 +89,31 @@ impl Pattern {
     }
 }
 
+/// How much backtracking a single match may spend before the engine
+/// gives up.
+///
+/// The default (1,000,000) is exhausted by the `aws-secret` pattern on
+/// an ordinary `bun.lock` — 158 KB of base64-ish tokens, which is a file
+/// in nearly every repository this will be pointed at. Refusing there
+/// meant exiting 2 on seven of seven real repositories, so the tool was
+/// unusable rather than cautious. Measured, not guessed: found by
+/// running the binary over the fleet.
+///
+/// The limit is raised rather than removed. A budget that cannot be
+/// exhausted is a scanner that can be made to hang by a crafted file,
+/// and the refusal it produces is honest — the report says the file was
+/// not fully scanned and the run exits 2.
+const BACKTRACK_LIMIT: usize = 100_000_000;
+
 pub(crate) static PATTERNS: LazyLock<Vec<Pattern>> = LazyLock::new(|| {
     let table: Table = toml::from_str(TABLE).expect("the embedded pattern table parses");
     table
         .pattern
         .into_iter()
         .map(|entry| Pattern {
-            regex: Regex::new(&to_rust_syntax(&entry.regex, &entry.flags))
+            regex: fancy_regex::RegexBuilder::new(&to_rust_syntax(&entry.regex, &entry.flags))
+                .backtrack_limit(BACKTRACK_LIMIT)
+                .build()
                 .expect("a pattern from the shared table compiles"),
             kind: entry.kind,
             description: entry.description,
