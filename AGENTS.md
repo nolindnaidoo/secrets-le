@@ -2,6 +2,8 @@
 
 Technical source of truth for this repo. README.md is the user-facing doc; this file is for anyone (human or agent) changing the code.
 
+This repo hosts **two products**: the extension at the root (this document's scope) and the Rust CLI in `crate/` (its own `AGENTS.md` + `SPEC.md`). The shared detection corpus lives at `crate/signatures/` and `crate/fixtures/`; `scripts/check-detection-parity.ts` fails CI when this extension drifts from it.
+
 ## What this is
 
 A VS Code extension that scans the workspace for hardcoded secrets (API keys, tokens, passwords, PEM private keys, credentialed database URLs) and can replace detections in the active file with a placeholder. Detection is regex over whole file content — no parser, no network, no writes outside normal document edits.

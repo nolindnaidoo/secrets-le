@@ -1,0 +1,50 @@
+# Changelog
+
+The Rust CLI and MCP server. The VS Code extension has its own
+[CHANGELOG](../CHANGELOG.md) and its own version — the two products in
+this repository release on their own cadence.
+
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] - 2026-08-08
+
+First release. The extension's detection engine, ported and pinned
+against a shared pattern table, over a tree instead of a buffer.
+
+### Added
+
+- **The detection engine**, reproducing the extension's output for every
+  case in `fixtures/` — nineteen patterns across API keys, passwords,
+  tokens and private keys, with the same sensitivity levels, the same
+  family switches, and the same deliberate misses.
+- **`signatures/patterns.toml`**, the pattern table as reviewable data,
+  mirrored from `SECRET_PATTERNS` and checked in both directions.
+  Order is preserved and asserted: the specific key patterns must
+  precede the generic token one, or a `refresh_token` reports as a plain
+  token.
+- **The CLI**: JSON reports on stdout one per line, a human summary on
+  stderr, and exit codes as the API — 0 nothing found, 1 findings, 2 the
+  question was malformed. `--sensitivity`, `--no-api-keys`,
+  `--no-passwords`, `--no-tokens`, `--no-private-keys`, `--stdin`,
+  `--hidden`, `--no-ignore`.
+- **The MCP server** (`secrets-le mcp`) with two tools: `detect_secrets`,
+  shared byte-for-byte with the npm server and pinned by
+  `fixtures/mcp-detect-secrets.json`, and `secrets_le_scan`.
+- **Named warnings for skipped credential files.** `.gitignore` is
+  honoured by default, which is where `.env` usually lives. Files whose
+  names say they hold credentials are listed individually when skipped;
+  everything else is a count. Vendored trees are excluded from the list.
+
+### The rule that shaped it
+
+**No surface emits a complete value** — not stdout, not stderr, not the
+MCP envelope, not an error message — and there is no flag that changes
+that. A scanner's output goes into a CI log, which is archived, often
+world-readable, and outlives the credential.
+
+The property is asserted four ways: exhaustively over value lengths 3 to
+300, over every corpus document, over a real binary run against planted
+credentials, and from the extension's side by the parity script.
+
+[0.1.0]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.0

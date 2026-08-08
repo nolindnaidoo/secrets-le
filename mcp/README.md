@@ -52,6 +52,14 @@ carries this server and registers it for you:
 · [Open VSX](https://open-vsx.org/extension/OffensiveEdge/secrets-le)
 · [Zed](https://github.com/zed-industries/extensions/pull/7085) *(pending review)*
 
+**No Node?** The same `detect_secrets` tool ships in a static Rust
+binary: `cargo install secrets-le`, then `secrets-le mcp`
+([crates.io](https://crates.io/crates/secrets-le)). The two servers
+answer identically — one fixture corpus runs against both and CI fails
+if they diverge — and both mask the same way. The binary additionally
+offers `secrets_le_scan`, which walks a tree; **this server reads no
+files**, which is what lets an agent call it anywhere.
+
 Prefer a global install to `npx` on every launch:
 
 ```bash

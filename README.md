@@ -17,6 +17,9 @@
   <a href="https://www.npmjs.com/package/secrets-le-mcp">
     <img src="https://img.shields.io/npm/v/secrets-le-mcp?style=for-the-badge&label=MCP%20server&color=blue&logo=npm" alt="secrets-le-mcp on npm" />
   </a>
+  <a href="https://crates.io/crates/secrets-le">
+    <img src="https://img.shields.io/crates/v/secrets-le?style=for-the-badge&label=Rust%20CLI&color=blue&logo=rust" alt="secrets-le on crates.io" />
+  </a>
   <a href="https://letools.dev/tools/secrets-le">
     <img src="https://img.shields.io/badge/LE%20Tools-letools.dev-blue?style=for-the-badge" alt="LE Tools" />
   </a>
@@ -99,6 +102,44 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | npx -y secrets-le-mcp
 That prints the tool list and exits — if you see `detect_secrets`, the server works.
 
 </details>
+
+## The CLI
+
+The same detection runs from a terminal or a CI step: a Rust CLI in
+[`crate/`](crate/README.md), sharing one pattern table with the extension
+— [`crate/signatures/patterns.toml`](crate/signatures/patterns.toml) —
+so the two can never disagree about what counts as a credential.
+
+```bash
+secrets-le .                        # scan a tree
+secrets-le --sensitivity high .     # only high-confidence findings
+secrets-le --no-ignore --hidden .   # reach .env and everything git ignores
+secrets-le mcp                      # the same detection over MCP on stdio
+```
+
+The exit code is the answer: **0 nothing found · 1 findings · 2 the
+question was malformed** — so `secrets-le .` is a CI step as it stands.
+
+**It never prints a credential.** A scanner's output goes into a CI log,
+which is archived, often world-readable, and outlives the secret; a
+scanner that printed what it found would disclose it more widely than
+the commit would have. Previews are capped at eight characters *and* at
+half the value's length, context lines are masked, and there is no flag
+that changes either. The extension is the half that can *fix* what it
+finds; the binary only reports.
+
+Install it with `cargo install secrets-le`
+([crates.io](https://crates.io/crates/secrets-le)). The spec
+([`crate/SPEC.md`](crate/SPEC.md)) and the engineering standard
+([`crate/AGENTS.md`](crate/AGENTS.md)) live alongside it, and it keeps
+its own [CHANGELOG](crate/CHANGELOG.md).
+
+**Two MCP servers, one tool.** `secrets-le mcp` offers `detect_secrets`
+exactly as [`secrets-le-mcp`](https://www.npmjs.com/package/secrets-le-mcp)
+does — [`crate/fixtures/mcp-detect-secrets.json`](crate/fixtures/mcp-detect-secrets.json)
+runs against both and CI fails if they diverge. Take the npm one if Node
+is already there; take the binary if you want no runtime, or if you want
+`secrets_le_scan` too.
 
 ## What gets detected
 
@@ -221,7 +262,7 @@ run. Reproduce with `bun run test:coverage`.
 
 Every tool in the family, one page: **[letools.dev](https://letools.dev)**
 
-All ten also ship as MCP servers — `npx <name>-mcp` gives any agent the same engine.
+Two also ship a Rust CLI: **Secrets-LE** (`cargo install secrets-le`) and **Paths-LE** (`cargo install paths-le`), plus **Scrape-LE**. All ten also ship as MCP servers — `npx <name>-mcp` gives any agent the same engine.
 
 - **[String-LE](https://letools.dev/tools/string-le)** - Extract string values for i18n from JSON, YAML, CSV, TOML, INI, and .env
 - **[Numbers-LE](https://letools.dev/tools/numbers-le)** - Extract numeric values from JSON, YAML, CSV, TOML, INI, and .env
