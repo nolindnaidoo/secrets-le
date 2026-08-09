@@ -63,8 +63,9 @@ Detection exits 1. What you do about it is yours.
 ## Shape
 
 **One crate.** Self-contained: no published `-core`, no shared crate with
-the rest of the family. Code two crates in the family both need is
-copied, with a drift check — the family's existing idiom.
+the rest of the family, and nothing holding this code equal to the
+similar files in the sibling repos. Where they agree it is because the
+same answer was right twice; where they diverge that is the point.
 
 ```
 crate/
