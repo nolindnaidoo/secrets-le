@@ -10,11 +10,11 @@
 //!
 //! Lines and columns are 1-based, matching the extension's contract.
 //!
-//! **This file is a copy of paths-le's `extract/position.rs`.** The
-//! family's crates are self-contained by decision — no shared crate, no
-//! published core — so code two of them need is duplicated and held
-//! equal by a drift check, the same way `biome.json` and `ci.yml` are.
-//! Fix a bug here and it needs fixing there.
+//! Each crate in this family stands on its own: no shared crate, no
+//! published core, and nothing holding this file equal to the similar
+//! ones in the sibling repos. Where they agree it is because the same
+//! answer was right twice; where they diverge that is the point, and
+//! neither has to justify itself to the other.
 
 use serde::Serialize;
 
@@ -24,13 +24,20 @@ pub(crate) struct Position {
     pub(crate) column: usize,
 }
 
-/// A prepared index over one document. Building it is O(bytes); each
-/// lookup is a binary search plus a UTF-16 count of the current line's
-/// prefix, which is bounded by the line length rather than the file.
+/// A prepared index over one document. Building it is O(bytes). A
+/// lookup is a binary search, then a column: arithmetic when the
+/// document is ASCII, and a UTF-16 count of the current line's prefix
+/// when it is not.
 pub(crate) struct PositionIndex<'a> {
     content: &'a str,
     /// Byte offset of the first character of each line.
     line_starts: Vec<usize>,
+    /// Whether the whole document is ASCII, in which case a byte offset
+    /// **is** a UTF-16 offset and a column is arithmetic rather than a
+    /// scan. Without it, `at()` re-counts code units from the line start
+    /// on every call — invisible on ordinary source, quadratic on a
+    /// minified file whose content sits on one very long line.
+    all_ascii: bool,
 }
 
 impl<'a> PositionIndex<'a> {
@@ -46,6 +53,7 @@ impl<'a> PositionIndex<'a> {
         Self {
             content,
             line_starts,
+            all_ascii: content.is_ascii(),
         }
     }
 
@@ -58,7 +66,12 @@ impl<'a> PositionIndex<'a> {
         let clamped = self.floor_to_boundary(offset.min(self.content.len()));
         let line_index = self.line_starts.partition_point(|&start| start <= clamped) - 1;
         let line_start = self.line_starts[line_index];
-        let column = self.content[line_start..clamped].encode_utf16().count() + 1;
+        let prefix = &self.content[line_start..clamped];
+        let column = if self.all_ascii {
+            prefix.len() + 1
+        } else {
+            prefix.encode_utf16().count() + 1
+        };
         Position {
             line: line_index + 1,
             column,
@@ -156,6 +169,35 @@ mod tests {
     fn an_offset_inside_a_character_floors_to_its_start() {
         let index = PositionIndex::new("é!");
         assert_eq!(index.at(1), Position { line: 1, column: 1 });
+    }
+
+    /// The fast path and the counted path must agree at every offset,
+    /// or the optimisation is a second implementation with its own
+    /// answers.
+    #[test]
+    fn the_ascii_fast_path_agrees_with_the_counted_path() {
+        let ascii = "abc\ndef";
+        let index = PositionIndex::new(ascii);
+        assert!(index.all_ascii);
+        for offset in 0..=ascii.len() {
+            let line_index = index.line_starts.partition_point(|&start| start <= offset) - 1;
+            let line_start = index.line_starts[line_index];
+            assert_eq!(
+                index.at(offset),
+                Position {
+                    line: line_index + 1,
+                    column: ascii[line_start..offset].encode_utf16().count() + 1,
+                },
+                "at offset {offset}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_non_ascii_document_takes_the_counted_path() {
+        let index = PositionIndex::new("é!");
+        assert!(!index.all_ascii);
+        assert_eq!(index.at(2), Position { line: 1, column: 2 });
     }
 
     /// A carriage return is an ordinary character, not a line break —
