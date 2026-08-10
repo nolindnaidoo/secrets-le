@@ -61,7 +61,7 @@ Key settings: Detection sensitivity, sanitization placeholder, safety checks
 
 Enjoying it? A rating helps more than you'd think:
 - Rate on VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le&ssr=false#review-details
-- Rate on Open VSX: https://open-vsx.org/extension/nolindnaidoo/secrets-le/reviews
+- Rate on Open VSX: https://open-vsx.org/extension/OffensiveEdge/secrets-le/reviews
 
 Built by nolindnaidoo (https://github.com/nolindnaidoo) — MIT licensed.
 `;

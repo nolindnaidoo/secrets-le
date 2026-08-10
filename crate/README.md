@@ -191,7 +191,7 @@ Full behaviour is in
 | **VS Code** | Detection and in-place sanitising, in your editor | [Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le) |
 | **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/OffensiveEdge/secrets-le) |
 | **Any MCP agent, via Node** | `detect_secrets` over stdio | `npx secrets-le-mcp` · [npm](https://www.npmjs.com/package/secrets-le-mcp) |
-| **Zed** | The MCP server as a context server | [zed-industries/extensions#7077](https://github.com/zed-industries/extensions/pull/7077) *(listing pending)* |
+| **Zed** | The MCP server as a context server | [add it by hand](https://zed.dev/docs/ai/mcp) *(no listing yet)* |
 
 The extension is the one that can *fix* what it finds; this binary only
 reports. All ten LE tools are on **[letools.dev](https://letools.dev)**.
@@ -206,6 +206,10 @@ reports. All ten LE tools are on **[letools.dev](https://letools.dev)**.
   [pixelactions.dev](https://pixelactions.dev) · [crates.io](https://crates.io/crates/pixelactions)
 - **[paths-le](https://github.com/nolindnaidoo/paths-le/tree/main/crate)** — Find every path in a codebase and report whether it still points at anything
   [crates.io](https://crates.io/crates/paths-le)
+- **[urls-le](https://github.com/nolindnaidoo/urls-le/tree/main/crate)** — Extract every URL from a codebase, with its protocol and exact position
+  [crates.io](https://crates.io/crates/urls-le)
+- **[regex-le](https://github.com/nolindnaidoo/regex-le/tree/main/crate)** — Find every regex in a codebase and report which can be driven into catastrophic backtracking
+  [crates.io](https://crates.io/crates/regex-le)
 - **[scrape-le](https://github.com/nolindnaidoo/scrape-le/tree/main/crate)** — Check whether a page is scrapeable before the scraper is written
   [crates.io](https://crates.io/crates/scrape-le)
 
