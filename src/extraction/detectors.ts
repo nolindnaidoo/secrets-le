@@ -57,7 +57,7 @@ export const SECRET_PATTERNS: readonly SecretPattern[] = Object.freeze([
 	{
 		type: 'aws-secret',
 		pattern: new RegExp(
-			`${key('aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey')}([A-Za-z0-9/+=]{40})(?!['"A-Za-z0-9/+=])`,
+			`${key('aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey')}([A-Za-z0-9/+=]{40})(?![A-Za-z0-9/+=])`,
 			'gid',
 		),
 		keyGroup: 1,

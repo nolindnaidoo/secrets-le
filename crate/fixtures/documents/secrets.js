@@ -10,3 +10,4 @@ fetch(url, {
 	},
 });
 const version = '1.2.3';
+const awsSecretAccessKey = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY';

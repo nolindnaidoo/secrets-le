@@ -265,6 +265,37 @@ mod tests {
         assert!(detect_ok("api_key = xxxxxxxxxxxxxxxxxxxxxxxx\n").is_empty());
     }
 
+    /// The trailing lookahead on `aws-secret` used to exclude a quote,
+    /// so the pattern allowed an opening `"` and then refused the
+    /// closing one — a quoted 40-character key, which is how it is
+    /// written in code, could never match. Only the unquoted form was in
+    /// the corpus, which is why it went unnoticed.
+    #[test]
+    fn a_quoted_aws_secret_is_found_the_same_as_an_unquoted_one() {
+        const VALUE: &str = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+        for line in [
+            format!("aws_secret_access_key = {VALUE}"),
+            format!("aws_secret_access_key = \"{VALUE}\""),
+            format!("aws_secret_access_key = '{VALUE}'"),
+            format!("\"aws_secret_access_key\": \"{VALUE}\","),
+        ] {
+            let found = detect_ok(&line);
+            assert_eq!(
+                found.iter().map(|f| f.kind.as_str()).collect::<Vec<_>>(),
+                ["aws-secret"],
+                "{line}"
+            );
+        }
+    }
+
+    /// The lookahead still has a job: 40 characters must be the whole
+    /// value, not the first 40 of a longer one.
+    #[test]
+    fn a_longer_value_is_not_truncated_to_forty_characters() {
+        let long = "a".repeat(45);
+        assert!(detect_ok(&format!("aws_secret_access_key = \"{long}\"")).is_empty());
+    }
+
     #[test]
     fn sensitivity_filters_on_confidence() {
         // A cookie is a low-confidence detector.

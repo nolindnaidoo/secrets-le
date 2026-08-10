@@ -11,6 +11,19 @@ separate product on its own cadence and keeps its own
 
 ## [Unreleased]
 
+### Fixed
+
+- **The AWS secret-key detector could not match a quoted value.** Its
+  trailing lookahead excluded `'` and `"`, so a pattern that allowed an
+  opening quote then refused the closing one — and
+  `aws_secret_access_key = "<40 chars>"`, the form it takes in code,
+  never matched. Only the unquoted `.env` form was in the corpus, which
+  is why it went unnoticed. The lookahead still rejects a 41st
+  character, so 40 characters must be the whole value rather than the
+  start of a longer one.
+
+## [Unreleased]
+
 ### Added
 
 - A **Rust CLI and MCP server**, in [`crate/`](crate/README.md), published

@@ -13,7 +13,7 @@
 [[pattern]]
 type = "aws-secret"
 description = "AWS Secret Access Key"
-regex = "['\"]?\\b([A-Za-z0-9_-]*(?:aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9/+=]{40})(?!['\"A-Za-z0-9/+=])"
+regex = "['\"]?\\b([A-Za-z0-9_-]*(?:aws[_-]?(?:secret[_-]?)?(?:access[_-]?)?key|secretkey))\\b['\"]?\\s*[:=]\\s*['\"]?([A-Za-z0-9/+=]{40})(?![A-Za-z0-9/+=])"
 flags = "dgi"
 key_group = 1
 value_group = 2
