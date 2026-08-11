@@ -68,6 +68,24 @@ pub(crate) struct Pattern {
     pub(crate) kind: String,
     pub(crate) description: String,
     pub(crate) regex: Regex,
+    /// A cheap test for "this pattern definitely cannot match here".
+    ///
+    /// Thirteen of these patterns begin with `[A-Za-z0-9_-]*` before
+    /// their keyword, which leaves the backtracking engine nothing to
+    /// anchor on: it tries a variable-length run at every offset in the
+    /// file. Scanning a repository took fifty times as long as any
+    /// sibling tool for that reason alone.
+    ///
+    /// This is the same pattern with every lookaround removed, compiled
+    /// by the DFA engine. Removing a lookaround can only *relax* a
+    /// pattern — a positive one drops a requirement, a negative one
+    /// drops a prohibition — so whatever the real pattern matches, this
+    /// matches too. If this finds nothing, the real one cannot, and it
+    /// is skipped. It never changes an answer; it only avoids asking.
+    ///
+    /// `None` where the relaxed form would not compile, in which case
+    /// the real pattern simply runs.
+    pub(crate) prefilter: Option<regex::Regex>,
     pub(crate) key_group: Option<usize>,
     pub(crate) value_group: usize,
     rule: Rule,
@@ -110,19 +128,92 @@ pub(crate) static PATTERNS: LazyLock<Vec<Pattern>> = LazyLock::new(|| {
     table
         .pattern
         .into_iter()
-        .map(|entry| Pattern {
-            regex: fancy_regex::RegexBuilder::new(&to_rust_syntax(&entry.regex, &entry.flags))
-                .backtrack_limit(BACKTRACK_LIMIT)
-                .build()
-                .expect("a pattern from the shared table compiles"),
-            kind: entry.kind,
-            description: entry.description,
-            key_group: entry.key_group,
-            value_group: entry.value_group,
-            rule: entry.confidence,
+        .map(|entry| {
+            let translated = to_rust_syntax(&entry.regex, &entry.flags);
+            Pattern {
+                prefilter: relaxed(&translated),
+                regex: fancy_regex::RegexBuilder::new(&translated)
+                    .backtrack_limit(BACKTRACK_LIMIT)
+                    .build()
+                    .expect("a pattern from the shared table compiles"),
+                kind: entry.kind,
+                description: entry.description,
+                key_group: entry.key_group,
+                value_group: entry.value_group,
+                rule: entry.confidence,
+            }
         })
         .collect()
 });
+
+/// The same pattern with every lookaround group removed.
+///
+/// Sound as a prefilter because dropping a lookaround only ever widens
+/// what a pattern accepts: a positive one is a requirement removed, a
+/// negative one a prohibition removed. The result therefore matches a
+/// superset, so "the relaxed one found nothing" proves the real one
+/// would find nothing too.
+fn relaxed(source: &str) -> Option<regex::Regex> {
+    let bytes: Vec<char> = source.chars().collect();
+    let mut out = String::with_capacity(source.len());
+    let mut index = 0;
+
+    while index < bytes.len() {
+        // An escape carries its next character through untouched, so a
+        // literal `\(` is never mistaken for a group.
+        if bytes[index] == '\\' && index + 1 < bytes.len() {
+            out.push(bytes[index]);
+            out.push(bytes[index + 1]);
+            index += 2;
+            continue;
+        }
+        if bytes[index] == '(' && is_lookaround(&bytes, index) {
+            index = closing_paren(&bytes, index)? + 1;
+            continue;
+        }
+        out.push(bytes[index]);
+        index += 1;
+    }
+
+    regex::RegexBuilder::new(&out)
+        .size_limit(1 << 22)
+        .build()
+        .ok()
+}
+
+fn is_lookaround(chars: &[char], open: usize) -> bool {
+    let rest: String = chars[open..].iter().take(4).collect();
+    rest.starts_with("(?=")
+        || rest.starts_with("(?!")
+        || rest.starts_with("(?<=")
+        || rest.starts_with("(?<!")
+}
+
+/// The index of the `)` closing the group that opens at `open`, tracking
+/// nesting, escapes and character classes — inside a class a paren is a
+/// literal.
+fn closing_paren(chars: &[char], open: usize) -> Option<usize> {
+    let mut depth = 0;
+    let mut in_class = false;
+    let mut index = open;
+    while index < chars.len() {
+        match chars[index] {
+            '\\' => index += 1,
+            '[' if !in_class => in_class = true,
+            ']' if in_class => in_class = false,
+            '(' if !in_class => depth += 1,
+            ')' if !in_class => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(index);
+                }
+            }
+            _ => {}
+        }
+        index += 1;
+    }
+    None
+}
 
 /// JavaScript's `\b`: a boundary between an ASCII word character
 /// (`[A-Za-z0-9_]`) and anything else, including the ends of the input.
@@ -180,6 +271,78 @@ fn to_rust_syntax(source: &str, flags: &str) -> String {
         }
     }
     out
+}
+
+#[cfg(test)]
+mod prefilter_soundness {
+    use super::*;
+
+    /// The property the prefilter rests on: it matches a superset.
+    ///
+    /// If this ever fails, the prefilter is suppressing a real finding
+    /// — which in a secret scanner is the worst defect available, and
+    /// silent. Checked against the corpus rather than argued from the
+    /// code.
+    #[test]
+    fn the_relaxed_pattern_matches_whenever_the_real_one_does() {
+        let corpus: Vec<(&str, &str)> = crate::detect::corpus::documents().collect();
+        for pattern in PATTERNS.iter() {
+            let Some(prefilter) = &pattern.prefilter else {
+                continue;
+            };
+            for (name, content) in &corpus {
+                let real = pattern.regex.find(content).ok().flatten().is_some();
+                if real {
+                    assert!(
+                        prefilter.is_match(content),
+                        "the {} prefilter would have suppressed a real match in {name}",
+                        pattern.kind
+                    );
+                }
+            }
+        }
+    }
+
+    /// The same property over text built to trip it: a value that only
+    /// the strict pattern rejects must still reach the strict pattern.
+    #[test]
+    fn a_lookaround_only_rejection_still_reaches_the_real_pattern() {
+        for text in [
+            "aws_secret_access_key = \"AKIAIOSFODNN7EXAMPLEAKIAIOSFODNN7EXAMPLE\"",
+            "password: \"hunter2hunter2\"",
+            "api_key='abcdefghijklmnopqrstuvwxyz'",
+            "Authorization: bearer abcdefghijklmnopqrstuvwxyz",
+            "eyJhbGciOi.eyJzdWIiOi.SflKxwRJSM",
+            "postgres://user:pass@host/db",
+            "-----BEGIN RSA PRIVATE KEY-----\nabc\n-----END RSA PRIVATE KEY-----",
+        ] {
+            for pattern in PATTERNS.iter() {
+                let Some(prefilter) = &pattern.prefilter else {
+                    continue;
+                };
+                if pattern.regex.find(text).ok().flatten().is_some() {
+                    assert!(
+                        prefilter.is_match(text),
+                        "the {} prefilter would have suppressed {text:?}",
+                        pattern.kind
+                    );
+                }
+            }
+        }
+    }
+
+    /// Every pattern with a lookaround in it should have produced a
+    /// prefilter. If one silently did not, the speedup quietly is not
+    /// there and nobody would notice.
+    #[test]
+    fn every_pattern_has_a_prefilter() {
+        let without: Vec<&str> = PATTERNS
+            .iter()
+            .filter(|pattern| pattern.prefilter.is_none())
+            .map(|pattern| pattern.kind.as_str())
+            .collect();
+        assert!(without.is_empty(), "no prefilter for: {without:?}");
+    }
 }
 
 #[cfg(test)]

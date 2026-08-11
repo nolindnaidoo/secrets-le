@@ -51,6 +51,21 @@ credentials, and from the extension's side by the parity script.
 
 ### Fixed
 
+- **Scanning a repository was fifty times slower than it needed to be.**
+  Thirteen of the nineteen patterns begin with `[A-Za-z0-9_-]*` before
+  their keyword, which leaves a backtracking engine nothing to anchor
+  on: it tries a variable-length run at every offset in every file.
+
+  Each pattern now carries a prefilter — the same pattern with every
+  lookaround removed, compiled by the DFA engine — and the real pattern
+  runs only where that matches. Removing a lookaround can only widen
+  what a pattern accepts, so the prefilter matches a superset and can
+  never suppress a real finding; tests assert that property over the
+  whole corpus rather than arguing it from the code, and the output is
+  byte-identical on every repository it was checked against.
+
+  A 456-file tree went from 8.55s to under a tenth of a second.
+
 - **A leading byte-order mark is no longer part of the document.** Three
   invisible bytes, added by Notepad, Excel and a PowerShell redirect, and
   stripped by VS Code before the extension ever sees a file — so the two

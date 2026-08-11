@@ -161,6 +161,16 @@ fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, S
             continue;
         }
 
+        // Ask the cheap question first. This never changes an answer —
+        // the relaxed pattern matches a superset — it only avoids
+        // running a backtracking scan over a file that cannot contain
+        // what it is looking for, which is nearly every file.
+        if let Some(prefilter) = &pattern.prefilter
+            && !prefilter.is_match(content)
+        {
+            continue;
+        }
+
         for captures in pattern.regex.captures_iter(content) {
             let captures = captures
                 .map_err(|error| format!("the {} pattern gave up: {error}", pattern.kind))?;
