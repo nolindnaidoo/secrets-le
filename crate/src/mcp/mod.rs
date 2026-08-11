@@ -192,7 +192,7 @@ fn scan_tool(arguments: &Value) -> Result<Value, String> {
     let reports: Vec<Value> = walked
         .files
         .iter()
-        .filter_map(|file| scan::scan_file(file, options))
+        .map(|file| scan::scan_file(file, options))
         .map(|report| serde_json::to_value(&report).expect("a report serializes"))
         .collect();
 

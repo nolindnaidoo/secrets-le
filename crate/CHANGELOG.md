@@ -48,3 +48,29 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 credentials, and from the extension's side by the parity script.
 
 [0.1.0]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.0
+
+### Fixed
+
+- **A leading byte-order mark is no longer part of the document.** Three
+  invisible bytes, added by Notepad, Excel and a PowerShell redirect, and
+  stripped by VS Code before the extension ever sees a file — so the two
+  frontends read the same file differently. It shifted every column on
+  line one, and before a `{` it made a structured parser reject the whole
+  document, which is indistinguishable from a file with no findings in it.
+
+- **A file that cannot be read no longer fails the run.** Every
+  repository has a PNG, a zip and something the runner lacks permission
+  for. Exiting 2 on those made the tool unusable in CI, which is the one
+  place it is most worth running. Such a file is now named on stderr and
+  carried in the report with a `skipped` diagnostic, and the exit code
+  reflects what was found. `--strict` restores the old behaviour for a
+  pipeline that wants zero tolerance.
+
+  A detector that gives up part way through a file still fails without
+  asking: reporting no findings for a file the scanner did not finish is
+  the one failure mode a secret scanner cannot have, and it is now a
+  different thing from a PNG rather than the same one.
+
+- **A file that is not text is named rather than dropped.** It used to
+  vanish from the report entirely, which reads to whoever ran it as
+  "that file was clean".

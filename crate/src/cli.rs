@@ -27,6 +27,8 @@ Options:
   --no-passwords          skip the password detectors
   --no-tokens             skip the token detectors
   --no-private-keys       skip the private-key detectors
+  --strict             exit 2 if any file could not be read, rather than
+                       reporting it and carrying on
   --stdin                 read one document from stdin
   --hidden                scan hidden files and directories too
   --no-ignore             scan files that .gitignore excludes
@@ -34,13 +36,19 @@ Options:
 No preview is ever the whole value, and there is no flag that changes
 that: a flag which turned it off would end up in someone's CI config.
 
+Files that are not text, or that cannot be opened, are named on stderr
+and carried in the report, and do not by themselves fail the run — every
+repository has a PNG in it. --strict turns them back into a failure, and
+a detector that gives up part way always does.
+
 Exit codes: 0 nothing found · 1 findings · 2 malformed question.
 For a run over many files, the exit code is the worst outcome in it.";
 
 /// Every flag the parser accepts. Held equal to the flags named in USAGE
 /// by a test, and consulted at runtime so the list is what the parser
 /// actually honours.
-const FLAGS: [&str; 8] = [
+const FLAGS: [&str; 9] = [
+    "--strict",
     "--sensitivity",
     "--no-api-keys",
     "--no-passwords",
@@ -53,6 +61,8 @@ const FLAGS: [&str; 8] = [
 
 #[derive(Debug)]
 struct Parsed {
+    /// Fail the run if any file could not be read.
+    strict: bool,
     inputs: Vec<PathBuf>,
     stdin: bool,
     options: Options,
@@ -109,7 +119,7 @@ fn execute(args: &[String]) -> Result<u8, String> {
         let reports: Vec<FileReport> = walked
             .files
             .iter()
-            .filter_map(|file| scan::scan_file(file, parsed.options))
+            .map(|file| scan::scan_file(file, parsed.options))
             .collect();
         (reports, walked, total)
     };
@@ -123,13 +133,14 @@ fn execute(args: &[String]) -> Result<u8, String> {
     drop(stdout);
 
     summarise(&reports, &walked, scanned);
-    Ok(scan::exit_code(&reports))
+    Ok(scan::exit_code(&reports, parsed.strict))
 }
 
 fn parse(args: &[String]) -> Result<Parsed, String> {
     let mut parsed = Parsed {
         inputs: Vec::new(),
         stdin: false,
+        strict: false,
         options: Options::default(),
         walk: WalkOptions::default(),
     };
@@ -146,6 +157,7 @@ fn parse(args: &[String]) -> Result<Parsed, String> {
 
         match arg.as_str() {
             "--stdin" => parsed.stdin = true,
+            "--strict" => parsed.strict = true,
             "--hidden" => parsed.walk.hidden = true,
             "--no-ignore" => parsed.walk.respect_ignore = false,
             "--no-api-keys" => parsed.options.api_keys = false,
