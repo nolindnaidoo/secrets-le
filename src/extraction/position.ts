@@ -53,3 +53,18 @@ export function lineTextAt(content: string, offset: number): string {
 	if (lineEnd === -1) lineEnd = content.length;
 	return content.slice(lineStart, lineEnd);
 }
+
+/**
+ * The same line, paired with where `offset` sits inside it.
+ *
+ * The context window is cut around the value, so it needs the position within
+ * the line rather than within the document.
+ */
+export function lineAndOffset(
+	content: string,
+	offset: number,
+): readonly [string, number] {
+	const clamped = Math.max(0, Math.min(offset, content.length));
+	const lineStart = content.lastIndexOf('\n', clamped - 1) + 1;
+	return [lineTextAt(content, offset), clamped - lineStart];
+}

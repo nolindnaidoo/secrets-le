@@ -331,6 +331,106 @@ mod prefilter_soundness {
         }
     }
 
+    /// The same property over **generated** documents rather than the
+    /// ones somebody thought of.
+    ///
+    /// The corpus proves the prefilter is sound for the cases it holds.
+    /// This builds tens of thousands more by crossing every key name the
+    /// table looks for with every way a value gets written — quoted,
+    /// spaced, commented, in an attribute, mid-line — and asserts the
+    /// same thing over all of them.
+    ///
+    /// **This is a correctness claim, not a performance one.** If the
+    /// relaxed pattern ever fails to match where the real one would, the
+    /// real one is never asked, and a credential goes unreported on both
+    /// surfaces with the scan still exiting clean. That is the worst
+    /// defect this codebase can have, and it is silent.
+    ///
+    /// The cross-product is deterministic and fully enumerated — no
+    /// clock, no randomness, reproducible by construction — which is what
+    /// `AGENTS.md` requires of anything under `detect/`.
+    #[test]
+    fn no_generated_document_is_suppressed_by_its_prefilter() {
+        const KEYS: [&str; 18] = [
+            "password",
+            "DATABASE_PASSWORD",
+            "passwd",
+            "pwd",
+            "api_key",
+            "apiKey",
+            "aws_secret_access_key",
+            "secretkey",
+            "access_token",
+            "refresh_token",
+            "oauth2_token",
+            "jwt",
+            "json_web_token",
+            "token",
+            "session_id",
+            "cookie",
+            "connection_string",
+            "accountkey",
+        ];
+        const VALUES: [&str; 8] = [
+            "hunter2hunter2",
+            "aB3xY7zQ9mK2pL5vN8wR4tS6",
+            "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+            "AKIAIOSFODNN7EXAMPLE",
+            "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N",
+            "postgres://user:pass@db.example.invalid/app",
+            "Server=prod;Database=app;Uid=admin;Pwd=secret123;",
+        ];
+        // `{key}` and `{value}` stand in for the pair.
+        const WRAPPERS: [&str; 12] = [
+            "{key}={value}",
+            "{key} = {value}",
+            "{key} = \"{value}\"",
+            "{key} = '{value}'",
+            "  \"{key}\": \"{value}\",",
+            "{key}: {value}",
+            "// {key}={value}",
+            "# {key}={value}",
+            "<config {key}=\"{value}\" />",
+            "const c = {{ {key}: '{value}' }};",
+            "Authorization: Bearer {value} # {key}",
+            "\u{fc}nicode \u{1f3af} {key}={value}\u{feff}",
+        ];
+
+        let mut checked = 0_usize;
+        for key in KEYS {
+            for value in VALUES {
+                for wrapper in WRAPPERS {
+                    let document = wrapper
+                        .replace("{key}", key)
+                        .replace("{value}", value)
+                        .replace("{{", "{")
+                        .replace("}}", "}");
+                    for pattern in PATTERNS.iter() {
+                        let Some(prefilter) = &pattern.prefilter else {
+                            continue;
+                        };
+                        checked += 1;
+                        if pattern.regex.find(&document).ok().flatten().is_none() {
+                            continue;
+                        }
+                        assert!(
+                            prefilter.is_match(&document),
+                            "the {} prefilter would have suppressed a real match, so this \
+                             credential would go unreported and the scan would still exit \
+                             clean:\n  {document:?}",
+                            pattern.kind
+                        );
+                    }
+                }
+            }
+        }
+        assert!(
+            checked > 20_000,
+            "only {checked} pattern/document pairs ran"
+        );
+    }
+
     /// Every pattern with a lookaround in it should have produced a
     /// prefilter. If one silently did not, the speedup quietly is not
     /// there and nobody would notice.

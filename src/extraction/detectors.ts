@@ -17,12 +17,13 @@
  */
 
 import type { ConfidenceLevel, DetectedSecret, SecretType } from '../types';
+import { maskAll, maskContext, maskingOrder } from '../utils/mask';
 import {
 	confidenceByLength,
 	isJwtShaped,
 	looksLikePlaceholder,
 } from './heuristics';
-import { createPositionIndex, lineTextAt } from './position';
+import { createPositionIndex, lineAndOffset } from './position';
 
 interface SecretPattern {
 	readonly type: SecretType;
@@ -322,30 +323,54 @@ export function detectSecrets(
 			if (seen.has(dedupeKey)) continue;
 			seen.add(dedupeKey);
 
+			// Kept verbatim for now: the key is a slice of the document and can
+			// carry a credential of its own, so it is masked in the same pass as
+			// the context, once every value in the document is known.
 			const keyName =
-				pattern.keyGroup !== undefined
-					? match[pattern.keyGroup]?.toLowerCase()
-					: undefined;
+				pattern.keyGroup !== undefined ? match[pattern.keyGroup] : undefined;
 
-			secrets.push(
-				Object.freeze({
-					value,
-					type,
-					confidence,
-					start,
-					end,
-					position: positionAt(start),
-					context: lineTextAt(content, start).trim(),
-					key: keyName,
-					description: pattern.description,
-				}),
-			);
+			secrets.push({
+				value,
+				type,
+				confidence,
+				start,
+				end,
+				position: positionAt(start),
+				// Filled in below, once every value in the document is known: a
+				// context line holds whatever else sits beside the finding, and
+				// masking only the finding's own value left those in the clear.
+				context: undefined,
+				key: keyName,
+				description: pattern.description,
+			});
 		}
 	}
 
 	// Report in document order regardless of which pattern found what.
 	secrets.sort((a, b) => a.start - b.start);
-	return Object.freeze(secrets);
+
+	const order = maskingOrder(secrets.map((secret) => secret.value));
+	return Object.freeze(
+		secrets.map((secret) => {
+			const [line, offset] = lineAndOffset(content, secret.start);
+			return Object.freeze({
+				...secret,
+				// Masked before it is lowercased: the key is source text, so an
+				// embedded value appears in it with the case it was written in.
+				key:
+					secret.key === undefined
+						? undefined
+						: maskAll(secret.key, order).toLowerCase(),
+				context: maskContext(
+					line,
+					offset,
+					secret.value.length,
+					secret.value,
+					order,
+				),
+			});
+		}),
+	);
 
 	function included(type: SecretType): boolean {
 		if (API_KEY_TYPES.has(type)) return includeApiKeys;

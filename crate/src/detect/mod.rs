@@ -202,10 +202,13 @@ fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, S
             }
             seen.push(dedupe_key);
 
+            // Kept verbatim for now: the key is a slice of the document
+            // and can carry a credential of its own, so it is masked in
+            // the same pass as the context, once every value is known.
             let key = pattern
                 .key_group
                 .and_then(|group| captures.get(group))
-                .map(|found| found.as_str().to_lowercase());
+                .map(|found| found.as_str().to_string());
 
             findings.push((
                 start,
@@ -214,10 +217,11 @@ fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, S
                     confidence,
                     key,
                     preview: mask::mask_secret_value(value),
-                    context: Some(mask::mask_within(
-                        position::line_text_at(content, start).trim(),
-                        value,
-                    )),
+                    // Filled in below, once every value in the document
+                    // is known: a context line holds whatever else sits
+                    // beside the finding, and masking only this
+                    // finding's own value left those in the clear.
+                    context: None,
                     position: index.at(start),
                     description: pattern.description.clone(),
                 },
@@ -230,6 +234,24 @@ fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, S
     // `sort_by_key` is stable, as JavaScript's sort has been since
     // ES2019, so two findings at one offset keep table order.
     findings.sort_by_key(|(start, _, _)| *start);
+
+    let order = mask::masking_order(
+        &findings
+            .iter()
+            .map(|(_, _, value)| value.clone())
+            .collect::<Vec<_>>(),
+    );
+    for (start, finding, value) in &mut findings {
+        let (line, offset) = position::line_and_offset(content, *start);
+        finding.context = Some(mask::mask_context(line, offset, value.len(), value, &order));
+        // Masked before it is lowercased: the key is source text, so an
+        // embedded value appears in it with the case it was written in.
+        finding.key = finding
+            .key
+            .as_ref()
+            .map(|key| mask::mask_all(key, &order).to_lowercase());
+    }
+
     Ok(findings
         .into_iter()
         .map(|(_, finding, value)| (finding, value))

@@ -4,7 +4,7 @@
 //! written once. A surface that grows its own copy of one is a bug, and
 //! `tests/contracts.rs` asserts the two agree on the same tree.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::Serialize;
 
@@ -88,7 +88,7 @@ fn report(file: String, findings: Vec<Finding>, diagnostics: Vec<Diagnostic>) ->
 /// unusable. It is not text, so there is no hardcoded credential in it
 /// to find. The walker's skip count is what keeps that visible.
 pub(crate) fn scan_file(path: &PathBuf, options: Options) -> FileReport {
-    let file = path.to_string_lossy().into_owned();
+    let file = reported_path(path);
     let skipped = |file: String, reason: &str| {
         report(
             file,
@@ -102,7 +102,7 @@ pub(crate) fn scan_file(path: &PathBuf, options: Options) -> FileReport {
     };
     match std::fs::read(path) {
         Ok(bytes) => match String::from_utf8(bytes) {
-            Ok(content) => scan_content(without_bom(&content), file, options),
+            Ok(content) => scan_content(&content, file, options),
             // Named rather than dropped. A file that vanishes from a
             // secret scanner's report is a file the reader believes was
             // clean.
@@ -114,7 +114,14 @@ pub(crate) fn scan_file(path: &PathBuf, options: Options) -> FileReport {
 
 /// The same scan over content already in hand, so the whole path below
 /// the file read is testable without one.
+///
+/// The byte-order mark is dropped **here** rather than in `scan_file`,
+/// because `--stdin` is the same document arriving by a different route:
+/// `secrets-le config.env` and `secrets-le --stdin < config.env` were
+/// answering with different columns for the same file, which makes the
+/// exit code trustworthy and the position not.
 pub(crate) fn scan_content(content: &str, file: String, options: Options) -> FileReport {
+    let content = without_bom(content);
     match detect::detect(content, options) {
         Ok(findings) => report(file, findings, Vec::new()),
         // A refusal, not a clean result: reporting no findings when a
@@ -310,6 +317,44 @@ mod tests {
     }
 }
 
+/// A path as every surface spells it: `/` on every platform.
+///
+/// stdout is protocol, and a secret scanner's output is the thing a
+/// reviewer files, diffs and baselines. `config\app.env` on Windows and
+/// `config/app.env` everywhere else are two answers to one question, and
+/// a baseline taken on one platform is useless on the other. A sibling
+/// in this family shipped `\` for a whole release before anyone noticed.
+///
+/// Rewritten **only where `\` is the separator**. On Unix a backslash is
+/// an ordinary character in a filename, and rewriting it there would
+/// name a file that was never scanned.
+pub(crate) fn reported_path(path: &Path) -> String {
+    let rendered = path.to_string_lossy();
+    if cfg!(windows) {
+        return forward_slashes(&rendered);
+    }
+    rendered.into_owned()
+}
+
+/// The Windows half of `reported_path`, written as a pure string
+/// function so that **every** platform compiles and tests it. A branch
+/// only Windows can execute is a branch only Windows CI can catch, and
+/// this one was wrong in six crates at once.
+fn forward_slashes(rendered: &str) -> String {
+    // `canonicalize` hands back an extended-length path, so the reports
+    // for a scan of an absolute path would otherwise all begin `//?/`.
+    // `\\?\UNC\server\share` is `\\server\share` written the long way,
+    // so dropping the whole prefix there would lose the host.
+    let bare = match rendered.strip_prefix(r"\\?\UNC\") {
+        Some(tail) => format!(r"\\{tail}"),
+        None => rendered
+            .strip_prefix(r"\\?\")
+            .unwrap_or(rendered)
+            .to_string(),
+    };
+    bare.replace('\\', "/")
+}
+
 /// Drop a leading byte-order mark.
 ///
 /// No editor shows it and VS Code strips it before the extension ever
@@ -325,11 +370,88 @@ pub(crate) fn without_bom(content: &str) -> &str {
 #[cfg(test)]
 mod hazards {
     use super::*;
+    use crate::testing::TempTree;
 
     #[test]
     fn a_byte_order_mark_is_not_part_of_the_document() {
         assert_eq!(without_bom("\u{feff}abc"), "abc");
         assert_eq!(without_bom("abc"), "abc");
         assert_eq!(without_bom("a\u{feff}b"), "a\u{feff}b");
+    }
+
+    /// The regression: the mark was dropped when the document arrived as
+    /// a path and kept when the same document arrived as text, so
+    /// `secrets-le config.env` and `secrets-le --stdin < config.env`
+    /// answered with different columns and different context lines.
+    #[test]
+    fn a_document_reads_the_same_by_path_and_by_text() {
+        let tree = TempTree::new("scan-bom-routes");
+        let line = "DATABASE_PASSWORD=hunter2hunter2\n";
+        let file = tree.write("app.env", &format!("\u{feff}{line}"));
+
+        let by_path = scan_file(&file, Options::default());
+        let by_text = scan_content(
+            &format!("\u{feff}{line}"),
+            "app.env".to_string(),
+            Options::default(),
+        );
+        assert_eq!(by_path.findings, by_text.findings);
+
+        let without = scan_content(line, "app.env".to_string(), Options::default());
+        assert_eq!(
+            by_text.findings[0].position, without.findings[0].position,
+            "three invisible bytes moved the column"
+        );
+        assert_eq!(by_text.findings[0].context, without.findings[0].context);
+    }
+
+    /// A report is protocol, and a pipeline written against one platform
+    /// has to read the report from another.
+    #[test]
+    fn a_report_path_uses_forward_slashes() {
+        let tree = TempTree::new("scan-sep");
+        let file = tree.write("config/nested/app.env", "x=1\n");
+        let report = scan_file(&file, Options::default());
+        assert!(!report.file.contains('\\'), "{}", report.file);
+        assert!(
+            report.file.ends_with("config/nested/app.env"),
+            "{}",
+            report.file
+        );
+    }
+
+    /// The Windows branch, exercised on every platform. Without this the
+    /// only machine that ever runs these lines is the one nobody
+    /// develops on.
+    #[test]
+    fn the_windows_spelling_becomes_the_reported_one() {
+        assert_eq!(
+            forward_slashes(r"config\nested\app.env"),
+            "config/nested/app.env"
+        );
+        assert_eq!(forward_slashes(r"\\?\C:\src\app.env"), "C:/src/app.env");
+        assert_eq!(
+            forward_slashes(r"\\?\UNC\server\share\app.env"),
+            "//server/share/app.env"
+        );
+        assert_eq!(
+            forward_slashes("already/forward.env"),
+            "already/forward.env"
+        );
+    }
+
+    /// The guard on the fix: a backslash is a legal character in a Unix
+    /// filename, so rewriting one there would name a file that was never
+    /// scanned. Unix-only because Windows cannot create the file.
+    #[cfg(unix)]
+    #[test]
+    fn a_backslash_in_a_unix_filename_survives_the_report() {
+        let tree = TempTree::new("scan-backslash");
+        let file = tree.write("od\\d.env", "x=1\n");
+        assert!(
+            scan_file(&file, Options::default())
+                .file
+                .contains("od\\d.env")
+        );
     }
 }

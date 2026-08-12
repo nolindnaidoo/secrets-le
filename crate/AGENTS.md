@@ -187,13 +187,22 @@ The bar, enforced by review:
   pure; if something is hard to test there, the design is wrong. Per
   module rather than the crate total, because a total lets one module
   slide while the others carry it.
-- **The never-leak property is tested four ways**, and a change that
+- **The never-leak property is tested six ways**, and a change that
   weakens any of them is the change to refuse: exhaustively over value
   lengths 3–300 in `detect/mask.rs`, over every corpus document in
   `detect/corpus.rs`, against a real binary run with planted credentials
-  in `tests/contracts.rs`, and from the extension's side in the parity
-  script. `detect_values` exists only under `#[cfg(test)]` so the
-  property can be checked at all.
+  in `tests/contracts.rs`, from the extension's side in the parity
+  script, over generated documents through both MCP servers in
+  `../scripts/check-detection-differential.ts`, and over mutated
+  documents in `tests/fuzz.rs`. `detect_values` exists only under
+  `#[cfg(test)]` so the property can be checked at all.
+
+  **The property is about every value in the document, not the
+  finding's own.** Masking a finding's own value and nothing else left
+  the credential beside it in the clear — which is what a compact JSON
+  config looks like — and left the key name, which is source text with
+  `[A-Za-z0-9_-]*` in front of it, untouched. Both shipped in the
+  corpus.
 - **The parity corpus is embedded.** Every `fixtures/` case runs as a
   unit test; the expected values are the extension's answers.
 - **Exit codes belong in `tests/contracts.rs`.** They are the API —
@@ -228,10 +237,35 @@ CI additionally builds on macOS, Windows and Linux, checks the Rust 1.88
 minimum version, runs `cargo audit`, the no-inline-`#[allow]` and
 no-filesystem-in-`detect/` policy jobs, the per-module coverage floor,
 the gated scenarios, and parity — including on extension-side edits to
-`src/detection/**`, so neither frontend can drift green. A change is
-not done because it compiles; it is done when it is tested, linted,
-documented where behavior changed (README / CHANGELOG / SPEC / this
-file), and honest — claims in docs must match the code.
+`src/detection/**`, so neither frontend can drift green.
+
+Six further jobs exist because something real got through. Each is named
+after the class of bug it catches, and each has caught one:
+
+| job | what it holds |
+|---|---|
+| `hazards` | a byte-order mark, a lone CR, a NUL, a file that is not text, a symlink loop, a FIFO, a name Windows cannot hold. Three platforms, against the built binary, over a tree built at runtime. No panic, no hang, exit 0/1/2 — never a signal. |
+| `platform` | report paths use `/` everywhere; the suite does not read `TZ`; case-folding filesystems do not double-report; reserved Windows names do not end the walk; a child that refuses stdin still answers with its exit code. |
+| `differential` | both `detect_secrets` servers, byte-identical over generated documents, and the prefilter soundness claim over a generated cross-product. |
+| `fuzz` | sixty seconds over the detector table. No panic, no hang, no refusal under 64 KB, no reported value in the output, no context past its bound, and every preview cut from the offsets its finding reports. |
+| `budget` | a wall-clock ceiling at ten times the local measurement, and linearity: four times the input inside six times the time. |
+| `coverage-matrix` | one file per extension across a broad sample plus a dozen nothing knows — this crate's claim is that it reads everything. |
+
+Run them locally the way CI does:
+
+```bash
+cargo test --locked --test hazards
+cargo test --locked --test platform
+cargo test --locked --test coverage_matrix
+cargo test --locked --bin secrets-le prefilter_soundness
+SECRETS_LE_FUZZ_SECONDS=60 cargo test --release --locked --test fuzz
+SECRETS_LE_BUDGET=1 cargo test --release --locked --test budget -- --test-threads=1
+bun ../scripts/check-detection-differential.ts   # needs a --release build
+```
+
+A change is not done because it compiles; it is done when it is tested,
+linted, documented where behavior changed (README / CHANGELOG / SPEC /
+this file), and honest — claims in docs must match the code.
 
 ## Commits and pull requests
 

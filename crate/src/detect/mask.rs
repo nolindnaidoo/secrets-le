@@ -13,6 +13,8 @@
 //!
 //! There is no option, flag or code path that turns this off.
 
+use super::heuristics::{js_trim_end, js_trim_start};
+
 const MAX_PREVIEW: usize = 8;
 
 /// A preview that can never be the whole value.
@@ -49,6 +51,149 @@ pub(crate) fn mask_within(context: &str, value: &str) -> String {
         return context.to_string();
     }
     context.replace(value, &mask_secret_value(value))
+}
+
+/// How much of the source line either side of the value the context
+/// keeps, counted in UTF-16 code units so both frontends cut in the same
+/// place.
+///
+/// A context line used to be the *whole* source line. On an ordinary
+/// file that is a sentence; on a minified one it is the entire file, and
+/// a file with a thousand findings on its single line produced a
+/// hundred megabytes of report — the same line, a thousand times. The
+/// cost of a scan stopped being proportional to what was in it.
+const CONTEXT_MARGIN: usize = 60;
+
+/// The context line for one finding: a bounded window of its source
+/// line, with **every** detected value in it masked.
+///
+/// The second half is the part that matters. Masking only the finding's
+/// own value left every *other* credential on that line in the clear:
+///
+/// ```text
+/// DB_PASSWORD=hunter2… (14 chars) API_KEY=abcdefghijklmnopqrstuvwx
+/// ```
+///
+/// which is a complete API key, printed by a tool whose one promise is
+/// that it never prints one — into a CI log, which is archived and
+/// outlives the credential. A line holding two credentials is not
+/// exotic: it is what a compact JSON config looks like.
+///
+/// `values` is every distinct value the document yielded. Longest first,
+/// so a value containing a shorter one is replaced whole rather than
+/// broken into pieces by its own substring.
+pub(crate) fn mask_context(
+    line: &str,
+    value_start: usize,
+    value_length: usize,
+    value: &str,
+    values: &[String],
+) -> String {
+    // Assembled from three parts rather than cut out and searched.
+    //
+    // Searching only works when the value is present in the window whole.
+    // A PEM block is not: it runs past the end of its own line, so the
+    // line holds a *prefix* of it, which no replacement matches — and the
+    // context came out carrying seventeen hundred characters of key
+    // material in the clear. Building the middle from the preview means
+    // the value's own text has nowhere to appear from.
+    let value_end = value_start.saturating_add(value_length).min(line.len());
+    let before_start = back_from(line, value_start, CONTEXT_MARGIN);
+    let after_end = forward_from(line, value_end, CONTEXT_MARGIN);
+
+    let before = mask_all(js_trim_start(&line[before_start..value_start]), values);
+    let after = mask_all(js_trim_end(&line[value_end..after_end]), values);
+
+    let mut context = String::new();
+    if before_start > 0 {
+        context.push('…');
+    }
+    context.push_str(&before);
+    context.push_str(&mask_secret_value(value));
+    context.push_str(&after);
+    if after_end < line.len() {
+        context.push('…');
+    }
+    context
+}
+
+/// Every value in `values`, replaced wherever it appears in `text`.
+///
+/// Used for the context window and for the **key name**, which is a
+/// verbatim slice of the document and not the tidy identifier it looks
+/// like. Every key pattern in the table begins `[A-Za-z0-9_-]*`, so the
+/// key group swallows whatever word characters run up to the keyword —
+/// and a token abutting the name ends up reported as part of it:
+///
+/// ```text
+/// "key": "ghp_1234567890abcdefghijklmnopqrstuvwxyz----session_id"
+/// ```
+///
+/// A complete credential, in a field nothing was masking.
+pub(crate) fn mask_all(text: &str, values: &[String]) -> String {
+    let mut masked = text.to_string();
+    for value in values {
+        // Asked before replacing rather than after. `replace` allocates a
+        // new string whether or not it changed anything, and a document
+        // with a thousand distinct values would pay that a thousand times
+        // per finding — the scan's cost stops being proportional to the
+        // document and starts being proportional to its square. Skipping
+        // a replacement that would have changed nothing cannot change the
+        // answer.
+        if !masked.contains(value.as_str()) {
+            continue;
+        }
+        masked = mask_within(&masked, value);
+    }
+    masked
+}
+
+/// Every distinct value, longest first — the order `mask_context`
+/// depends on, prepared once for a whole document rather than per
+/// finding.
+pub(crate) fn masking_order(values: &[String]) -> Vec<String> {
+    let mut ordered: Vec<String> = values.to_vec();
+    // Length descending, then by content, so the order is total and the
+    // output cannot depend on the order values happened to be found in.
+    ordered.sort_by(|a, b| {
+        b.encode_utf16()
+            .count()
+            .cmp(&a.encode_utf16().count())
+            .then_with(|| a.cmp(b))
+    });
+    ordered.dedup();
+    ordered
+}
+
+/// The byte offset `units` UTF-16 code units before `from`, floored to a
+/// character boundary.
+fn back_from(line: &str, from: usize, units: usize) -> usize {
+    let mut seen = 0;
+    for (offset, character) in line[..from].char_indices().rev() {
+        seen += character.len_utf16();
+        if seen > units {
+            return offset + character.len_utf8();
+        }
+    }
+    0
+}
+
+/// The byte offset `units` code units past `from`, or the end of the
+/// line, whichever comes first.
+///
+/// A character that would take the window past `units` is left out
+/// rather than included whole: an astral character is two code units,
+/// and the two frontends have to cut in the same place or the same
+/// document reads differently on each.
+fn forward_from(line: &str, from: usize, units: usize) -> usize {
+    let mut seen = 0;
+    for (offset, character) in line[from..].char_indices() {
+        if seen + character.len_utf16() > units {
+            return from + offset;
+        }
+        seen += character.len_utf16();
+    }
+    line.len()
 }
 
 /// The first `units` UTF-16 code units of `value`, never splitting a
@@ -166,6 +311,87 @@ mod tests {
         let preview = mask_secret_value(value);
         assert_eq!(preview, "ééééééé… (15 chars)");
         assert!(!preview.contains(value));
+    }
+
+    /// **The leak this window and this ordering exist for.** Masking a
+    /// finding's own value left every *other* credential on the line in
+    /// the clear, and a line holding two credentials is what a compact
+    /// JSON config looks like.
+    #[test]
+    fn a_context_masks_every_value_on_the_line_not_only_its_own() {
+        let line = "DB_PASSWORD=hunter2hunter2 API_KEY=abcdefghijklmnopqrstuvwx";
+        let values = masking_order(&[
+            "hunter2hunter2".to_string(),
+            "abcdefghijklmnopqrstuvwx".to_string(),
+        ]);
+        let context = mask_context(line, 12, 14, "hunter2hunter2", &values);
+        assert!(!context.contains("hunter2hunter2"), "{context}");
+        assert!(
+            !context.contains("abcdefghijklmnopqrstuvwx"),
+            "the neighbouring key survived: {context}"
+        );
+    }
+
+    /// A line short enough to fit reads exactly as it did before the
+    /// window existed: no ellipsis, same trim.
+    #[test]
+    fn a_short_line_is_not_windowed_at_all() {
+        let line = "  DATABASE_PASSWORD=hunter2hunter2  ";
+        let values = masking_order(&["hunter2hunter2".to_string()]);
+        assert_eq!(
+            mask_context(line, 20, 14, "hunter2hunter2", &values),
+            "DATABASE_PASSWORD=hunter2… (14 chars)"
+        );
+    }
+
+    /// The quadratic: a minified line is the whole file, and one context
+    /// line per finding made the report grow with findings *times* line
+    /// length. Ninety-eight megabytes of stdout for one file.
+    #[test]
+    fn a_long_line_is_cut_down_to_a_window_around_the_value() {
+        let filler = "z".repeat(5_000);
+        let line = format!("{filler} DATABASE_PASSWORD=hunter2hunter2 {filler}");
+        let values = masking_order(&["hunter2hunter2".to_string()]);
+        let context = mask_context(&line, 5_019, 14, "hunter2hunter2", &values);
+        assert!(context.len() < 200, "{} bytes", context.len());
+        assert!(context.starts_with('…'), "{context}");
+        assert!(context.ends_with('…'), "{context}");
+        assert!(context.contains("DATABASE_PASSWORD="), "{context}");
+        assert!(!context.contains("hunter2hunter2"), "{context}");
+    }
+
+    /// A value longer than the window is still inside it, whole — a cut
+    /// through a value leaves a fragment no mask matches, which is a
+    /// partial disclosure dressed up as a redaction.
+    #[test]
+    fn a_value_longer_than_the_window_is_still_masked_entirely() {
+        let value = "aB3xY7zQ9mK2pL5vN8wR4tS6".repeat(20);
+        let line = format!("token = {value} trailing");
+        let values = masking_order(std::slice::from_ref(&value));
+        let context = mask_context(&line, 8, value.len(), &value, &values);
+        assert!(!context.contains(&value), "{context}");
+        assert!(context.contains("trailing"), "{context}");
+    }
+
+    /// Longest first, so a value that contains a shorter one is replaced
+    /// whole instead of being broken into pieces by its own substring.
+    #[test]
+    fn the_masking_order_puts_the_longest_value_first() {
+        let order = masking_order(&[
+            "hunter2hunter2".to_string(),
+            "hunter2hunter2hunter2".to_string(),
+            "hunter2hunter2".to_string(),
+        ]);
+        assert_eq!(
+            order,
+            [
+                "hunter2hunter2hunter2".to_string(),
+                "hunter2hunter2".to_string()
+            ]
+        );
+        let line = "a=hunter2hunter2hunter2 b=hunter2hunter2";
+        let context = mask_context(line, 2, 21, "hunter2hunter2hunter2", &order);
+        assert!(!context.contains("hunter2hunter2"), "{context}");
     }
 
     #[test]

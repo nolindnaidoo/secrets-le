@@ -61,7 +61,7 @@
 					"confidence": "high",
 					"key": null,
 					"preview": "-----BEG… (321 chars)",
-					"context": "-----BEGIN RSA PRIVATE KEY-----",
+					"context": "-----BEG… (321 chars)",
 					"line": 1,
 					"column": 1,
 					"description": "Private key block (PEM)"
@@ -78,7 +78,7 @@
 					"confidence": "high",
 					"key": null,
 					"preview": "-----BEG… (321 chars)",
-					"context": "-----BEGIN RSA PRIVATE KEY-----",
+					"context": "-----BEG… (321 chars)",
 					"line": 1,
 					"column": 1,
 					"description": "Private key block (PEM)"
@@ -95,7 +95,7 @@
 					"confidence": "high",
 					"key": null,
 					"preview": "-----BEG… (321 chars)",
-					"context": "-----BEGIN RSA PRIVATE KEY-----",
+					"context": "-----BEG… (321 chars)",
 					"line": 1,
 					"column": 1,
 					"description": "Private key block (PEM)"

@@ -21,6 +21,50 @@ use super::patterns::Confidence;
 pub(crate) const JS_SPACE_CLASS: &str =
     r"\t\n\x0B\f\r \u{a0}\u{1680}\u{2000}-\u{200a}\u{2028}\u{2029}\u{202f}\u{205f}\u{3000}\u{feff}";
 
+/// True for exactly the characters JavaScript's `\s` matches.
+///
+/// Rust's `char::is_whitespace` is not that set twice over: it **excludes**
+/// U+FEFF, which JavaScript counts, and **includes** U+0085, which
+/// JavaScript does not.
+pub(crate) fn is_js_space(character: char) -> bool {
+    if matches!(character, '\u{2000}'..='\u{200a}') {
+        return true;
+    }
+    matches!(
+        character,
+        '\t' | '\n'
+            | '\u{b}'
+            | '\u{c}'
+            | '\r'
+            | ' '
+            | '\u{a0}'
+            | '\u{1680}'
+            | '\u{2028}'
+            | '\u{2029}'
+            | '\u{202f}'
+            | '\u{205f}'
+            | '\u{3000}'
+            | '\u{feff}'
+    )
+}
+
+/// `String.prototype.trim`, one end at a time — and it is not
+/// `str::trim`.
+///
+/// The difference is one character and it is the one that matters here: a
+/// byte-order mark. JavaScript trims it, Rust does not — so a document
+/// beginning with one produced a context line with three invisible bytes
+/// on one frontend and without them on the other. Both servers offer the
+/// *same* `detect_secrets` tool, so a caller must not be able to tell
+/// which one it reached.
+pub(crate) fn js_trim_start(text: &str) -> &str {
+    text.trim_start_matches(is_js_space)
+}
+
+pub(crate) fn js_trim_end(text: &str) -> &str {
+    text.trim_end_matches(is_js_space)
+}
+
 /// `^(.)\1+$` — a single repeated character. The backreference is the
 /// whole point, so this one pattern is matched by hand rather than by
 /// an engine that would need backtracking for it.
@@ -115,6 +159,35 @@ mod tests {
             confidence_by_length("a".repeat(19).as_str(), 32, 20),
             Confidence::Low
         );
+    }
+
+    /// The drift guard: `is_js_space` is written out by hand and
+    /// `JS_SPACE_CLASS` is handed to the regex engine. They are the same
+    /// claim in two spellings, so they are checked against each other
+    /// rather than kept in step by hope.
+    #[test]
+    fn the_spelled_out_space_set_matches_the_class_the_engine_gets() {
+        let class = Regex::new(&format!("^[{JS_SPACE_CLASS}]$")).expect("compiles");
+        for code in 0..=0x3100_u32 {
+            let Some(character) = char::from_u32(code) else {
+                continue;
+            };
+            assert_eq!(
+                is_js_space(character),
+                class.is_match(&character.to_string()),
+                "U+{code:04X} is in one spelling of JavaScript's \\s and not the other"
+            );
+        }
+    }
+
+    /// The two characters Rust and JavaScript disagree about, pinned.
+    #[test]
+    fn a_byte_order_mark_is_space_to_javascript_and_a_next_line_is_not() {
+        assert_eq!(js_trim_end(js_trim_start("\u{feff}abc\u{feff}")), "abc");
+        assert!(!"\u{feff}".trim().is_empty(), "Rust's own trim keeps it");
+        assert_eq!(js_trim_start("\u{85}abc"), "\u{85}abc");
+        assert!("\u{85}".trim().is_empty(), "Rust's own trim drops it");
+        assert_eq!(js_trim_end(js_trim_start("  abc\t\n")), "abc");
     }
 
     #[test]

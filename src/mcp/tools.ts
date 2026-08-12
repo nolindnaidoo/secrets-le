@@ -1,6 +1,6 @@
 import { detectSecretsInContent } from '../extraction/extract';
 import type { DetectedSecret } from '../types';
-import { maskSecretValue, maskWithin } from '../utils/mask';
+import { maskSecretValue } from '../utils/mask';
 import {
 	capped,
 	DEFAULT_MAX_RESULTS,
@@ -22,10 +22,10 @@ import type { ToolDefinition } from './transport';
  * **This server never returns a secret.** Everything else in the family hands
  * back what it extracted; here that would mean posting live credentials to
  * whatever cloud model called the tool, which is the exact opposite of what
- * this extension is for. `DetectedSecret.value` is the raw match and
- * `DetectedSecret.context` is the raw source line containing it, so both go
- * through `utils/mask` — the same masking the detection report already uses —
- * and there is no option, flag or code path that turns it off.
+ * this extension is for. `DetectedSecret.value` is the raw match, so it goes
+ * through `utils/mask` here; `DetectedSecret.context` arrives already masked
+ * — against every value in the document, not only this finding's — and there
+ * is no option, flag or code path that turns either off.
  *
  * A finding is identifiable without its value: the type, confidence, key name
  * and position are enough to locate it in the file, and the caller has the file.
@@ -58,10 +58,9 @@ function redact(secret: DetectedSecret): Record<string, unknown> {
 		confidence: secret.confidence,
 		key: secret.key,
 		preview: maskSecretValue(secret.value),
-		context:
-			secret.context === undefined
-				? undefined
-				: maskWithin(secret.context, secret.value),
+		// Already masked, and masked against *every* value in the document
+		// rather than only this finding's — see utils/mask.maskContext.
+		context: secret.context,
 		line: secret.position?.line,
 		column: secret.position?.column,
 	};

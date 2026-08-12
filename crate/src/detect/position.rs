@@ -100,6 +100,17 @@ pub(crate) fn line_text_at(content: &str, offset: usize) -> &str {
     &content[start..end]
 }
 
+/// The same line, paired with where `offset` sits inside it. The context
+/// window is cut around the value, so it needs the position within the
+/// line rather than within the document.
+pub(crate) fn line_and_offset(content: &str, offset: usize) -> (&str, usize) {
+    let clamped = offset.min(content.len());
+    let start = content[..clamped]
+        .rfind('\n')
+        .map_or(0, |newline| newline + 1);
+    (line_text_at(content, offset), clamped - start)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

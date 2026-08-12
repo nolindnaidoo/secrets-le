@@ -13,6 +13,26 @@ separate product on its own cadence and keeps its own
 
 ### Fixed
 
+- **A detection report printed the credential beside the one it was
+  masking.** `maskWithin` covered a finding's own value and nothing else,
+  so two credentials on one line each disclosed the other — and a context
+  line is the raw source line, which on a compact JSON config holds
+  several. The context is now a bounded window around the value with
+  **every** detected value in the document masked out of it, and it is
+  assembled from the preview rather than searched, so a value that runs
+  past the end of its line (a PEM block does) cannot leave key material
+  behind.
+
+- **A key name printed a credential.** Every key pattern begins
+  `[A-Za-z0-9_-]*`, so the key group swallows whatever word characters
+  run up to the keyword, and a token abutting the name came back as part
+  of it — in the one field nothing was masking. Key names are now masked
+  before they are lowercased.
+
+  Both are behaviour changes to `src/extraction/detectors.ts` and
+  `src/utils/mask.ts`, so `crate/fixtures/` moved with them in the same
+  commit and both frontends reproduce the new answers.
+
 - **The AWS secret-key detector could not match a quoted value.** Its
   trailing lookahead excluded `'` and `"`, so a pattern that allowed an
   opening quote then refused the closing one — and

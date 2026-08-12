@@ -211,7 +211,7 @@ fn scan_tool(arguments: &Value) -> Result<Value, String> {
             &format!(
                 "{} was not scanned — excluded by .gitignore or the hidden rule, and its name \
                  says it holds credentials. Ask for ignored and hidden files to reach it.",
-                path.display()
+                scan::reported_path(path)
             ),
         ));
     }

@@ -197,3 +197,142 @@ jobs:
       - name: Detection, masking and MCP parity
         working-directory: .
         run: bun scripts/check-detection-parity.ts
+
+  # ---------------------------------------------------------------------
+  # The jobs below exist because something real got through. Each one is
+  # named after the class of bug it catches, and the comment says which.
+  # ---------------------------------------------------------------------
+
+  # Inputs that break scanners: a byte-order mark, a lone CR, a NUL, a
+  # file that is not text, a symlink loop, a FIFO, a name Windows cannot
+  # hold. Every case asserts the process does not panic, does not hang,
+  # and exits 0, 1 or 2 — never on a signal.
+  #
+  # The tree is built at runtime because git cannot carry a FIFO or a
+  # permission-denied file to Windows, and each case the platform cannot
+  # express prints the skip by name.
+  hazards:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, windows-2025, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      - name: Hazardous inputs, against the built binary
+        run: cargo test --locked --test hazards -- --nocapture
+
+  # Behaviour that differs by operating system, asserted rather than
+  # hoped. The report path is the one that shipped wrong: a sibling in
+  # this family answered `src\app.env` on Windows for a whole release,
+  # and a report that spells a path two ways cannot be diffed or
+  # baselined.
+  platform:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, windows-2025, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      - name: Platform behaviour
+        run: cargo test --locked --test platform -- --nocapture
+      # The suite must not depend on TZ, because Windows ignores it. Run
+      # twice — once pinned, once with it gone — and require the same
+      # result from both.
+      - name: The whole suite, with TZ pinned
+        env:
+          TZ: UTC
+        run: cargo test --locked
+      - name: The whole suite, with TZ unset
+        run: cargo test --locked
+
+  # `detect_secrets` is offered by BOTH servers: one tool name, one
+  # schema, two implementations. An agent must get the same answer
+  # whichever one it reaches. The checked-in corpus pins the cases
+  # somebody thought of; this generates six hundred more.
+  #
+  # It also carries the two claims that are not up for negotiation: the
+  # prefilter matches a superset of every real pattern (if it ever does
+  # not, a credential goes unreported and the scan still exits clean),
+  # and no answer from either server contains a value it detected.
+  differential:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.13
+      - name: Install dependencies
+        working-directory: .
+        run: bun install --frozen-lockfile
+      - name: Build the server the script talks to
+        run: cargo build --release --locked
+      - name: Prefilter soundness over generated documents
+        run: cargo test --locked --bin secrets-le prefilter_soundness -- --nocapture
+      - name: Both detect_secrets servers, over generated documents
+        working-directory: .
+        run: bun scripts/check-detection-differential.ts
+
+  # A standing net over the detector table: nineteen patterns through a
+  # backtracking engine, fed documents nobody wrote. Sixty seconds, not
+  # to convergence. Any panic, any hang, any exit outside 0/1/2, any
+  # detector that gives up on a document this size, and — the one that
+  # matters — any value the run reported appearing in what it printed.
+  fuzz:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      - name: Fuzz the detector table
+        env:
+          SECRETS_LE_FUZZ_SECONDS: "60"
+          # Fixed so a failure is reproducible; the failure message
+          # prints it back and writes the document that broke it.
+          SECRETS_LE_FUZZ_SEED: "20260812"
+        run: cargo test --release --locked --test fuzz -- --nocapture
+
+  # This crate was fifty times slower than every sibling for a release —
+  # 8.55s over a tree the others crossed in 0.06s — and nobody noticed,
+  # because nothing measured it. A ceiling catches a scan that got
+  # slower; the linearity assertion catches a scan whose cost stopped
+  # being proportional to its input.
+  budget:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      - name: Wall clock over a generated tree
+        env:
+          SECRETS_LE_BUDGET: "1"
+        run: cargo test --release --locked --test budget -- --nocapture --test-threads=1
+
+  # Does this crate open what it claims to open? Every other crate in the
+  # family answers that against an alias table; this one has none, and
+  # that absence *is* the claim — a scanner that only read the extensions
+  # it recognised would report a clean tree next to a `.bak` full of
+  # passwords. So the matrix is one file per extension across a broad
+  # sample plus a dozen nothing knows, and every one must come back with
+  # its finding.
+  coverage-matrix:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      - name: One file per extension, all of them read
+        run: cargo test --locked --test coverage_matrix -- --nocapture

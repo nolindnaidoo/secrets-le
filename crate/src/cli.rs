@@ -216,7 +216,7 @@ fn summarise(reports: &[FileReport], walked: &walk::Walked, scanned: usize) {
             stderr,
             "not scanned: {} — excluded by .gitignore or the hidden rule, and its name says it \
              holds credentials. --no-ignore --hidden reaches it.",
-            path.display()
+            scan::reported_path(path)
         );
     }
 

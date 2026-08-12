@@ -4,7 +4,7 @@ import type {
 	SanitizationResult,
 	SecretReplacement,
 } from '../types';
-import { maskSecretValue, maskWithin } from '../utils/mask';
+import { maskSecretValue } from '../utils/mask';
 
 /**
  * Rendering detection and sanitization results as markdown.
@@ -40,11 +40,9 @@ function secretLines(secret: DetectedSecret): readonly string[] {
 	if (secret.description) lines.push(`  Type: ${secret.description}`);
 	lines.push(`  Confidence: ${secret.confidence}`);
 	lines.push(`  Value: ${maskSecretValue(secret.value)}`);
-	if (secret.context) {
-		lines.push(
-			`  Context: ${maskWithin(secret.context, secret.value).substring(0, 80)}`,
-		);
-	}
+	// The context arrives masked and already bounded to a window around the
+	// value, so there is nothing left here to redact or to cut.
+	if (secret.context) lines.push(`  Context: ${secret.context}`);
 	lines.push('');
 	return lines;
 }

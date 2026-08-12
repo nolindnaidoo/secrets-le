@@ -37,9 +37,13 @@ So, without exception and without a flag:
   length**, and always carries the value's length. Half-length is what
   makes the cap hold for short values: an eight-character cap on an
   eight-character password is the password.
-- **The context line is masked too.** It is the raw source line, so it
-  contains the credential it is providing context for. Every occurrence
-  of the value is replaced by the same bounded preview.
+- **The context line carries no value — not its own, and not its
+  neighbour's.** See below.
+- **The key name is masked too.** Every key pattern begins
+  `[A-Za-z0-9_-]*`, so the key group swallows whatever word characters
+  run up to the keyword — and a token abutting the name is reported as
+  part of it. The key is source text, not the tidy identifier it looks
+  like.
 - **There is no `--show-values`, no `--unsafe`, no environment variable.**
   A flag that turns this off is a flag that ends up in someone's CI
   config. A caller who needs the value has the file; the report says
@@ -47,6 +51,37 @@ So, without exception and without a flag:
 
 A property test asserts the whole of it: for any input value, no string
 this crate emits contains that value.
+
+### The context line
+
+A context is **a bounded window of the source line** — sixty UTF-16 code
+units either side of the value, with an ellipsis wherever the line
+continues past the cut — and the value itself is never in it: the middle
+is the preview, assembled rather than searched for. Three things forced
+that shape, all of them found by the checks in `ci-crate.yml`:
+
+- A context used to be the whole source line. On a minified file that is
+  the whole file, and one context per finding made a report grow with
+  findings *times* line length: a single file with sixteen hundred
+  findings on one line produced ninety-eight megabytes of stdout.
+- Masking only the finding's **own** value left every other credential on
+  that line in the clear. `connection_string = Server=...;Pwd=secret;`
+  reported the password masked and printed the connection string it sits
+  inside — itself a reported finding — whole. A line holding two
+  credentials is what a compact JSON config looks like.
+- A value can run past the end of its own line; a PEM block does. Cutting
+  a window and searching it for the value found nothing to replace,
+  because the line holds only a prefix — so seventeen hundred characters
+  of key material went out verbatim.
+
+**What a context line can still contain.** Every value the scan detected
+is masked out of the window. Text the scan did *not* detect is not a
+secret as far as this tool knows, and the window is source, so a
+credential this tool deliberately misses — a JWT with a non-JSON header,
+a GCP project id — can appear in one. That is the price of a context line
+existing at all, and it is bounded: sixty characters either side, never
+the whole file. A pipeline that will not pay it has the file, line,
+column and key without ever reading `context`.
 
 ## Why this is not a remediation tool
 
@@ -245,12 +280,62 @@ a file that was clean.
 
 ## The byte-order mark
 
-A leading BOM is stripped before extraction. It is three invisible bytes
-that Notepad, Excel and a PowerShell redirect all add, and that VS Code
+A leading BOM is stripped before extraction — **whether the document
+arrives as a path or through a pipe**. It is three invisible bytes that
+Notepad, Excel and a PowerShell redirect all add, and that VS Code
 removes before the extension sees a document — so leaving it in means
 the two frontends read the same file differently. It shifts every column
 on the first line, and in a structured format it can lose the document
 entirely.
 
+`secrets-le config.env` and `secrets-le --stdin < config.env` are the
+same question about the same document and must answer the same way. They
+did not: only the path route dropped the mark.
+
 A BOM anywhere other than the start is a zero-width no-break space and
 belongs to the text.
+
+## Deliberate divergences
+
+Two surfaces, two jobs. The extension is **IDE-first** — one open buffer,
+a person reading results in an editor. This is **terminal-first** — a
+tree, an exit code, a pipeline. Each works the way its own use case
+expects, so the walk, `--strict`, `--sensitivity`, the exit codes and
+JSON Lines are this side's and are not drift.
+
+What is **not** allowed to differ is the tool both servers offer.
+`detect_secrets` is one name, one schema, two implementations: same
+document text in, byte-identical envelope out. A caller must not be able
+to tell which server it reached.
+`../scripts/check-detection-differential.ts` holds them against each
+other over hundreds of generated documents, and
+`fixtures/mcp-detect-secrets.json` pins the hand-written cases.
+
+Divergences that are deliberate live here, with their reason:
+
+- **`--stdin` strips a leading byte-order mark; `detect_secrets` does
+  not.** `--stdin` reads a *document*, which arrived from a file through
+  a pipe and carries whatever that file carried. `detect_secrets` takes
+  text a caller already has in hand, and its contract is byte-identity
+  with the npm server, which does not strip either. Both are checked.
+- **`js_trim` rather than `str::trim`.** JavaScript's whitespace set is
+  not Rust's: it counts U+FEFF, which Rust does not, and skips U+0085,
+  which Rust counts. Using Rust's would have been a divergence rather
+  than a choice, and the differential found it as one.
+
+## The measured limits
+
+Stated because a limit nobody wrote down is a surprise:
+
+- **The backtracking budget covers a line of about a million word
+  characters, and not more.** Thirteen patterns begin `[A-Za-z0-9_-]*`,
+  and the engine saves a backtrack frame per character of an unbroken
+  run, so a crafted run of that size exhausts the stack. Measured, not
+  guessed: 800,000 answers, a million refuses. A megabyte of *ordinary*
+  minified JavaScript is punctuated every few characters and scans in a
+  sixth of a second. The refusal is the honest outcome — the report says
+  the file was not fully scanned and the run exits 2, rather than
+  reporting a clean file the scanner never finished.
+- **A scan is linear in the size of the tree**, and `ci-crate.yml`'s
+  `budget` job asserts it: four times the tree, at most six times the
+  time.
