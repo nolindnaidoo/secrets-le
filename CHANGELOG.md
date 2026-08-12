@@ -9,7 +9,33 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
-## [Unreleased]
+## [2.2.5] - 2026-08-12
+
+Three ways a report could have shown you a credential, closed. Nothing
+new to learn and nothing to change in your settings — the same
+detectors, finding the same things, keeping more of what they find to
+themselves.
+
+### Added
+
+- A **Rust CLI and MCP server**, in [`crate/`](crate/README.md), published
+  to crates.io as [`secrets-le`](https://crates.io/crates/secrets-le). It
+  runs the same detection over a whole tree with an exit code a CI step
+  fails on, and — like every surface here — never prints a credential.
+
+  The extension stays the reference implementation. The pattern table
+  both frontends build against lives in
+  [`crate/signatures/patterns.toml`](crate/signatures/patterns.toml),
+  `scripts/check-detection-parity.ts` runs it against this extension,
+  `cargo test` runs it against the crate, and `ci-crate.yml` watches
+  `src/extraction/**` and `src/utils/mask.ts` so neither side can drift
+  green.
+
+### Changed
+
+- Documentation only for the extension itself — no behaviour change. The
+  README, the npm server's README and the manifest now cross-reference
+  the CLI, and the CLI references them back.
 
 ### Fixed
 
@@ -41,29 +67,6 @@ separate product on its own cadence and keeps its own
   is why it went unnoticed. The lookahead still rejects a 41st
   character, so 40 characters must be the whole value rather than the
   start of a longer one.
-
-## [Unreleased]
-
-### Added
-
-- A **Rust CLI and MCP server**, in [`crate/`](crate/README.md), published
-  to crates.io as [`secrets-le`](https://crates.io/crates/secrets-le). It
-  runs the same detection over a whole tree with an exit code a CI step
-  fails on, and — like every surface here — never prints a credential.
-
-  The extension stays the reference implementation. The pattern table
-  both frontends build against lives in
-  [`crate/signatures/patterns.toml`](crate/signatures/patterns.toml),
-  `scripts/check-detection-parity.ts` runs it against this extension,
-  `cargo test` runs it against the crate, and `ci-crate.yml` watches
-  `src/extraction/**` and `src/utils/mask.ts` so neither side can drift
-  green.
-
-### Changed
-
-- Documentation only for the extension itself — no behaviour change. The
-  README, the npm server's README and the manifest now cross-reference
-  the CLI, and the CLI references them back.
 
 ## [2.2.4] - 2026-08-07
 

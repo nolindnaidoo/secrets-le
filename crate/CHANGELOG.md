@@ -7,47 +7,35 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2026-08-08
+## [0.1.1] - 2026-08-12
 
-First release. The extension's detection engine, ported and pinned
-against a shared pattern table, over a tree instead of a buffer.
+Speed and proof. No new detector, no new flag, no new field — the same
+nineteen patterns, answering faster and with more of the answer checked.
 
-### Added
+**A repository scan went from 8.55 seconds to under a tenth of a second,
+and not one finding changed.** For a tool that exists to find
+credentials, "faster" is only reassuring next to "and it still finds
+exactly the same things", so that was the bar: byte-identical output on
+every tree it was measured against, with the property asserted in tests
+rather than argued from the diff.
 
-- **The detection engine**, reproducing the extension's output for every
-  case in `fixtures/` — nineteen patterns across API keys, passwords,
-  tokens and private keys, with the same sensitivity levels, the same
-  family switches, and the same deliberate misses.
-- **`signatures/patterns.toml`**, the pattern table as reviewable data,
-  mirrored from `SECRET_PATTERNS` and checked in both directions.
-  Order is preserved and asserted: the specific key patterns must
-  precede the generic token one, or a `refresh_token` reports as a plain
-  token.
-- **The CLI**: JSON reports on stdout one per line, a human summary on
-  stderr, and exit codes as the API — 0 nothing found, 1 findings, 2 the
-  question was malformed. `--sensitivity`, `--no-api-keys`,
-  `--no-passwords`, `--no-tokens`, `--no-private-keys`, `--stdin`,
-  `--hidden`, `--no-ignore`.
-- **The MCP server** (`secrets-le mcp`) with two tools: `detect_secrets`,
-  shared byte-for-byte with the npm server and pinned by
-  `fixtures/mcp-detect-secrets.json`, and `secrets_le_scan`.
-- **Named warnings for skipped credential files.** `.gitignore` is
-  honoured by default, which is where `.env` usually lives. Files whose
-  names say they hold credentials are listed individually when skipped;
-  everything else is a count. Vendored trees are excluded from the list.
+Three of these fixes are places where the tool could have printed a
+credential. That is the one thing it must never do, and every one of
+them was found by a check that now runs on every push — over generated
+documents, not a fixed list of cases somebody thought of. Two claims are
+now standing:
 
-### The rule that shaped it
+- **No finding ever carries a value the run detected.** Not its own, not
+  the one beside it on the same line, and not one swallowed into a key
+  name.
+- **The cheap pattern that decides whether to run the real one can never
+  skip a file the real one would have matched.** If it could, a
+  credential would go unreported and the scan would still exit 0.
 
-**No surface emits a complete value** — not stdout, not stderr, not the
-MCP envelope, not an error message — and there is no flag that changes
-that. A scanner's output goes into a CI log, which is archived, often
-world-readable, and outlives the credential.
-
-The property is asserted four ways: exhaustively over value lengths 3 to
-300, over every corpus document, over a real binary run against planted
-credentials, and from the extension's side by the parity script.
-
-[0.1.0]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.0
+Still deliberately absent, and not on the way: entropy-based detection,
+git-history scanning, and any network call — nothing here validates a
+credential against the service it belongs to, because that would
+transmit it.
 
 ### Fixed
 
@@ -177,3 +165,47 @@ bug it catches. Every fix above was found by one of them.
   plus a dozen nothing knows, plus names with no extension at all. Every
   one must come back with a report line and its finding, because this
   crate's claim is that it reads everything.
+
+[0.1.1]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.1
+
+## [0.1.0] - 2026-08-08
+
+First release. The extension's detection engine, ported and pinned
+against a shared pattern table, over a tree instead of a buffer.
+
+### Added
+
+- **The detection engine**, reproducing the extension's output for every
+  case in `fixtures/` — nineteen patterns across API keys, passwords,
+  tokens and private keys, with the same sensitivity levels, the same
+  family switches, and the same deliberate misses.
+- **`signatures/patterns.toml`**, the pattern table as reviewable data,
+  mirrored from `SECRET_PATTERNS` and checked in both directions.
+  Order is preserved and asserted: the specific key patterns must
+  precede the generic token one, or a `refresh_token` reports as a plain
+  token.
+- **The CLI**: JSON reports on stdout one per line, a human summary on
+  stderr, and exit codes as the API — 0 nothing found, 1 findings, 2 the
+  question was malformed. `--sensitivity`, `--no-api-keys`,
+  `--no-passwords`, `--no-tokens`, `--no-private-keys`, `--stdin`,
+  `--hidden`, `--no-ignore`.
+- **The MCP server** (`secrets-le mcp`) with two tools: `detect_secrets`,
+  shared byte-for-byte with the npm server and pinned by
+  `fixtures/mcp-detect-secrets.json`, and `secrets_le_scan`.
+- **Named warnings for skipped credential files.** `.gitignore` is
+  honoured by default, which is where `.env` usually lives. Files whose
+  names say they hold credentials are listed individually when skipped;
+  everything else is a count. Vendored trees are excluded from the list.
+
+### The rule that shaped it
+
+**No surface emits a complete value** — not stdout, not stderr, not the
+MCP envelope, not an error message — and there is no flag that changes
+that. A scanner's output goes into a CI log, which is archived, often
+world-readable, and outlives the credential.
+
+The property is asserted four ways: exhaustively over value lengths 3 to
+300, over every corpus document, over a real binary run against planted
+credentials, and from the extension's side by the parity script.
+
+[0.1.0]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.0
