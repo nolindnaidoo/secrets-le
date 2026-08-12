@@ -27,8 +27,8 @@ Options:
   --no-passwords          skip the password detectors
   --no-tokens             skip the token detectors
   --no-private-keys       skip the private-key detectors
-  --strict             exit 2 if any file could not be read, rather than
-                       reporting it and carrying on
+  --strict                exit 2 if any file could not be read, rather
+                          than reporting it and carrying on
   --stdin                 read one document from stdin
   --hidden                scan hidden files and directories too
   --no-ignore             scan files that .gitignore excludes

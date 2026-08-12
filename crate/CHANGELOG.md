@@ -166,7 +166,6 @@ bug it catches. Every fix above was found by one of them.
   one must come back with a report line and its finding, because this
   crate's claim is that it reads everything.
 
-[0.1.1]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.1
 
 ## [0.1.0] - 2026-08-08
 
@@ -208,4 +207,5 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 300, over every corpus document, over a real binary run against planted
 credentials, and from the extension's side by the parity script.
 
-[0.1.0]: https://github.com/nolindnaidoo/secrets-le/releases/tag/crate-v0.1.0
+[0.1.1]: https://crates.io/crates/secrets-le/0.1.1
+[0.1.0]: https://crates.io/crates/secrets-le/0.1.0

@@ -27,7 +27,7 @@ with its own `CLAUDE.md`.
   shared `detect_secrets` MCP tool**, which must answer identically from
   either server; a difference there is a bug. The surfaces themselves
   are IDE-first and terminal-first and are meant to differ —
-  the walk, `--no-mask`, `--strict`, the detector toggles, the exit codes and JSON Lines have no
+  the walk, `--sensitivity`, `--strict`, the detector toggles, the exit codes and JSON Lines have no
   editor equivalent and are not drift. SPEC.md's "Deliberate
   divergences" is the bar for a new one.
 - Write regression tests for every bug you fix; keep unit tests free of

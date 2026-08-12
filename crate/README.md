@@ -123,6 +123,25 @@ against it, and kept — **parity is the contract, and a scanner whose two
 frontends disagree is worse than one with a known noisy pattern.**
 `--sensitivity high` drops most of this class.
 
+## Options
+
+```
+--sensitivity <level>   low, medium (default) or high. Higher reports
+                        fewer, more certain findings.
+--no-api-keys           skip the API-key detectors
+--no-passwords          skip the password detectors
+--no-tokens             skip the token detectors
+--no-private-keys       skip the private-key detectors
+--strict                exit 2 if any file could not be read, rather
+                        than reporting it and carrying on
+--stdin                 read one document from stdin
+--hidden                scan hidden files and directories too
+--no-ignore             scan files that .gitignore excludes
+```
+
+The four `--no-*` toggles narrow what runs. They cannot widen it: there
+is no flag that turns masking off, and none that prints a value.
+
 ## `.gitignore` is honoured, and that is a real risk
 
 By default the walk skips what git ignores, which is where `.env` usually
