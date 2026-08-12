@@ -43,11 +43,16 @@ artifact users actually install.
   byte-identical across the family; a change here needs copying to the other
   nine. See `../CLAUDE.md`. `ci-crate.yml` and `release-crate.yml` are the
   exception — they exist only in the repos that ship a crate.
-- **Detection is shared with the Rust CLI.** `src/extraction/**` and
-  `src/utils/mask.ts` are the reference implementation for `crate/`, and
-  `crate/signatures/` + `crate/fixtures/` are the contract between them. Run
-  `bun scripts/check-detection-parity.ts` after any change to either, and
-  update the corpus in the same commit. CI fails when they drift.
+- **Detection is shared with the Rust CLI**, and the corpus under `crate/` is
+  the contract. Changing detection behaviour means running
+  `bun scripts/check-detection-parity.ts` and updating the corpus — on both
+  sides, in the same commit. CI fails when either drifts.
+- **What the contract holds equal is the shared `detect_secrets` MCP tool**,
+  which both servers offer and must answer identically; a difference there
+  is a bug. **The surfaces are meant to differ.** This one is IDE-first —
+  the active buffer, plus a workspace scan on demand — one of two in the family that reaches past the buffer, and deliberately. The CLI is terminal-first: a tree walk,
+  exit codes and JSON Lines, none of which has an editor equivalent. That
+  is not drift, and nothing holds them equal — see `crate/SPEC.md`.
 - **Nothing may print a secret.** The masking in `src/utils/mask.ts` is what
   makes both frontends safe to run in CI. Before adding any output path, ask
   what a CI log would have captured.

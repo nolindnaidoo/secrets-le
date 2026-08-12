@@ -23,9 +23,13 @@ with its own `CLAUDE.md`.
   never grow one; the raw match lives only inside the detection loop.
   Before adding any output, ask what a CI log would have captured.
 - `fixtures/` is shared with the extension — changing it changes both
-  frontends and needs a CHANGELOG entry. The extension is the reference
-  implementation for detection; a difference is a regression until
-  SPEC.md says otherwise.
+  frontends and needs a CHANGELOG entry. **What it holds equal is the
+  shared `detect_secrets` MCP tool**, which must answer identically from
+  either server; a difference there is a bug. The surfaces themselves
+  are IDE-first and terminal-first and are meant to differ —
+  the walk, `--no-mask`, `--strict`, the detector toggles, the exit codes and JSON Lines have no
+  editor equivalent and are not drift. SPEC.md's "Deliberate
+  divergences" is the bar for a new one.
 - Write regression tests for every bug you fix; keep unit tests free of
   clocks, randomness, and the filesystem outside `resolve`/`walk`/
   `audit`.
