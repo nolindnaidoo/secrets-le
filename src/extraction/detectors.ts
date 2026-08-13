@@ -52,8 +52,165 @@ const key = (names: string): string =>
  * Order matters: specific key patterns (oauth/access/refresh/jwt) come
  * before the generic token pattern; the first pattern to claim a span
  * wins dedupe.
+ *
+ * The issuer-prefixed patterns lead for the same reason one level up. A
+ * value that names its own issuer is more specific than a key name that
+ * only says "token", and the two claim the same span: `NPM_TOKEN=npm_…`
+ * matches the generic token pattern too, and whichever runs first is the
+ * one reported. Running them first buys two things. The report names the
+ * issuer, so a reader knows which credential to revoke. And the
+ * confidence is the shape's rather than the length's — a 31-character
+ * `sk-proj-…` under an `api_key` name grades `medium` by length and is
+ * dropped by `--sensitivity high`, which is a live OpenAI key going
+ * unreported by a run that asked for the certain findings only.
  */
 export const SECRET_PATTERNS: readonly SecretPattern[] = Object.freeze([
+	// --- issuer-prefixed values (valueGroup 1, no key required) --------
+	//
+	// Bounds are open at the top (`{20,}`, not `{20}`) even where the
+	// issuer documents an exact length. The prefix is what makes these
+	// specific; the length is not doing the work, and issuers lengthen
+	// their tokens — GitLab's routable tokens and OpenAI's project keys
+	// are both longer than the format they replaced. An exact bound would
+	// have silently stopped matching on the day that shipped.
+	{
+		type: 'anthropic-key',
+		pattern: /\b(sk-ant-[A-Za-z0-9_-]{24,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Anthropic API key',
+	},
+	{
+		type: 'openai-key',
+		// The legacy form is `sk-` and exactly 48 alphanumerics; the
+		// current ones carry a class prefix. `sk-` on its own is too weak
+		// to match — it is the start of Stripe's `sk_live_` with a
+		// different separator, and of any hyphenated identifier.
+		pattern:
+			/\b(sk-(?:proj|svcacct|admin)-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9]{48})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'OpenAI API key',
+	},
+	{
+		type: 'gitlab-token',
+		pattern: /\b(gl(?:pat|rt|dt)-[A-Za-z0-9_-]{20,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'GitLab access token',
+	},
+	{
+		type: 'sendgrid-key',
+		pattern: /\b(SG\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{30,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'SendGrid API key',
+	},
+	{
+		type: 'mailgun-key',
+		// `key-` is an English word before a hyphen, so this is the one
+		// issuer prefix in the table that is also ordinary text. Graded
+		// medium for that reason: it still shows by default and is
+		// dropped by `--sensitivity high`, which is where a maybe belongs.
+		pattern: /\b(key-[0-9a-f]{32,})\b/dg,
+		valueGroup: 1,
+		confidence: medium,
+		description: 'Mailgun API key',
+	},
+	{
+		type: 'sentry-token',
+		pattern: /\b(sntry[su]_[A-Za-z0-9+/=_-]{40,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Sentry auth token',
+	},
+	{
+		type: 'npm-token',
+		pattern: /\b(npm_[A-Za-z0-9]{36,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'npm access token',
+	},
+	{
+		type: 'pypi-token',
+		// A PyPI token is a macaroon, and every one of them begins with
+		// the base64 of its own service identifier — `AgE` is where that
+		// starts, and is what separates a token from any other `pypi-`
+		// prefixed string.
+		pattern: /\b(pypi-AgE[A-Za-z0-9_-]{50,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'PyPI API token',
+	},
+	{
+		type: 'docker-token',
+		pattern: /\b(dckr_pat_[A-Za-z0-9_-]{20,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Docker Hub access token',
+	},
+	{
+		type: 'vault-token',
+		// Service, batch and recovery tokens. The pre-1.10 form was `s.`
+		// and 24 characters, which is also every `object.property` in a
+		// minified bundle, and is deliberately not matched.
+		pattern: /\b(hv[bsr]\.[A-Za-z0-9_-]{24,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'HashiCorp Vault token',
+	},
+	{
+		type: 'terraform-token',
+		// `.atlasv1.` carries all the specificity here; the bounds either
+		// side only keep the pattern from matching a stray word.
+		pattern: /\b([A-Za-z0-9]{10,20}\.atlasv1\.[A-Za-z0-9_-]{40,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Terraform Cloud API token',
+	},
+	{
+		type: 'supabase-key',
+		// The personal access token and the secret half of the newer key
+		// pair. `sb_publishable_` is deliberately absent: it is designed
+		// to ship in a browser bundle, and reporting it is how a scanner
+		// teaches people to ignore it.
+		pattern:
+			/\b(sbp_(?:v[0-9]_)?[0-9a-f]{40,}|sb_secret_[A-Za-z0-9_-]{16,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Supabase secret key',
+	},
+	{
+		type: 'shopify-token',
+		pattern: /\b(shp(?:at|ca|pa|ss)_[a-fA-F0-9]{32,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Shopify access token',
+	},
+	{
+		type: 'square-token',
+		pattern: /\b(sq0(?:atp|csp|idp)-[A-Za-z0-9_-]{20,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Square access token',
+	},
+	{
+		type: 'azure-sas',
+		// The signature alone is the credential, so it alone is the
+		// value: everything before it is the policy the signature
+		// authorises — resource, permissions, expiry — and reporting that
+		// as a secret would mask a line the reader needs to see. `sv=` is
+		// the storage service version, which is what makes this Azure's
+		// rather than any signed URL's, and the bounded run between the
+		// two is what keeps a crafted line from costing more than it
+		// should.
+		pattern:
+			/\bsv=[0-9]{4}-[0-9]{2}-[0-9]{2}[^\s'"]{0,300}?[?&]sig=([A-Za-z0-9%+/]{20,})/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Azure Storage SAS signature',
+	},
+
 	// --- key-based patterns (keyGroup 1, valueGroup 2) -----------------
 	{
 		type: 'aws-secret',
@@ -242,12 +399,40 @@ export const SECRET_PATTERNS: readonly SecretPattern[] = Object.freeze([
 	},
 ]);
 
+/**
+ * Which `--no-…` switch each type answers to.
+ *
+ * Every type must appear in exactly one of these three or be a password:
+ * `included` returns true for anything it does not recognise, so a type
+ * left out here is one no switch can turn off — a `--no-api-keys` run
+ * that still reports API keys. `detectors.test.ts` asserts the table's
+ * types are all covered.
+ */
+/**
+ * A connection string and a database URL are reported *because* they
+ * carry a credential in the URI, so `includePasswords` is the switch a
+ * caller reaches for. Both answered to none of the four before, and so
+ * did `cookie` and `session-id`, which are bearer credentials and sit
+ * under tokens.
+ */
+const PASSWORD_TYPES: ReadonlySet<SecretType> = new Set([
+	'password',
+	'connection-string',
+	'database-url',
+]);
+
 const API_KEY_TYPES: ReadonlySet<SecretType> = new Set([
 	'api-key',
 	'aws-key',
 	'aws-secret',
 	'gcp-key',
 	'azure-key',
+	'azure-sas',
+	'anthropic-key',
+	'mailgun-key',
+	'openai-key',
+	'sendgrid-key',
+	'supabase-key',
 ]);
 const TOKEN_TYPES: ReadonlySet<SecretType> = new Set([
 	'token',
@@ -256,6 +441,17 @@ const TOKEN_TYPES: ReadonlySet<SecretType> = new Set([
 	'bearer-token',
 	'access-token',
 	'refresh-token',
+	'docker-token',
+	'gitlab-token',
+	'npm-token',
+	'pypi-token',
+	'sentry-token',
+	'shopify-token',
+	'square-token',
+	'terraform-token',
+	'vault-token',
+	'cookie',
+	'session-id',
 ]);
 const PRIVATE_KEY_TYPES: ReadonlySet<SecretType> = new Set([
 	'private-key',
@@ -374,7 +570,7 @@ export function detectSecrets(
 
 	function included(type: SecretType): boolean {
 		if (API_KEY_TYPES.has(type)) return includeApiKeys;
-		if (type === 'password') return includePasswords;
+		if (PASSWORD_TYPES.has(type)) return includePasswords;
 		if (TOKEN_TYPES.has(type)) return includeTokens;
 		if (PRIVATE_KEY_TYPES.has(type)) return includePrivateKeys;
 		return true;

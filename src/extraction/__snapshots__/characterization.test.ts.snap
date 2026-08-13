@@ -512,20 +512,6 @@ exports[`detection characterization > secrets.ini with includePasswords disabled
   },
   "secrets": [
     {
-      "confidence": "medium",
-      "context": "connection_string = Server=p… (50 chars)",
-      "description": "Connection string",
-      "end": 115,
-      "key": "connection_string",
-      "position": {
-        "column": 21,
-        "line": 3,
-      },
-      "start": 65,
-      "type": "connection-string",
-      "value": "Server=prod;Database=app;Uid=admin;Pwd=secret123x;",
-    },
-    {
       "confidence": "high",
       "context": "api_key = 01234567… (32 chars)",
       "description": "Generic API key",

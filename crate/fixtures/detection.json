@@ -9,8 +9,8 @@
 					"type": "jwt",
 					"confidence": "high",
 					"key": null,
-					"preview": "eyJhbGci… (107 chars)",
-					"context": "eyJhbGci… (107 chars)",
+					"preview": "eyJhbGci\u2026 (107 chars)",
+					"context": "eyJhbGci\u2026 (107 chars)",
 					"line": 4,
 					"column": 1,
 					"description": "JWT token (format only)"
@@ -26,8 +26,8 @@
 					"type": "jwt",
 					"confidence": "high",
 					"key": null,
-					"preview": "eyJhbGci… (107 chars)",
-					"context": "eyJhbGci… (107 chars)",
+					"preview": "eyJhbGci\u2026 (107 chars)",
+					"context": "eyJhbGci\u2026 (107 chars)",
 					"line": 4,
 					"column": 1,
 					"description": "JWT token (format only)"
@@ -43,8 +43,8 @@
 					"type": "jwt",
 					"confidence": "high",
 					"key": null,
-					"preview": "eyJhbGci… (107 chars)",
-					"context": "eyJhbGci… (107 chars)",
+					"preview": "eyJhbGci\u2026 (107 chars)",
+					"context": "eyJhbGci\u2026 (107 chars)",
 					"line": 4,
 					"column": 1,
 					"description": "JWT token (format only)"
@@ -60,8 +60,8 @@
 					"type": "private-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "-----BEG… (321 chars)",
-					"context": "-----BEG… (321 chars)",
+					"preview": "-----BEG\u2026 (321 chars)",
+					"context": "-----BEG\u2026 (321 chars)",
 					"line": 1,
 					"column": 1,
 					"description": "Private key block (PEM)"
@@ -77,8 +77,8 @@
 					"type": "private-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "-----BEG… (321 chars)",
-					"context": "-----BEG… (321 chars)",
+					"preview": "-----BEG\u2026 (321 chars)",
+					"context": "-----BEG\u2026 (321 chars)",
 					"line": 1,
 					"column": 1,
 					"description": "Private key block (PEM)"
@@ -94,11 +94,442 @@
 					"type": "private-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "-----BEG… (321 chars)",
-					"context": "-----BEG… (321 chars)",
+					"preview": "-----BEG\u2026 (321 chars)",
+					"context": "-----BEG\u2026 (321 chars)",
 					"line": 1,
 					"column": 1,
 					"description": "Private key block (PEM)"
+				}
+			]
+		},
+		{
+			"name": "provider-tokens.txt at low sensitivity",
+			"file": "provider-tokens.txt",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "anthropic-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sk-ant-a\u2026 (45 chars)",
+					"context": "ANTHROPIC_API_KEY=sk-ant-a\u2026 (45 chars)",
+					"line": 14,
+					"column": 19,
+					"description": "Anthropic API key"
+				},
+				{
+					"type": "openai-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sk-proj-\u2026 (44 chars)",
+					"context": "OPENAI_API_KEY=sk-proj-\u2026 (44 chars)",
+					"line": 15,
+					"column": 16,
+					"description": "OpenAI API key"
+				},
+				{
+					"type": "gitlab-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "glpat-EX\u2026 (29 chars)",
+					"context": "curl -H \"PRIVATE-TOKEN: glpat-EX\u2026 (29 chars)\" https://gitlab.example.invalid/api",
+					"line": 16,
+					"column": 25,
+					"description": "GitLab access token"
+				},
+				{
+					"type": "sendgrid-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "SG.EXAMP\u2026 (73 chars)",
+					"context": "SENDGRID_KEY=SG.EXAMP\u2026 (73 chars)",
+					"line": 17,
+					"column": 14,
+					"description": "SendGrid API key"
+				},
+				{
+					"type": "mailgun-key",
+					"confidence": "medium",
+					"key": null,
+					"preview": "key-dead\u2026 (40 chars)",
+					"context": "mailgun --key key-dead\u2026 (40 chars)",
+					"line": 18,
+					"column": 15,
+					"description": "Mailgun API key"
+				},
+				{
+					"type": "sentry-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "sntrys_E\u2026 (48 chars)",
+					"context": "SENTRY_AUTH_TOKEN=sntrys_E\u2026 (48 chars)",
+					"line": 19,
+					"column": 19,
+					"description": "Sentry auth token"
+				},
+				{
+					"type": "npm-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "npm_EXAM\u2026 (44 chars)",
+					"context": "//registry.npmjs.org/:_authToken=npm_EXAM\u2026 (44 chars)",
+					"line": 20,
+					"column": 34,
+					"description": "npm access token"
+				},
+				{
+					"type": "pypi-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "pypi-AgE\u2026 (60 chars)",
+					"context": "pypi-AgE\u2026 (60 chars)",
+					"line": 21,
+					"column": 1,
+					"description": "PyPI API token"
+				},
+				{
+					"type": "docker-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dckr_pat\u2026 (43 chars)",
+					"context": "docker login -u nobody -p dckr_pat\u2026 (43 chars)",
+					"line": 22,
+					"column": 27,
+					"description": "Docker Hub access token"
+				},
+				{
+					"type": "vault-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "hvs.EXAM\u2026 (31 chars)",
+					"context": "VAULT_TOKEN=hvs.EXAM\u2026 (31 chars)",
+					"line": 23,
+					"column": 13,
+					"description": "HashiCorp Vault token"
+				},
+				{
+					"type": "terraform-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "EXAMPLEn\u2026 (67 chars)",
+					"context": "credentials \"app.terraform.io\" { token = \"EXAMPLEn\u2026 (67 chars)\" }",
+					"line": 24,
+					"column": 43,
+					"description": "Terraform Cloud API token"
+				},
+				{
+					"type": "supabase-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sbp_dead\u2026 (48 chars)",
+					"context": "supabase login --token sbp_dead\u2026 (48 chars)",
+					"line": 25,
+					"column": 24,
+					"description": "Supabase secret key"
+				},
+				{
+					"type": "square-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "sq0atp-E\u2026 (30 chars)",
+					"context": "square-cli --access-token sq0atp-E\u2026 (30 chars)",
+					"line": 27,
+					"column": 27,
+					"description": "Square access token"
+				},
+				{
+					"type": "azure-sas",
+					"confidence": "high",
+					"key": null,
+					"preview": "EXAMPLEn\u2026 (27 chars)",
+					"context": "\u2026b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
+					"line": 28,
+					"column": 105,
+					"description": "Azure Storage SAS signature"
+				}
+			]
+		},
+		{
+			"name": "provider-tokens.txt at medium sensitivity",
+			"file": "provider-tokens.txt",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "anthropic-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sk-ant-a\u2026 (45 chars)",
+					"context": "ANTHROPIC_API_KEY=sk-ant-a\u2026 (45 chars)",
+					"line": 14,
+					"column": 19,
+					"description": "Anthropic API key"
+				},
+				{
+					"type": "openai-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sk-proj-\u2026 (44 chars)",
+					"context": "OPENAI_API_KEY=sk-proj-\u2026 (44 chars)",
+					"line": 15,
+					"column": 16,
+					"description": "OpenAI API key"
+				},
+				{
+					"type": "gitlab-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "glpat-EX\u2026 (29 chars)",
+					"context": "curl -H \"PRIVATE-TOKEN: glpat-EX\u2026 (29 chars)\" https://gitlab.example.invalid/api",
+					"line": 16,
+					"column": 25,
+					"description": "GitLab access token"
+				},
+				{
+					"type": "sendgrid-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "SG.EXAMP\u2026 (73 chars)",
+					"context": "SENDGRID_KEY=SG.EXAMP\u2026 (73 chars)",
+					"line": 17,
+					"column": 14,
+					"description": "SendGrid API key"
+				},
+				{
+					"type": "mailgun-key",
+					"confidence": "medium",
+					"key": null,
+					"preview": "key-dead\u2026 (40 chars)",
+					"context": "mailgun --key key-dead\u2026 (40 chars)",
+					"line": 18,
+					"column": 15,
+					"description": "Mailgun API key"
+				},
+				{
+					"type": "sentry-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "sntrys_E\u2026 (48 chars)",
+					"context": "SENTRY_AUTH_TOKEN=sntrys_E\u2026 (48 chars)",
+					"line": 19,
+					"column": 19,
+					"description": "Sentry auth token"
+				},
+				{
+					"type": "npm-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "npm_EXAM\u2026 (44 chars)",
+					"context": "//registry.npmjs.org/:_authToken=npm_EXAM\u2026 (44 chars)",
+					"line": 20,
+					"column": 34,
+					"description": "npm access token"
+				},
+				{
+					"type": "pypi-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "pypi-AgE\u2026 (60 chars)",
+					"context": "pypi-AgE\u2026 (60 chars)",
+					"line": 21,
+					"column": 1,
+					"description": "PyPI API token"
+				},
+				{
+					"type": "docker-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dckr_pat\u2026 (43 chars)",
+					"context": "docker login -u nobody -p dckr_pat\u2026 (43 chars)",
+					"line": 22,
+					"column": 27,
+					"description": "Docker Hub access token"
+				},
+				{
+					"type": "vault-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "hvs.EXAM\u2026 (31 chars)",
+					"context": "VAULT_TOKEN=hvs.EXAM\u2026 (31 chars)",
+					"line": 23,
+					"column": 13,
+					"description": "HashiCorp Vault token"
+				},
+				{
+					"type": "terraform-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "EXAMPLEn\u2026 (67 chars)",
+					"context": "credentials \"app.terraform.io\" { token = \"EXAMPLEn\u2026 (67 chars)\" }",
+					"line": 24,
+					"column": 43,
+					"description": "Terraform Cloud API token"
+				},
+				{
+					"type": "supabase-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sbp_dead\u2026 (48 chars)",
+					"context": "supabase login --token sbp_dead\u2026 (48 chars)",
+					"line": 25,
+					"column": 24,
+					"description": "Supabase secret key"
+				},
+				{
+					"type": "square-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "sq0atp-E\u2026 (30 chars)",
+					"context": "square-cli --access-token sq0atp-E\u2026 (30 chars)",
+					"line": 27,
+					"column": 27,
+					"description": "Square access token"
+				},
+				{
+					"type": "azure-sas",
+					"confidence": "high",
+					"key": null,
+					"preview": "EXAMPLEn\u2026 (27 chars)",
+					"context": "\u2026b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
+					"line": 28,
+					"column": 105,
+					"description": "Azure Storage SAS signature"
+				}
+			]
+		},
+		{
+			"name": "provider-tokens.txt at high sensitivity",
+			"file": "provider-tokens.txt",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "anthropic-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sk-ant-a\u2026 (45 chars)",
+					"context": "ANTHROPIC_API_KEY=sk-ant-a\u2026 (45 chars)",
+					"line": 14,
+					"column": 19,
+					"description": "Anthropic API key"
+				},
+				{
+					"type": "openai-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sk-proj-\u2026 (44 chars)",
+					"context": "OPENAI_API_KEY=sk-proj-\u2026 (44 chars)",
+					"line": 15,
+					"column": 16,
+					"description": "OpenAI API key"
+				},
+				{
+					"type": "gitlab-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "glpat-EX\u2026 (29 chars)",
+					"context": "curl -H \"PRIVATE-TOKEN: glpat-EX\u2026 (29 chars)\" https://gitlab.example.invalid/api",
+					"line": 16,
+					"column": 25,
+					"description": "GitLab access token"
+				},
+				{
+					"type": "sendgrid-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "SG.EXAMP\u2026 (73 chars)",
+					"context": "SENDGRID_KEY=SG.EXAMP\u2026 (73 chars)",
+					"line": 17,
+					"column": 14,
+					"description": "SendGrid API key"
+				},
+				{
+					"type": "sentry-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "sntrys_E\u2026 (48 chars)",
+					"context": "SENTRY_AUTH_TOKEN=sntrys_E\u2026 (48 chars)",
+					"line": 19,
+					"column": 19,
+					"description": "Sentry auth token"
+				},
+				{
+					"type": "npm-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "npm_EXAM\u2026 (44 chars)",
+					"context": "//registry.npmjs.org/:_authToken=npm_EXAM\u2026 (44 chars)",
+					"line": 20,
+					"column": 34,
+					"description": "npm access token"
+				},
+				{
+					"type": "pypi-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "pypi-AgE\u2026 (60 chars)",
+					"context": "pypi-AgE\u2026 (60 chars)",
+					"line": 21,
+					"column": 1,
+					"description": "PyPI API token"
+				},
+				{
+					"type": "docker-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dckr_pat\u2026 (43 chars)",
+					"context": "docker login -u nobody -p dckr_pat\u2026 (43 chars)",
+					"line": 22,
+					"column": 27,
+					"description": "Docker Hub access token"
+				},
+				{
+					"type": "vault-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "hvs.EXAM\u2026 (31 chars)",
+					"context": "VAULT_TOKEN=hvs.EXAM\u2026 (31 chars)",
+					"line": 23,
+					"column": 13,
+					"description": "HashiCorp Vault token"
+				},
+				{
+					"type": "terraform-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "EXAMPLEn\u2026 (67 chars)",
+					"context": "credentials \"app.terraform.io\" { token = \"EXAMPLEn\u2026 (67 chars)\" }",
+					"line": 24,
+					"column": 43,
+					"description": "Terraform Cloud API token"
+				},
+				{
+					"type": "supabase-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "sbp_dead\u2026 (48 chars)",
+					"context": "supabase login --token sbp_dead\u2026 (48 chars)",
+					"line": 25,
+					"column": 24,
+					"description": "Supabase secret key"
+				},
+				{
+					"type": "square-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "sq0atp-E\u2026 (30 chars)",
+					"context": "square-cli --access-token sq0atp-E\u2026 (30 chars)",
+					"line": 27,
+					"column": 27,
+					"description": "Square access token"
+				},
+				{
+					"type": "azure-sas",
+					"confidence": "high",
+					"key": null,
+					"preview": "EXAMPLEn\u2026 (27 chars)",
+					"context": "\u2026b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
+					"line": 28,
+					"column": 105,
+					"description": "Azure Storage SAS signature"
 				}
 			]
 		},
@@ -111,8 +542,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "sk_demo_… (40 chars)",
-					"context": "API_KEY=sk_demo_… (40 chars)",
+					"preview": "sk_demo_\u2026 (40 chars)",
+					"context": "API_KEY=sk_demo_\u2026 (40 chars)",
 					"line": 2,
 					"column": 9,
 					"description": "Generic API key"
@@ -121,8 +552,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "database_password",
-					"preview": "hunter2b… (16 chars)",
-					"context": "DATABASE_PASSWORD=hunter2b… (16 chars)",
+					"preview": "hunter2b\u2026 (16 chars)",
+					"context": "DATABASE_PASSWORD=hunter2b\u2026 (16 chars)",
 					"line": 3,
 					"column": 19,
 					"description": "Password"
@@ -131,8 +562,8 @@
 					"type": "aws-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "AKIAIOSF… (20 chars)",
-					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF… (20 chars)",
+					"preview": "AKIAIOSF\u2026 (20 chars)",
+					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF\u2026 (20 chars)",
 					"line": 4,
 					"column": 19,
 					"description": "AWS Access Key ID"
@@ -141,8 +572,8 @@
 					"type": "aws-secret",
 					"confidence": "high",
 					"key": "aws_secret_access_key",
-					"preview": "wJalrXUt… (40 chars)",
-					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)",
+					"preview": "wJalrXUt\u2026 (40 chars)",
+					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt\u2026 (40 chars)",
 					"line": 5,
 					"column": 23,
 					"description": "AWS Secret Access Key"
@@ -151,8 +582,8 @@
 					"type": "database-url",
 					"confidence": "high",
 					"key": null,
-					"preview": "postgres… (44 chars)",
-					"context": "DATABASE_URL=postgres… (44 chars)",
+					"preview": "postgres\u2026 (44 chars)",
+					"context": "DATABASE_URL=postgres\u2026 (44 chars)",
 					"line": 6,
 					"column": 14,
 					"description": "Database URL with embedded credentials"
@@ -161,8 +592,8 @@
 					"type": "session-id",
 					"confidence": "medium",
 					"key": "session_id",
-					"preview": "abcdef12… (22 chars)",
-					"context": "SESSION_ID=abcdef12… (22 chars)",
+					"preview": "abcdef12\u2026 (22 chars)",
+					"context": "SESSION_ID=abcdef12\u2026 (22 chars)",
 					"line": 7,
 					"column": 12,
 					"description": "Session ID"
@@ -178,8 +609,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "sk_demo_… (40 chars)",
-					"context": "API_KEY=sk_demo_… (40 chars)",
+					"preview": "sk_demo_\u2026 (40 chars)",
+					"context": "API_KEY=sk_demo_\u2026 (40 chars)",
 					"line": 2,
 					"column": 9,
 					"description": "Generic API key"
@@ -188,8 +619,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "database_password",
-					"preview": "hunter2b… (16 chars)",
-					"context": "DATABASE_PASSWORD=hunter2b… (16 chars)",
+					"preview": "hunter2b\u2026 (16 chars)",
+					"context": "DATABASE_PASSWORD=hunter2b\u2026 (16 chars)",
 					"line": 3,
 					"column": 19,
 					"description": "Password"
@@ -198,8 +629,8 @@
 					"type": "aws-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "AKIAIOSF… (20 chars)",
-					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF… (20 chars)",
+					"preview": "AKIAIOSF\u2026 (20 chars)",
+					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF\u2026 (20 chars)",
 					"line": 4,
 					"column": 19,
 					"description": "AWS Access Key ID"
@@ -208,8 +639,8 @@
 					"type": "aws-secret",
 					"confidence": "high",
 					"key": "aws_secret_access_key",
-					"preview": "wJalrXUt… (40 chars)",
-					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)",
+					"preview": "wJalrXUt\u2026 (40 chars)",
+					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt\u2026 (40 chars)",
 					"line": 5,
 					"column": 23,
 					"description": "AWS Secret Access Key"
@@ -218,8 +649,8 @@
 					"type": "database-url",
 					"confidence": "high",
 					"key": null,
-					"preview": "postgres… (44 chars)",
-					"context": "DATABASE_URL=postgres… (44 chars)",
+					"preview": "postgres\u2026 (44 chars)",
+					"context": "DATABASE_URL=postgres\u2026 (44 chars)",
 					"line": 6,
 					"column": 14,
 					"description": "Database URL with embedded credentials"
@@ -228,8 +659,8 @@
 					"type": "session-id",
 					"confidence": "medium",
 					"key": "session_id",
-					"preview": "abcdef12… (22 chars)",
-					"context": "SESSION_ID=abcdef12… (22 chars)",
+					"preview": "abcdef12\u2026 (22 chars)",
+					"context": "SESSION_ID=abcdef12\u2026 (22 chars)",
 					"line": 7,
 					"column": 12,
 					"description": "Session ID"
@@ -245,8 +676,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "sk_demo_… (40 chars)",
-					"context": "API_KEY=sk_demo_… (40 chars)",
+					"preview": "sk_demo_\u2026 (40 chars)",
+					"context": "API_KEY=sk_demo_\u2026 (40 chars)",
 					"line": 2,
 					"column": 9,
 					"description": "Generic API key"
@@ -255,8 +686,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "database_password",
-					"preview": "hunter2b… (16 chars)",
-					"context": "DATABASE_PASSWORD=hunter2b… (16 chars)",
+					"preview": "hunter2b\u2026 (16 chars)",
+					"context": "DATABASE_PASSWORD=hunter2b\u2026 (16 chars)",
 					"line": 3,
 					"column": 19,
 					"description": "Password"
@@ -265,8 +696,8 @@
 					"type": "aws-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "AKIAIOSF… (20 chars)",
-					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF… (20 chars)",
+					"preview": "AKIAIOSF\u2026 (20 chars)",
+					"context": "AWS_ACCESS_KEY_ID=AKIAIOSF\u2026 (20 chars)",
 					"line": 4,
 					"column": 19,
 					"description": "AWS Access Key ID"
@@ -275,8 +706,8 @@
 					"type": "aws-secret",
 					"confidence": "high",
 					"key": "aws_secret_access_key",
-					"preview": "wJalrXUt… (40 chars)",
-					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)",
+					"preview": "wJalrXUt\u2026 (40 chars)",
+					"context": "AWS_SECRET_ACCESS_KEY=wJalrXUt\u2026 (40 chars)",
 					"line": 5,
 					"column": 23,
 					"description": "AWS Secret Access Key"
@@ -285,8 +716,8 @@
 					"type": "database-url",
 					"confidence": "high",
 					"key": null,
-					"preview": "postgres… (44 chars)",
-					"context": "DATABASE_URL=postgres… (44 chars)",
+					"preview": "postgres\u2026 (44 chars)",
+					"context": "DATABASE_URL=postgres\u2026 (44 chars)",
 					"line": 6,
 					"column": 14,
 					"description": "Database URL with embedded credentials"
@@ -302,8 +733,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "supersec… (22 chars)",
-					"context": "password = supersec… (22 chars)",
+					"preview": "supersec\u2026 (22 chars)",
+					"context": "password = supersec\u2026 (22 chars)",
 					"line": 2,
 					"column": 12,
 					"description": "Password"
@@ -312,8 +743,8 @@
 					"type": "connection-string",
 					"confidence": "medium",
 					"key": "connection_string",
-					"preview": "Server=p… (50 chars)",
-					"context": "connection_string = Server=p… (50 chars)",
+					"preview": "Server=p\u2026 (50 chars)",
+					"context": "connection_string = Server=p\u2026 (50 chars)",
 					"line": 3,
 					"column": 21,
 					"description": "Connection string"
@@ -322,8 +753,8 @@
 					"type": "password",
 					"confidence": "medium",
 					"key": "pwd",
-					"preview": "secre… (10 chars)",
-					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre… (10 chars);",
+					"preview": "secre\u2026 (10 chars)",
+					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre\u2026 (10 chars);",
 					"line": 3,
 					"column": 60,
 					"description": "Password"
@@ -332,8 +763,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "01234567… (32 chars)",
-					"context": "api_key = 01234567… (32 chars)",
+					"preview": "01234567\u2026 (32 chars)",
+					"context": "api_key = 01234567\u2026 (32 chars)",
 					"line": 5,
 					"column": 11,
 					"description": "Generic API key"
@@ -349,8 +780,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "supersec… (22 chars)",
-					"context": "password = supersec… (22 chars)",
+					"preview": "supersec\u2026 (22 chars)",
+					"context": "password = supersec\u2026 (22 chars)",
 					"line": 2,
 					"column": 12,
 					"description": "Password"
@@ -359,8 +790,8 @@
 					"type": "connection-string",
 					"confidence": "medium",
 					"key": "connection_string",
-					"preview": "Server=p… (50 chars)",
-					"context": "connection_string = Server=p… (50 chars)",
+					"preview": "Server=p\u2026 (50 chars)",
+					"context": "connection_string = Server=p\u2026 (50 chars)",
 					"line": 3,
 					"column": 21,
 					"description": "Connection string"
@@ -369,8 +800,8 @@
 					"type": "password",
 					"confidence": "medium",
 					"key": "pwd",
-					"preview": "secre… (10 chars)",
-					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre… (10 chars);",
+					"preview": "secre\u2026 (10 chars)",
+					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre\u2026 (10 chars);",
 					"line": 3,
 					"column": 60,
 					"description": "Password"
@@ -379,8 +810,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "01234567… (32 chars)",
-					"context": "api_key = 01234567… (32 chars)",
+					"preview": "01234567\u2026 (32 chars)",
+					"context": "api_key = 01234567\u2026 (32 chars)",
 					"line": 5,
 					"column": 11,
 					"description": "Generic API key"
@@ -396,8 +827,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "supersec… (22 chars)",
-					"context": "password = supersec… (22 chars)",
+					"preview": "supersec\u2026 (22 chars)",
+					"context": "password = supersec\u2026 (22 chars)",
 					"line": 2,
 					"column": 12,
 					"description": "Password"
@@ -406,8 +837,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "01234567… (32 chars)",
-					"context": "api_key = 01234567… (32 chars)",
+					"preview": "01234567\u2026 (32 chars)",
+					"context": "api_key = 01234567\u2026 (32 chars)",
 					"line": 5,
 					"column": 11,
 					"description": "Generic API key"
@@ -423,8 +854,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "apikey",
-					"preview": "sk_demo_… (32 chars)",
-					"context": "const apiKey = 'sk_demo_… (32 chars)';",
+					"preview": "sk_demo_\u2026 (32 chars)",
+					"context": "const apiKey = 'sk_demo_\u2026 (32 chars)';",
 					"line": 1,
 					"column": 17,
 					"description": "Generic API key"
@@ -433,8 +864,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "n0tS0Se… (15 chars)",
-					"context": "password: 'n0tS0Se… (15 chars)',",
+					"preview": "n0tS0Se\u2026 (15 chars)",
+					"context": "password: 'n0tS0Se\u2026 (15 chars)',",
 					"line": 3,
 					"column": 13,
 					"description": "Password"
@@ -443,8 +874,8 @@
 					"type": "bearer-token",
 					"confidence": "high",
 					"key": null,
-					"preview": "eyJhbGci… (79 chars)",
-					"context": "'Bearer eyJhbGci… (79 chars)',",
+					"preview": "eyJhbGci\u2026 (79 chars)",
+					"context": "'Bearer eyJhbGci\u2026 (79 chars)',",
 					"line": 9,
 					"column": 12,
 					"description": "Bearer token"
@@ -453,8 +884,8 @@
 					"type": "aws-secret",
 					"confidence": "high",
 					"key": "awssecretaccesskey",
-					"preview": "wJalrXUt… (40 chars)",
-					"context": "const awsSecretAccessKey = 'wJalrXUt… (40 chars)';",
+					"preview": "wJalrXUt\u2026 (40 chars)",
+					"context": "const awsSecretAccessKey = 'wJalrXUt\u2026 (40 chars)';",
 					"line": 13,
 					"column": 29,
 					"description": "AWS Secret Access Key"
@@ -470,8 +901,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "apikey",
-					"preview": "sk_demo_… (32 chars)",
-					"context": "const apiKey = 'sk_demo_… (32 chars)';",
+					"preview": "sk_demo_\u2026 (32 chars)",
+					"context": "const apiKey = 'sk_demo_\u2026 (32 chars)';",
 					"line": 1,
 					"column": 17,
 					"description": "Generic API key"
@@ -480,8 +911,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "n0tS0Se… (15 chars)",
-					"context": "password: 'n0tS0Se… (15 chars)',",
+					"preview": "n0tS0Se\u2026 (15 chars)",
+					"context": "password: 'n0tS0Se\u2026 (15 chars)',",
 					"line": 3,
 					"column": 13,
 					"description": "Password"
@@ -490,8 +921,8 @@
 					"type": "bearer-token",
 					"confidence": "high",
 					"key": null,
-					"preview": "eyJhbGci… (79 chars)",
-					"context": "'Bearer eyJhbGci… (79 chars)',",
+					"preview": "eyJhbGci\u2026 (79 chars)",
+					"context": "'Bearer eyJhbGci\u2026 (79 chars)',",
 					"line": 9,
 					"column": 12,
 					"description": "Bearer token"
@@ -500,8 +931,8 @@
 					"type": "aws-secret",
 					"confidence": "high",
 					"key": "awssecretaccesskey",
-					"preview": "wJalrXUt… (40 chars)",
-					"context": "const awsSecretAccessKey = 'wJalrXUt… (40 chars)';",
+					"preview": "wJalrXUt\u2026 (40 chars)",
+					"context": "const awsSecretAccessKey = 'wJalrXUt\u2026 (40 chars)';",
 					"line": 13,
 					"column": 29,
 					"description": "AWS Secret Access Key"
@@ -517,8 +948,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "apikey",
-					"preview": "sk_demo_… (32 chars)",
-					"context": "const apiKey = 'sk_demo_… (32 chars)';",
+					"preview": "sk_demo_\u2026 (32 chars)",
+					"context": "const apiKey = 'sk_demo_\u2026 (32 chars)';",
 					"line": 1,
 					"column": 17,
 					"description": "Generic API key"
@@ -527,8 +958,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "n0tS0Se… (15 chars)",
-					"context": "password: 'n0tS0Se… (15 chars)',",
+					"preview": "n0tS0Se\u2026 (15 chars)",
+					"context": "password: 'n0tS0Se\u2026 (15 chars)',",
 					"line": 3,
 					"column": 13,
 					"description": "Password"
@@ -537,8 +968,8 @@
 					"type": "bearer-token",
 					"confidence": "high",
 					"key": null,
-					"preview": "eyJhbGci… (79 chars)",
-					"context": "'Bearer eyJhbGci… (79 chars)',",
+					"preview": "eyJhbGci\u2026 (79 chars)",
+					"context": "'Bearer eyJhbGci\u2026 (79 chars)',",
 					"line": 9,
 					"column": 12,
 					"description": "Bearer token"
@@ -547,8 +978,8 @@
 					"type": "aws-secret",
 					"confidence": "high",
 					"key": "awssecretaccesskey",
-					"preview": "wJalrXUt… (40 chars)",
-					"context": "const awsSecretAccessKey = 'wJalrXUt… (40 chars)';",
+					"preview": "wJalrXUt\u2026 (40 chars)",
+					"context": "const awsSecretAccessKey = 'wJalrXUt\u2026 (40 chars)';",
 					"line": 13,
 					"column": 29,
 					"description": "AWS Secret Access Key"
@@ -564,8 +995,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "apikey",
-					"preview": "a1b2c3d4… (32 chars)",
-					"context": "\"apiKey\": \"a1b2c3d4… (32 chars)\",",
+					"preview": "a1b2c3d4\u2026 (32 chars)",
+					"context": "\"apiKey\": \"a1b2c3d4\u2026 (32 chars)\",",
 					"line": 2,
 					"column": 13,
 					"description": "Generic API key"
@@ -574,8 +1005,8 @@
 					"type": "token",
 					"confidence": "high",
 					"key": "token",
-					"preview": "ghp_abcd… (40 chars)",
-					"context": "\"token\": \"ghp_abcd… (40 chars)\",",
+					"preview": "ghp_abcd\u2026 (40 chars)",
+					"context": "\"token\": \"ghp_abcd\u2026 (40 chars)\",",
 					"line": 4,
 					"column": 13,
 					"description": "Generic token"
@@ -584,8 +1015,8 @@
 					"type": "refresh-token",
 					"confidence": "high",
 					"key": "refresh_token",
-					"preview": "rt_abcde… (27 chars)",
-					"context": "\"refresh_token\": \"rt_abcde… (27 chars)\"",
+					"preview": "rt_abcde\u2026 (27 chars)",
+					"context": "\"refresh_token\": \"rt_abcde\u2026 (27 chars)\"",
 					"line": 5,
 					"column": 21,
 					"description": "Refresh token"
@@ -594,8 +1025,8 @@
 					"type": "connection-string",
 					"confidence": "medium",
 					"key": "connectionstring",
-					"preview": "Server=d… (53 chars)",
-					"context": "\"connectionString\": \"Server=d… (53 chars)\"",
+					"preview": "Server=d\u2026 (53 chars)",
+					"context": "\"connectionString\": \"Server=d\u2026 (53 chars)\"",
 					"line": 7,
 					"column": 23,
 					"description": "Connection string"
@@ -604,8 +1035,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "Sup3rS… (13 chars)",
-					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true\"",
+					"preview": "Sup3rS\u2026 (13 chars)",
+					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS\u2026 (13 chars);Encrypt=true\"",
 					"line": 7,
 					"column": 50,
 					"description": "Password"
@@ -621,8 +1052,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "apikey",
-					"preview": "a1b2c3d4… (32 chars)",
-					"context": "\"apiKey\": \"a1b2c3d4… (32 chars)\",",
+					"preview": "a1b2c3d4\u2026 (32 chars)",
+					"context": "\"apiKey\": \"a1b2c3d4\u2026 (32 chars)\",",
 					"line": 2,
 					"column": 13,
 					"description": "Generic API key"
@@ -631,8 +1062,8 @@
 					"type": "token",
 					"confidence": "high",
 					"key": "token",
-					"preview": "ghp_abcd… (40 chars)",
-					"context": "\"token\": \"ghp_abcd… (40 chars)\",",
+					"preview": "ghp_abcd\u2026 (40 chars)",
+					"context": "\"token\": \"ghp_abcd\u2026 (40 chars)\",",
 					"line": 4,
 					"column": 13,
 					"description": "Generic token"
@@ -641,8 +1072,8 @@
 					"type": "refresh-token",
 					"confidence": "high",
 					"key": "refresh_token",
-					"preview": "rt_abcde… (27 chars)",
-					"context": "\"refresh_token\": \"rt_abcde… (27 chars)\"",
+					"preview": "rt_abcde\u2026 (27 chars)",
+					"context": "\"refresh_token\": \"rt_abcde\u2026 (27 chars)\"",
 					"line": 5,
 					"column": 21,
 					"description": "Refresh token"
@@ -651,8 +1082,8 @@
 					"type": "connection-string",
 					"confidence": "medium",
 					"key": "connectionstring",
-					"preview": "Server=d… (53 chars)",
-					"context": "\"connectionString\": \"Server=d… (53 chars)\"",
+					"preview": "Server=d\u2026 (53 chars)",
+					"context": "\"connectionString\": \"Server=d\u2026 (53 chars)\"",
 					"line": 7,
 					"column": 23,
 					"description": "Connection string"
@@ -661,8 +1092,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "Sup3rS… (13 chars)",
-					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true\"",
+					"preview": "Sup3rS\u2026 (13 chars)",
+					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS\u2026 (13 chars);Encrypt=true\"",
 					"line": 7,
 					"column": 50,
 					"description": "Password"
@@ -678,8 +1109,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "apikey",
-					"preview": "a1b2c3d4… (32 chars)",
-					"context": "\"apiKey\": \"a1b2c3d4… (32 chars)\",",
+					"preview": "a1b2c3d4\u2026 (32 chars)",
+					"context": "\"apiKey\": \"a1b2c3d4\u2026 (32 chars)\",",
 					"line": 2,
 					"column": 13,
 					"description": "Generic API key"
@@ -688,8 +1119,8 @@
 					"type": "token",
 					"confidence": "high",
 					"key": "token",
-					"preview": "ghp_abcd… (40 chars)",
-					"context": "\"token\": \"ghp_abcd… (40 chars)\",",
+					"preview": "ghp_abcd\u2026 (40 chars)",
+					"context": "\"token\": \"ghp_abcd\u2026 (40 chars)\",",
 					"line": 4,
 					"column": 13,
 					"description": "Generic token"
@@ -698,8 +1129,8 @@
 					"type": "refresh-token",
 					"confidence": "high",
 					"key": "refresh_token",
-					"preview": "rt_abcde… (27 chars)",
-					"context": "\"refresh_token\": \"rt_abcde… (27 chars)\"",
+					"preview": "rt_abcde\u2026 (27 chars)",
+					"context": "\"refresh_token\": \"rt_abcde\u2026 (27 chars)\"",
 					"line": 5,
 					"column": 21,
 					"description": "Refresh token"
@@ -708,8 +1139,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "Sup3rS… (13 chars)",
-					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true\"",
+					"preview": "Sup3rS\u2026 (13 chars)",
+					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS\u2026 (13 chars);Encrypt=true\"",
 					"line": 7,
 					"column": 50,
 					"description": "Password"
@@ -725,8 +1156,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "AIzaSyAa… (36 chars)",
-					"context": "API_KEY = \"AIzaSyAa… (36 chars)\"",
+					"preview": "AIzaSyAa\u2026 (36 chars)",
+					"context": "API_KEY = \"AIzaSyAa\u2026 (36 chars)\"",
 					"line": 1,
 					"column": 12,
 					"description": "Generic API key"
@@ -735,8 +1166,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "db_password",
-					"preview": "postgres… (18 chars)",
-					"context": "db_password = \"postgres… (18 chars)\"",
+					"preview": "postgres\u2026 (18 chars)",
+					"context": "db_password = \"postgres\u2026 (18 chars)\"",
 					"line": 2,
 					"column": 16,
 					"description": "Password"
@@ -745,8 +1176,8 @@
 					"type": "token",
 					"confidence": "medium",
 					"key": "secret_token",
-					"preview": "tok_abcd… (26 chars)",
-					"context": "SECRET_TOKEN = \"tok_abcd… (26 chars)\"",
+					"preview": "tok_abcd\u2026 (26 chars)",
+					"context": "SECRET_TOKEN = \"tok_abcd\u2026 (26 chars)\"",
 					"line": 3,
 					"column": 17,
 					"description": "Generic token"
@@ -762,8 +1193,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "AIzaSyAa… (36 chars)",
-					"context": "API_KEY = \"AIzaSyAa… (36 chars)\"",
+					"preview": "AIzaSyAa\u2026 (36 chars)",
+					"context": "API_KEY = \"AIzaSyAa\u2026 (36 chars)\"",
 					"line": 1,
 					"column": 12,
 					"description": "Generic API key"
@@ -772,8 +1203,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "db_password",
-					"preview": "postgres… (18 chars)",
-					"context": "db_password = \"postgres… (18 chars)\"",
+					"preview": "postgres\u2026 (18 chars)",
+					"context": "db_password = \"postgres\u2026 (18 chars)\"",
 					"line": 2,
 					"column": 16,
 					"description": "Password"
@@ -782,8 +1213,8 @@
 					"type": "token",
 					"confidence": "medium",
 					"key": "secret_token",
-					"preview": "tok_abcd… (26 chars)",
-					"context": "SECRET_TOKEN = \"tok_abcd… (26 chars)\"",
+					"preview": "tok_abcd\u2026 (26 chars)",
+					"context": "SECRET_TOKEN = \"tok_abcd\u2026 (26 chars)\"",
 					"line": 3,
 					"column": 17,
 					"description": "Generic token"
@@ -799,8 +1230,8 @@
 					"type": "api-key",
 					"confidence": "high",
 					"key": "api_key",
-					"preview": "AIzaSyAa… (36 chars)",
-					"context": "API_KEY = \"AIzaSyAa… (36 chars)\"",
+					"preview": "AIzaSyAa\u2026 (36 chars)",
+					"context": "API_KEY = \"AIzaSyAa\u2026 (36 chars)\"",
 					"line": 1,
 					"column": 12,
 					"description": "Generic API key"
@@ -809,8 +1240,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "db_password",
-					"preview": "postgres… (18 chars)",
-					"context": "db_password = \"postgres… (18 chars)\"",
+					"preview": "postgres\u2026 (18 chars)",
+					"context": "db_password = \"postgres\u2026 (18 chars)\"",
 					"line": 2,
 					"column": 16,
 					"description": "Password"
@@ -826,8 +1257,8 @@
 					"type": "aws-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "AKIAIOSF… (20 chars)",
-					"context": "aws_access_key_id: AKIAIOSF… (20 chars)",
+					"preview": "AKIAIOSF\u2026 (20 chars)",
+					"context": "aws_access_key_id: AKIAIOSF\u2026 (20 chars)",
 					"line": 1,
 					"column": 20,
 					"description": "AWS Access Key ID"
@@ -836,8 +1267,8 @@
 					"type": "azure-key",
 					"confidence": "high",
 					"key": "azure_account_key",
-					"preview": "YWJjZGVm… (44 chars)",
-					"context": "azure_account_key: YWJjZGVm… (44 chars)",
+					"preview": "YWJjZGVm\u2026 (44 chars)",
+					"context": "azure_account_key: YWJjZGVm\u2026 (44 chars)",
 					"line": 2,
 					"column": 20,
 					"description": "Azure account key"
@@ -846,8 +1277,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "correcth… (25 chars)",
-					"context": "password: correcth… (25 chars)",
+					"preview": "correcth\u2026 (25 chars)",
+					"context": "password: correcth\u2026 (25 chars)",
 					"line": 3,
 					"column": 11,
 					"description": "Password"
@@ -856,8 +1287,8 @@
 					"type": "gcp-key",
 					"confidence": "medium",
 					"key": "gcp_key",
-					"preview": "my-proje… (20 chars)",
-					"context": "gcp_key: my-proje… (20 chars)",
+					"preview": "my-proje\u2026 (20 chars)",
+					"context": "gcp_key: my-proje\u2026 (20 chars)",
 					"line": 4,
 					"column": 10,
 					"description": "GCP/Google Cloud key"
@@ -866,8 +1297,8 @@
 					"type": "oauth-token",
 					"confidence": "high",
 					"key": "oauth_token",
-					"preview": "ya29a0Af… (31 chars)",
-					"context": "oauth_token: ya29a0Af… (31 chars)",
+					"preview": "ya29a0Af\u2026 (31 chars)",
+					"context": "oauth_token: ya29a0Af\u2026 (31 chars)",
 					"line": 5,
 					"column": 14,
 					"description": "OAuth token"
@@ -883,8 +1314,8 @@
 					"type": "aws-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "AKIAIOSF… (20 chars)",
-					"context": "aws_access_key_id: AKIAIOSF… (20 chars)",
+					"preview": "AKIAIOSF\u2026 (20 chars)",
+					"context": "aws_access_key_id: AKIAIOSF\u2026 (20 chars)",
 					"line": 1,
 					"column": 20,
 					"description": "AWS Access Key ID"
@@ -893,8 +1324,8 @@
 					"type": "azure-key",
 					"confidence": "high",
 					"key": "azure_account_key",
-					"preview": "YWJjZGVm… (44 chars)",
-					"context": "azure_account_key: YWJjZGVm… (44 chars)",
+					"preview": "YWJjZGVm\u2026 (44 chars)",
+					"context": "azure_account_key: YWJjZGVm\u2026 (44 chars)",
 					"line": 2,
 					"column": 20,
 					"description": "Azure account key"
@@ -903,8 +1334,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "correcth… (25 chars)",
-					"context": "password: correcth… (25 chars)",
+					"preview": "correcth\u2026 (25 chars)",
+					"context": "password: correcth\u2026 (25 chars)",
 					"line": 3,
 					"column": 11,
 					"description": "Password"
@@ -913,8 +1344,8 @@
 					"type": "gcp-key",
 					"confidence": "medium",
 					"key": "gcp_key",
-					"preview": "my-proje… (20 chars)",
-					"context": "gcp_key: my-proje… (20 chars)",
+					"preview": "my-proje\u2026 (20 chars)",
+					"context": "gcp_key: my-proje\u2026 (20 chars)",
 					"line": 4,
 					"column": 10,
 					"description": "GCP/Google Cloud key"
@@ -923,8 +1354,8 @@
 					"type": "oauth-token",
 					"confidence": "high",
 					"key": "oauth_token",
-					"preview": "ya29a0Af… (31 chars)",
-					"context": "oauth_token: ya29a0Af… (31 chars)",
+					"preview": "ya29a0Af\u2026 (31 chars)",
+					"context": "oauth_token: ya29a0Af\u2026 (31 chars)",
 					"line": 5,
 					"column": 14,
 					"description": "OAuth token"
@@ -940,8 +1371,8 @@
 					"type": "aws-key",
 					"confidence": "high",
 					"key": null,
-					"preview": "AKIAIOSF… (20 chars)",
-					"context": "aws_access_key_id: AKIAIOSF… (20 chars)",
+					"preview": "AKIAIOSF\u2026 (20 chars)",
+					"context": "aws_access_key_id: AKIAIOSF\u2026 (20 chars)",
 					"line": 1,
 					"column": 20,
 					"description": "AWS Access Key ID"
@@ -950,8 +1381,8 @@
 					"type": "azure-key",
 					"confidence": "high",
 					"key": "azure_account_key",
-					"preview": "YWJjZGVm… (44 chars)",
-					"context": "azure_account_key: YWJjZGVm… (44 chars)",
+					"preview": "YWJjZGVm\u2026 (44 chars)",
+					"context": "azure_account_key: YWJjZGVm\u2026 (44 chars)",
 					"line": 2,
 					"column": 20,
 					"description": "Azure account key"
@@ -960,8 +1391,8 @@
 					"type": "password",
 					"confidence": "high",
 					"key": "password",
-					"preview": "correcth… (25 chars)",
-					"context": "password: correcth… (25 chars)",
+					"preview": "correcth\u2026 (25 chars)",
+					"context": "password: correcth\u2026 (25 chars)",
 					"line": 3,
 					"column": 11,
 					"description": "Password"
@@ -970,8 +1401,8 @@
 					"type": "oauth-token",
 					"confidence": "high",
 					"key": "oauth_token",
-					"preview": "ya29a0Af… (31 chars)",
-					"context": "oauth_token: ya29a0Af… (31 chars)",
+					"preview": "ya29a0Af\u2026 (31 chars)",
+					"context": "oauth_token: ya29a0Af\u2026 (31 chars)",
 					"line": 5,
 					"column": 14,
 					"description": "OAuth token"
@@ -1027,11 +1458,6 @@
 					"line": 5
 				},
 				{
-					"type": "database-url",
-					"confidence": "high",
-					"line": 6
-				},
-				{
 					"type": "session-id",
 					"confidence": "medium",
 					"line": 7
@@ -1069,11 +1495,6 @@
 					"type": "database-url",
 					"confidence": "high",
 					"line": 6
-				},
-				{
-					"type": "session-id",
-					"confidence": "medium",
-					"line": 7
 				}
 			]
 		},
@@ -1113,6 +1534,94 @@
 					"type": "session-id",
 					"confidence": "medium",
 					"line": 7
+				}
+			]
+		},
+		{
+			"name": "api keys excluded, issuer-prefixed",
+			"file": "provider-tokens.txt",
+			"options": {
+				"includeApiKeys": false
+			},
+			"expected": [
+				{
+					"type": "gitlab-token",
+					"confidence": "high",
+					"line": 16
+				},
+				{
+					"type": "sentry-token",
+					"confidence": "high",
+					"line": 19
+				},
+				{
+					"type": "npm-token",
+					"confidence": "high",
+					"line": 20
+				},
+				{
+					"type": "pypi-token",
+					"confidence": "high",
+					"line": 21
+				},
+				{
+					"type": "docker-token",
+					"confidence": "high",
+					"line": 22
+				},
+				{
+					"type": "vault-token",
+					"confidence": "high",
+					"line": 23
+				},
+				{
+					"type": "terraform-token",
+					"confidence": "high",
+					"line": 24
+				},
+				{
+					"type": "square-token",
+					"confidence": "high",
+					"line": 27
+				}
+			]
+		},
+		{
+			"name": "tokens excluded, issuer-prefixed",
+			"file": "provider-tokens.txt",
+			"options": {
+				"includeTokens": false
+			},
+			"expected": [
+				{
+					"type": "anthropic-key",
+					"confidence": "high",
+					"line": 14
+				},
+				{
+					"type": "openai-key",
+					"confidence": "high",
+					"line": 15
+				},
+				{
+					"type": "sendgrid-key",
+					"confidence": "high",
+					"line": 17
+				},
+				{
+					"type": "mailgun-key",
+					"confidence": "medium",
+					"line": 18
+				},
+				{
+					"type": "supabase-key",
+					"confidence": "high",
+					"line": 25
+				},
+				{
+					"type": "azure-sas",
+					"confidence": "high",
+					"line": 28
 				}
 			]
 		}

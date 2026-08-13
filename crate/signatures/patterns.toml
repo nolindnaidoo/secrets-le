@@ -1,14 +1,138 @@
 # The detection table, mirrored out of src/extraction/detectors.ts.
 #
-# ORDER IS LOAD-BEARING. Specific key patterns run before the generic
-# token pattern, and the first pattern to claim a span wins the dedupe.
-# Reordering this file changes what the scanner reports.
+# ORDER IS LOAD-BEARING. The issuer-prefixed patterns run before the
+# key-name ones, and the specific key patterns before the generic token
+# pattern; the first pattern to claim a span wins the dedupe. Reordering
+# this file changes what the scanner reports, and in one direction it
+# changes what it reports *at all*: an issuer-prefixed value graded by a
+# key pattern's length rule can fall to `medium` and be dropped by
+# `--sensitivity high`.
 #
 # `confidence` is a rule rather than the lambda the extension holds,
 # because a function cannot be mirrored into data and checked. The
 # parity script evaluates both over probe values and fails when they
 # disagree — so changing a threshold in the code without changing it
 # here breaks a build.
+
+[[pattern]]
+type = "anthropic-key"
+description = "Anthropic API key"
+regex = "\\b(sk-ant-[A-Za-z0-9_-]{24,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "openai-key"
+description = "OpenAI API key"
+regex = "\\b(sk-(?:proj|svcacct|admin)-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9]{48})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "gitlab-token"
+description = "GitLab access token"
+regex = "\\b(gl(?:pat|rt|dt)-[A-Za-z0-9_-]{20,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "sendgrid-key"
+description = "SendGrid API key"
+regex = "\\b(SG\\.[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{30,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "mailgun-key"
+description = "Mailgun API key"
+regex = "\\b(key-[0-9a-f]{32,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "medium" }
+
+[[pattern]]
+type = "sentry-token"
+description = "Sentry auth token"
+regex = "\\b(sntry[su]_[A-Za-z0-9+/=_-]{40,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "npm-token"
+description = "npm access token"
+regex = "\\b(npm_[A-Za-z0-9]{36,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "pypi-token"
+description = "PyPI API token"
+regex = "\\b(pypi-AgE[A-Za-z0-9_-]{50,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "docker-token"
+description = "Docker Hub access token"
+regex = "\\b(dckr_pat_[A-Za-z0-9_-]{20,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "vault-token"
+description = "HashiCorp Vault token"
+regex = "\\b(hv[bsr]\\.[A-Za-z0-9_-]{24,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "terraform-token"
+description = "Terraform Cloud API token"
+regex = "\\b([A-Za-z0-9]{10,20}\\.atlasv1\\.[A-Za-z0-9_-]{40,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "supabase-key"
+description = "Supabase secret key"
+regex = "\\b(sbp_(?:v[0-9]_)?[0-9a-f]{40,}|sb_secret_[A-Za-z0-9_-]{16,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "shopify-token"
+description = "Shopify access token"
+regex = "\\b(shp(?:at|ca|pa|ss)_[a-fA-F0-9]{32,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "square-token"
+description = "Square access token"
+regex = "\\b(sq0(?:atp|csp|idp)-[A-Za-z0-9_-]{20,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "azure-sas"
+description = "Azure Storage SAS signature"
+regex = "\\bsv=[0-9]{4}-[0-9]{2}-[0-9]{2}[^\\s'\"]{0,300}?[?&]sig=([A-Za-z0-9%+/]{20,})"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
 
 [[pattern]]
 type = "aws-secret"

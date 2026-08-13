@@ -7,19 +7,22 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.1] - 2026-08-12
+## [0.2.0] - 2026-08-13
 
-Speed and proof. No new detector, no new flag, no new field — the same
-nineteen patterns, answering faster and with more of the answer checked.
+Fifteen more providers, four kinds of finding that no switch could turn
+off, and the speed and disclosure work that 0.1.1 was going to carry —
+0.1.1 was never published, so it is folded in here rather than
+advertised as a release nobody can install.
 
 **A repository scan went from 8.55 seconds to under a tenth of a second,
-and not one finding changed.** For a tool that exists to find
-credentials, "faster" is only reassuring next to "and it still finds
-exactly the same things", so that was the bar: byte-identical output on
-every tree it was measured against, with the property asserted in tests
-rather than argued from the diff.
+and no finding that existed before it changed.** For a tool that exists
+to find credentials, "faster" is only reassuring next to "and it still
+finds exactly the same things", so that was the bar: byte-identical
+output on every tree it was measured against, with the property asserted
+in tests rather than argued from the diff. The new providers above are
+the only reason a count moves.
 
-Three of these fixes are places where the tool could have printed a
+Three of the fixes below are places where the tool could have printed a
 credential. That is the one thing it must never do, and every one of
 them was found by a check that now runs on every push — over generated
 documents, not a fixed list of cases somebody thought of. Two claims are
@@ -37,10 +40,30 @@ git-history scanning, and any network call — nothing here validates a
 credential against the service it belongs to, because that would
 transmit it.
 
+### Added
+
+- **Fifteen more providers.** OpenAI, Anthropic, GitLab, SendGrid,
+  Mailgun, Sentry, npm, PyPI, Docker Hub, HashiCorp Vault, Terraform
+  Cloud, Supabase, Shopify, Square and Azure SAS. The table goes from 19
+  patterns to 34. A repository holding a live key from any of these
+  could scan clean before this.
+
 ### Fixed
 
+- **Four kinds of finding no switch could turn off.** `--no-passwords`
+  left connection strings and database URLs in the report, and
+  `--no-tokens` left cookies and session IDs, because anything the
+  classifier did not recognise was included unconditionally. A
+  connection string and a database URL are reported *because* they carry
+  a credential in a URI, so they answer to `--no-passwords`; a cookie
+  and a session ID are bearer credentials and answer to `--no-tokens`.
+  The same four flags reach the shared `detect_secrets` tool as
+  `includePasswords` and `includeTokens`, so both servers changed
+  together.
+
 - **Scanning a repository was fifty times slower than it needed to be.**
-  Thirteen of the nineteen patterns begin with `[A-Za-z0-9_-]*` before
+  Thirteen of the patterns then in the table begin with
+  `[A-Za-z0-9_-]*` before
   their keyword, which leaves a backtracking engine nothing to anchor
   on: it tries a variable-length run at every offset in every file.
 
@@ -207,5 +230,5 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 300, over every corpus document, over a real binary run against planted
 credentials, and from the extension's side by the parity script.
 
-[0.1.1]: https://crates.io/crates/secrets-le/0.1.1
+[0.2.0]: https://crates.io/crates/secrets-le/0.2.0
 [0.1.0]: https://crates.io/crates/secrets-le/0.1.0

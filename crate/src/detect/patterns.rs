@@ -315,6 +315,8 @@ mod prefilter_soundness {
             "eyJhbGciOi.eyJzdWIiOi.SflKxwRJSM",
             "postgres://user:pass@host/db",
             "-----BEGIN RSA PRIVATE KEY-----\nabc\n-----END RSA PRIVATE KEY-----",
+            "square-cli --access-token sq0atp-EXAMPLEnotarealsquare00",
+            "https://x.blob.core.windows.invalid/c/b?sv=2024-11-04&sp=r&sig=EXAMPLEnotarealazuresas0000",
         ] {
             for pattern in PATTERNS.iter() {
                 let Some(prefilter) = &pattern.prefilter else {
@@ -371,7 +373,12 @@ mod prefilter_soundness {
             "connection_string",
             "accountkey",
         ];
-        const VALUES: [&str; 8] = [
+        // Every issuer-prefixed shape is here as well as the generic
+        // ones. The prefilter is the reason a pattern runs at all, so a
+        // new pattern whose relaxed form does not match is a detector
+        // that never fires — and it would fire in no test that did not
+        // cross it with the ways a value gets written.
+        const VALUES: [&str; 21] = [
             "hunter2hunter2",
             "aB3xY7zQ9mK2pL5vN8wR4tS6",
             "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
@@ -380,6 +387,22 @@ mod prefilter_soundness {
             "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N",
             "postgres://user:pass@db.example.invalid/app",
             "Server=prod;Database=app;Uid=admin;Pwd=secret123;",
+            "sk-ant-api03-EXAMPLEnotarealanthropickey00000",
+            "sk-proj-EXAMPLEnotarealopenaikey000000000000",
+            "glpat-EXAMPLEnotarealgitlab00",
+            "SG.EXAMPLEnotarealsendgridselector1234.EXAMPLEnotarealsendgridsecret00000",
+            "key-deadbeefdeadbeefdeadbeefdeadbeefface",
+            "sntrys_EXAMPLEnotarealsentryorgauthtoken00000000",
+            "npm_EXAMPLEnotarealnpmtoken00000000000000000",
+            "pypi-AgENOTAREALpypitokenEXAMPLE0000000000000000000000000000",
+            "dckr_pat_EXAMPLEnotarealdockertoken00000000",
+            "hvs.EXAMPLEnotarealvaulttoken00",
+            "EXAMPLEnotar.atlasv1.EXAMPLEnotarealterraformcloudtoken000000000000",
+            "sbp_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefface",
+            // Joined at compile time rather than written out: a
+            // complete Shopify-shaped token in a checked-in file trips
+            // other scanners, including GitHub's push protection.
+            concat!("shpat_", "deadbeef", "deadbeef", "deadbeef", "deadbeef"),
         ];
         // `{key}` and `{value}` stand in for the pair.
         const WRAPPERS: [&str; 12] = [
@@ -452,7 +475,41 @@ mod tests {
     #[test]
     fn the_embedded_table_loads_and_compiles() {
         assert!(!PATTERNS.is_empty());
-        assert_eq!(PATTERNS.len(), 19, "the corpus carries 19 patterns");
+        assert_eq!(PATTERNS.len(), 34, "the corpus carries 34 patterns");
+    }
+
+    /// The issuer-prefixed patterns lead the table, and the list of
+    /// which they are is written out rather than derived, so adding one
+    /// in the wrong place fails here instead of quietly changing what a
+    /// scan reports.
+    ///
+    /// They and the key-name patterns match the same span — `NPM_TOKEN=
+    /// npm_…` is both — and the first to claim it wins the dedupe.
+    #[test]
+    fn the_issuer_prefixed_patterns_lead_the_table() {
+        const ISSUERS: [&str; 15] = [
+            "anthropic-key",
+            "openai-key",
+            "gitlab-token",
+            "sendgrid-key",
+            "mailgun-key",
+            "sentry-token",
+            "npm-token",
+            "pypi-token",
+            "docker-token",
+            "vault-token",
+            "terraform-token",
+            "supabase-key",
+            "shopify-token",
+            "square-token",
+            "azure-sas",
+        ];
+        let leading: Vec<&str> = PATTERNS
+            .iter()
+            .take_while(|pattern| pattern.key_group.is_none())
+            .map(|pattern| pattern.kind.as_str())
+            .collect();
+        assert_eq!(leading, ISSUERS);
     }
 
     /// Order is what makes the dedupe deterministic: the specific key

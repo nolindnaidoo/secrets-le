@@ -16,7 +16,11 @@ use super::{Confidence, Options, detect, mask};
 const DETECTION: &str = include_str!("../../fixtures/detection.json");
 const MASK: &str = include_str!("../../fixtures/mask.json");
 
-const DOCUMENTS: [(&str, &str); 8] = [
+const DOCUMENTS: [(&str, &str); 9] = [
+    (
+        "provider-tokens.txt",
+        include_str!("../../fixtures/documents/provider-tokens.txt"),
+    ),
     (
         "secrets.env",
         include_str!("../../fixtures/documents/secrets.env"),

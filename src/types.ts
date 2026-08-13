@@ -45,6 +45,7 @@ export type SecretType =
 	| 'aws-key'
 	| 'aws-secret'
 	| 'azure-key'
+	| 'azure-sas'
 	| 'gcp-key'
 	| 'database-url'
 	| 'connection-string'
@@ -55,6 +56,24 @@ export type SecretType =
 	| 'cookie'
 	| 'ssh-key'
 	| 'pgp-key'
+	// Issuer-specific, recognised from the value's own prefix rather than
+	// from the key name beside it. Naming the issuer is the point: a
+	// generic `api-key` tells a reader to go and look, `openai-key` tells
+	// them which credential to revoke and where.
+	| 'anthropic-key'
+	| 'docker-token'
+	| 'gitlab-token'
+	| 'mailgun-key'
+	| 'npm-token'
+	| 'openai-key'
+	| 'pypi-token'
+	| 'sendgrid-key'
+	| 'sentry-token'
+	| 'shopify-token'
+	| 'square-token'
+	| 'supabase-key'
+	| 'terraform-token'
+	| 'vault-token'
 	| 'unknown';
 
 export type ConfidenceLevel = 'low' | 'medium' | 'high';

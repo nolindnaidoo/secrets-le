@@ -17,13 +17,13 @@
 		"url": "https://github.com/nolindnaidoo/secrets-le",
 		"source": "github"
 	},
-	"version": "2.2.5",
+	"version": "2.3.0",
 	"packages": [
 		{
 			"registryType": "npm",
 			"registryBaseUrl": "https://registry.npmjs.org",
 			"identifier": "secrets-le-mcp",
-			"version": "2.2.5",
+			"version": "2.3.0",
 			"runtimeHint": "npx",
 			"transport": {
 				"type": "stdio"

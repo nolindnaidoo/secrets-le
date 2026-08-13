@@ -9,12 +9,29 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
-## [2.2.5] - 2026-08-12
+## [2.3.0] - 2026-08-13
 
-Three ways a report could have shown you a credential, closed. Nothing
-new to learn and nothing to change in your settings — the same
-detectors, finding the same things, keeping more of what they find to
-themselves.
+### Added
+
+- **Fifteen more providers detected** — OpenAI, Anthropic, GitLab,
+  SendGrid, Mailgun, Sentry, npm, PyPI, Docker Hub, HashiCorp Vault,
+  Terraform Cloud, Supabase, Shopify, Square and Azure SAS — taking the
+  table from 19 patterns to 34. Expect findings this release that the
+  last one missed.
+
+### Fixed
+
+- **Four kinds of finding no toggle could turn off.** Turning passwords
+  off left connection strings and database URLs in the results, and
+  turning tokens off left cookies and session IDs. Both are credentials
+  carried in a URI and a bearer credential respectively, so they now
+  answer to the toggle a reader would reach for.
+
+### Also in this release
+
+Everything below shipped as 2.2.5, which was never published — it is
+folded in here rather than left advertising a version nobody can
+install.
 
 ### Added
 

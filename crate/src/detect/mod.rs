@@ -71,14 +71,52 @@ pub(crate) struct Finding {
     pub(crate) description: String,
 }
 
-const API_KEY_TYPES: [&str; 5] = ["api-key", "aws-key", "aws-secret", "gcp-key", "azure-key"];
-const TOKEN_TYPES: [&str; 6] = [
+/// Which `--no-…` switch each type answers to.
+///
+/// Every type the table can produce must be in exactly one of these
+/// four: `included` returns true for anything it does not recognise, so
+/// a type left out is one no switch can turn off — a `--no-api-keys`
+/// run that still reports API keys. A test below walks the table and
+/// asserts the coverage rather than trusting this list.
+/// A connection string and a database URL are reported *because* they
+/// carry a credential in the URI, so `--no-passwords` is the switch a
+/// user reaches for when they do not want them. Both answered to none
+/// of the four before, which meant no flag could turn them off — and
+/// `cookie` and `session-id` were in the same position, now under
+/// tokens, since a session credential is a bearer credential.
+const PASSWORD_TYPES: [&str; 3] = ["password", "connection-string", "database-url"];
+
+const API_KEY_TYPES: [&str; 11] = [
+    "api-key",
+    "aws-key",
+    "aws-secret",
+    "gcp-key",
+    "azure-key",
+    "azure-sas",
+    "anthropic-key",
+    "mailgun-key",
+    "openai-key",
+    "sendgrid-key",
+    "supabase-key",
+];
+const TOKEN_TYPES: [&str; 17] = [
     "token",
     "jwt",
     "oauth-token",
     "bearer-token",
     "access-token",
     "refresh-token",
+    "docker-token",
+    "gitlab-token",
+    "npm-token",
+    "pypi-token",
+    "sentry-token",
+    "shopify-token",
+    "square-token",
+    "terraform-token",
+    "vault-token",
+    "cookie",
+    "session-id",
 ];
 const PRIVATE_KEY_TYPES: [&str; 3] = ["private-key", "ssh-key", "pgp-key"];
 
@@ -97,7 +135,7 @@ fn included(kind: &str, options: Options) -> bool {
     if API_KEY_TYPES.contains(&kind) {
         return options.api_keys;
     }
-    if kind == "password" {
+    if PASSWORD_TYPES.contains(&kind) {
         return options.passwords;
     }
     if TOKEN_TYPES.contains(&kind) {
@@ -350,6 +388,112 @@ mod tests {
         .expect("holds");
         assert!(strict.is_empty());
         assert!(!loose.is_empty());
+    }
+
+    /// Every type the table can produce must answer to exactly one
+    /// switch.
+    ///
+    /// `included` returns true for a kind it does not recognise, so a
+    /// type missing from the three family lists is a type no `--no-…`
+    /// flag can turn off — a `--no-api-keys` run that still reports API
+    /// keys, silently. This walks the *table* rather than the lists, so
+    /// it fails for the next pattern somebody adds without classifying
+    /// it, which is the only version of this check worth having.
+    #[test]
+    fn every_type_the_table_can_produce_answers_to_exactly_one_switch() {
+        let mut kinds: Vec<String> = patterns::PATTERNS
+            .iter()
+            .map(|pattern| pattern.kind.clone())
+            .collect();
+        // Named by no pattern: classified from the PEM header instead.
+        kinds.push("ssh-key".to_string());
+        kinds.push("pgp-key".to_string());
+        kinds.sort();
+        kinds.dedup();
+
+        for kind in kinds {
+            let switches = [
+                Options {
+                    api_keys: false,
+                    ..Options::default()
+                },
+                Options {
+                    passwords: false,
+                    ..Options::default()
+                },
+                Options {
+                    tokens: false,
+                    ..Options::default()
+                },
+                Options {
+                    private_keys: false,
+                    ..Options::default()
+                },
+            ];
+            let excluded = switches
+                .into_iter()
+                .filter(|options| !included(&kind, *options))
+                .count();
+            assert_eq!(
+                excluded, 1,
+                "{kind} is excluded by {excluded} of the four switches, not one"
+            );
+        }
+    }
+
+    /// An issuer-prefixed value and the key name beside it claim the
+    /// same span, and the first pattern in the table wins the dedupe.
+    /// The issuer is the more specific answer, so it is the one reported.
+    #[test]
+    fn an_issuer_prefixed_value_is_reported_by_its_issuer_not_by_its_key_name() {
+        for (line, expected) in [
+            (
+                "NPM_TOKEN=npm_EXAMPLEnotarealnpmtoken00000000000000000\n",
+                "npm-token",
+            ),
+            (
+                "ANTHROPIC_API_KEY=sk-ant-api03-EXAMPLEnotarealanthropickey00000\n",
+                "anthropic-key",
+            ),
+            (
+                "\"gitlab_token\": \"glpat-EXAMPLEnotarealgitlab00\",\n",
+                "gitlab-token",
+            ),
+        ] {
+            let findings = detect_ok(line);
+            assert_eq!(
+                findings.iter().map(|f| f.kind.as_str()).collect::<Vec<_>>(),
+                [expected],
+                "{line}"
+            );
+        }
+    }
+
+    /// Why the order is what it is, stated as a test rather than as a
+    /// comment.
+    ///
+    /// This value is 31 characters, one short of the generic api-key
+    /// rule's `high` threshold. Graded by that rule it is `medium`, and
+    /// `--sensitivity high` — the setting a pipeline picks when it wants
+    /// only the certain findings — drops it. Graded by its own shape it
+    /// is high, and survives. Behind the key patterns instead of in
+    /// front of them, this is a live `OpenAI` key going unreported.
+    #[test]
+    fn a_short_issuer_prefixed_value_survives_a_high_sensitivity_run() {
+        const VALUE: &str = "sk-proj-EXAMPLEnotarealopenai00";
+        assert_eq!(VALUE.len(), 31, "the point of the case is its length");
+
+        let findings = detect(
+            &format!("api_key={VALUE}\n"),
+            Options {
+                sensitivity: Confidence::High,
+                ..Options::default()
+            },
+        )
+        .expect("the patterns hold");
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].kind, "openai-key");
+        assert_eq!(findings[0].confidence, Confidence::High);
     }
 
     #[test]

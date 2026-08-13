@@ -1,0 +1,28 @@
+# Issuer-prefixed credentials, one per detector.
+#
+# EVERY VALUE HERE IS INVENTED. Each matches this tool's pattern for its
+# issuer and deliberately misses the issuer's own exact format — a
+# different length, a missing service marker, a checksum that cannot
+# hold — so that committing this file does not trip a push-protection
+# rule and does not put a plausible credential in a public repository.
+# See ../README.md.
+#
+# Half of these sit under a key name a generic detector also claims, and
+# half stand alone in a URL or a command. Both belong here: the first
+# half pins which pattern wins the dedupe, the second pins that the
+# issuer prefix is found with no key name at all.
+ANTHROPIC_API_KEY=sk-ant-api03-EXAMPLEnotarealanthropickey00000
+OPENAI_API_KEY=sk-proj-EXAMPLEnotarealopenaikey000000000000
+curl -H "PRIVATE-TOKEN: glpat-EXAMPLEnotarealgitlab00" https://gitlab.example.invalid/api
+SENDGRID_KEY=SG.EXAMPLEnotarealsendgridselector1234.EXAMPLEnotarealsendgridsecret00000
+mailgun --key key-deadbeefdeadbeefdeadbeefdeadbeefface
+SENTRY_AUTH_TOKEN=sntrys_EXAMPLEnotarealsentryorgauthtoken00000000
+//registry.npmjs.org/:_authToken=npm_EXAMPLEnotarealnpmtoken00000000000000000
+pypi-AgENOTAREALpypitokenEXAMPLE0000000000000000000000000000
+docker login -u nobody -p dckr_pat_EXAMPLEnotarealdockertoken00000000
+VAULT_TOKEN=hvs.EXAMPLEnotarealvaulttoken00
+credentials "app.terraform.io" { token = "EXAMPLEnotar.atlasv1.EXAMPLEnotarealterraformcloudtoken000000000000" }
+supabase login --token sbp_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefface
+# Shopify is covered by a unit test rather than here: a complete token of
+square-cli --access-token sq0atp-EXAMPLEnotarealsquare00
+https://example.blob.core.windows.invalid/c/b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEnotarealazuresas0000
