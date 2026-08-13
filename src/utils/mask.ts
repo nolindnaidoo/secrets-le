@@ -92,12 +92,40 @@ export function maskingOrder(values: readonly string[]): readonly string[] {
  * way, character for character, and `scripts/check-detection-differential.ts`
  * holds the two implementations against each other over generated documents.
  */
+/**
+ * `line.slice(from, to)`, with any part overlapping a finding's span replaced
+ * by a marker rather than shown.
+ *
+ * Overlap is what matters, not containment: a window edge can cut through a
+ * finding, and the half inside the window is still credential text.
+ */
+function redactSpans(
+	line: string,
+	from: number,
+	to: number,
+	spans: readonly (readonly [number, number])[],
+): string {
+	let out = '';
+	let cursor = from;
+	for (const [rawStart, rawEnd] of spans) {
+		const start = Math.max(rawStart, from);
+		const end = Math.min(rawEnd, to);
+		if (start >= end || end <= cursor) continue;
+		if (start > cursor) out += line.slice(cursor, start);
+		out += '…';
+		cursor = end;
+	}
+	if (cursor < to) out += line.slice(cursor, to);
+	return out;
+}
+
 export function maskContext(
 	line: string,
 	valueStart: number,
 	valueLength: number,
 	value: string,
 	values: readonly string[],
+	spans: readonly (readonly [number, number])[] = [],
 ): string {
 	// Assembled from three parts rather than cut out and searched.
 	//
@@ -119,11 +147,22 @@ export function maskContext(
 		-1,
 	);
 
+	// Masked by **span** and not only by text. A value is replaced by
+	// searching for it, which needs it present whole — and a credential can be
+	// reported only as part of a longer run, so the window shows a *prefix* of
+	// a reported value that no replacement matches. A planted connection
+	// string survived inside a 1,595-character database URL that way. Blanking
+	// the span first means the window cannot show source overlapping any
+	// finding, whatever the text is; the text pass after it still covers a
+	// value repeated where the spans do not reach.
 	const before = maskAll(
-		trimStart(line.slice(beforeStart, valueStart)),
+		trimStart(redactSpans(line, beforeStart, valueStart, spans)),
 		values,
 	);
-	const after = maskAll(trimEnd(line.slice(valueEnd, afterEnd)), values);
+	const after = maskAll(
+		trimEnd(redactSpans(line, valueEnd, afterEnd, spans)),
+		values,
+	);
 
 	return [
 		beforeStart > 0 ? '…' : '',

@@ -754,7 +754,7 @@
 					"confidence": "medium",
 					"key": "pwd",
 					"preview": "secre\u2026 (10 chars)",
-					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre\u2026 (10 chars);",
+					"context": "connection_string = \u2026secre\u2026 (10 chars)\u2026",
 					"line": 3,
 					"column": 60,
 					"description": "Password"
@@ -801,7 +801,7 @@
 					"confidence": "medium",
 					"key": "pwd",
 					"preview": "secre\u2026 (10 chars)",
-					"context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre\u2026 (10 chars);",
+					"context": "connection_string = \u2026secre\u2026 (10 chars)\u2026",
 					"line": 3,
 					"column": 60,
 					"description": "Password"
@@ -1036,7 +1036,7 @@
 					"confidence": "high",
 					"key": "password",
 					"preview": "Sup3rS\u2026 (13 chars)",
-					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS\u2026 (13 chars);Encrypt=true\"",
+					"context": "\"connectionString\": \"\u2026Sup3rS\u2026 (13 chars)\u2026\"",
 					"line": 7,
 					"column": 50,
 					"description": "Password"
@@ -1093,7 +1093,7 @@
 					"confidence": "high",
 					"key": "password",
 					"preview": "Sup3rS\u2026 (13 chars)",
-					"context": "\"connectionString\": \"Server=db;User=sa;Password=Sup3rS\u2026 (13 chars);Encrypt=true\"",
+					"context": "\"connectionString\": \"\u2026Sup3rS\u2026 (13 chars)\u2026\"",
 					"line": 7,
 					"column": 50,
 					"description": "Password"

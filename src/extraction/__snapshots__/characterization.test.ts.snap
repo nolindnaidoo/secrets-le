@@ -470,7 +470,7 @@ exports[`detection characterization > secrets.ini with default options 1`] = `
     },
     {
       "confidence": "medium",
-      "context": "connection_string = Server=prod;Database=app;Uid=admin;Pwd=secre… (10 chars);",
+      "context": "connection_string = …secre… (10 chars)…",
       "description": "Password",
       "end": 114,
       "key": "pwd",
@@ -655,7 +655,7 @@ exports[`detection characterization > secrets.json with default options 1`] = `
     },
     {
       "confidence": "high",
-      "context": ""connectionString": "Server=db;User=sa;Password=Sup3rS… (13 chars);Encrypt=true"",
+      "context": ""connectionString": "…Sup3rS… (13 chars)…"",
       "description": "Password",
       "end": 230,
       "key": "password",

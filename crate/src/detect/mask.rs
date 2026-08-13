@@ -64,6 +64,33 @@ pub(crate) fn mask_within(context: &str, value: &str) -> String {
 /// cost of a scan stopped being proportional to what was in it.
 const CONTEXT_MARGIN: usize = 60;
 
+/// `line[from..to]`, with any part of it that overlaps a finding's span
+/// replaced by a marker rather than shown.
+///
+/// Spans are byte offsets into the same line. Overlap is what matters,
+/// not containment: a window edge can cut through a finding, and the
+/// half that lands inside the window is still credential text.
+fn redact_spans(line: &str, from: usize, to: usize, spans: &[(usize, usize)]) -> String {
+    let mut out = String::new();
+    let mut cursor = from;
+    for (start, end) in spans.iter().copied() {
+        let start = start.max(from);
+        let end = end.min(to);
+        if start >= end || end <= cursor {
+            continue;
+        }
+        if start > cursor {
+            out.push_str(&line[cursor..start]);
+        }
+        out.push('\u{2026}');
+        cursor = end;
+    }
+    if cursor < to {
+        out.push_str(&line[cursor..to]);
+    }
+    out
+}
+
 /// The context line for one finding: a bounded window of its source
 /// line, with **every** detected value in it masked.
 ///
@@ -88,6 +115,7 @@ pub(crate) fn mask_context(
     value_length: usize,
     value: &str,
     values: &[String],
+    spans: &[(usize, usize)],
 ) -> String {
     // Assembled from three parts rather than cut out and searched.
     //
@@ -101,8 +129,19 @@ pub(crate) fn mask_context(
     let before_start = back_from(line, value_start, CONTEXT_MARGIN);
     let after_end = forward_from(line, value_end, CONTEXT_MARGIN);
 
-    let before = mask_all(js_trim_start(&line[before_start..value_start]), values);
-    let after = mask_all(js_trim_end(&line[value_end..after_end]), values);
+    // Masked by **span** and not only by text. A value is replaced by
+    // searching for it, which needs it to be present whole — and a
+    // credential can be reported only as part of a longer run, so the
+    // window shows a *prefix* of a reported value that no replacement
+    // matches. The fuzzer found a planted connection string surviving
+    // inside a 1,595-character database URL that way. Blanking the span
+    // first means the window cannot show source that overlaps any
+    // finding, whatever the text happens to be; the text pass after it
+    // still covers a value repeated somewhere the spans do not reach.
+    let before_raw = redact_spans(line, before_start, value_start, spans);
+    let after_raw = redact_spans(line, value_end, after_end, spans);
+    let before = mask_all(js_trim_start(&before_raw), values);
+    let after = mask_all(js_trim_end(&after_raw), values);
 
     let mut context = String::new();
     if before_start > 0 {
@@ -324,7 +363,7 @@ mod tests {
             "hunter2hunter2".to_string(),
             "abcdefghijklmnopqrstuvwx".to_string(),
         ]);
-        let context = mask_context(line, 12, 14, "hunter2hunter2", &values);
+        let context = mask_context(line, 12, 14, "hunter2hunter2", &values, &[]);
         assert!(!context.contains("hunter2hunter2"), "{context}");
         assert!(
             !context.contains("abcdefghijklmnopqrstuvwx"),
@@ -339,7 +378,7 @@ mod tests {
         let line = "  DATABASE_PASSWORD=hunter2hunter2  ";
         let values = masking_order(&["hunter2hunter2".to_string()]);
         assert_eq!(
-            mask_context(line, 20, 14, "hunter2hunter2", &values),
+            mask_context(line, 20, 14, "hunter2hunter2", &values, &[]),
             "DATABASE_PASSWORD=hunter2… (14 chars)"
         );
     }
@@ -352,7 +391,7 @@ mod tests {
         let filler = "z".repeat(5_000);
         let line = format!("{filler} DATABASE_PASSWORD=hunter2hunter2 {filler}");
         let values = masking_order(&["hunter2hunter2".to_string()]);
-        let context = mask_context(&line, 5_019, 14, "hunter2hunter2", &values);
+        let context = mask_context(&line, 5_019, 14, "hunter2hunter2", &values, &[]);
         assert!(context.len() < 200, "{} bytes", context.len());
         assert!(context.starts_with('…'), "{context}");
         assert!(context.ends_with('…'), "{context}");
@@ -368,7 +407,7 @@ mod tests {
         let value = "aB3xY7zQ9mK2pL5vN8wR4tS6".repeat(20);
         let line = format!("token = {value} trailing");
         let values = masking_order(std::slice::from_ref(&value));
-        let context = mask_context(&line, 8, value.len(), &value, &values);
+        let context = mask_context(&line, 8, value.len(), &value, &values, &[]);
         assert!(!context.contains(&value), "{context}");
         assert!(context.contains("trailing"), "{context}");
     }
@@ -390,7 +429,7 @@ mod tests {
             ]
         );
         let line = "a=hunter2hunter2hunter2 b=hunter2hunter2";
-        let context = mask_context(line, 2, 21, "hunter2hunter2hunter2", &order);
+        let context = mask_context(line, 2, 21, "hunter2hunter2hunter2", &order, &[]);
         assert!(!context.contains("hunter2hunter2"), "{context}");
     }
 

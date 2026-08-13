@@ -261,7 +261,7 @@
 			}
 		]
 	},
-	"description": "%manifest.ext.description%",
+	"description": "Find hardcoded credentials in a codebase, and never print one into the report",
 	"displayName": "%manifest.ext.name%",
 	"engines": {
 		"vscode": "^1.101.0",

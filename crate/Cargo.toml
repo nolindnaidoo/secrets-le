@@ -5,12 +5,12 @@ edition = "2024"
 rust-version = "1.88"
 license = "MIT"
 readme = "README.md"
-description = "Find hardcoded credentials, API keys, tokens and private keys in a codebase — a secret scanner for CI that never prints the value it finds. A gitleaks and trufflehog alternative with an exit code"
+description = "Find hardcoded credentials in a codebase, and never print one into the report"
 authors = ["Nolin D Naidoo"]
 homepage = "https://letools.dev/tools/secrets-le"
 repository = "https://github.com/nolindnaidoo/secrets-le"
-keywords = ["secret-scanning", "gitleaks", "trufflehog", "credentials", "sast"]
-categories = ["command-line-utilities", "development-tools", "development-tools::testing", "text-processing", "parsing"]
+keywords = ["letools", "secrets", "credentials", "scanner", "security"]
+categories = ["command-line-utilities", "development-tools", "cryptography"]
 # What a consumer gets, and why.
 #
 # Ships: src/, Cargo.toml, Cargo.lock, LICENSE, README.md — needed to

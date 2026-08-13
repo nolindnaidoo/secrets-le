@@ -182,6 +182,24 @@ pub(crate) fn detect_values(content: &str, options: Options) -> Result<Vec<Strin
         .collect())
 }
 
+/// The document's finding spans, rebased onto one line and clipped to it.
+fn spans_on_line(
+    spans: &[(usize, usize)],
+    line_start: usize,
+    line_len: usize,
+) -> Vec<(usize, usize)> {
+    spans
+        .iter()
+        .filter(|(from, to)| *to > line_start && *from < line_start + line_len)
+        .map(|(from, to)| {
+            (
+                from.saturating_sub(line_start),
+                to.saturating_sub(line_start).min(line_len),
+            )
+        })
+        .collect()
+}
+
 fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, String)>, String> {
     let index = PositionIndex::new(content);
     let mut findings: Vec<(usize, Finding, String)> = Vec::new();
@@ -279,9 +297,25 @@ fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, S
             .map(|(_, _, value)| value.clone())
             .collect::<Vec<_>>(),
     );
+    // Every finding's span, as byte offsets into the document, so the
+    // context can blank source that overlaps another finding instead of
+    // relying on that finding's text being present whole.
+    let spans: Vec<(usize, usize)> = findings
+        .iter()
+        .map(|(start, _, value)| (*start, start.saturating_add(value.len())))
+        .collect();
+
     for (start, finding, value) in &mut findings {
         let (line, offset) = position::line_and_offset(content, *start);
-        finding.context = Some(mask::mask_context(line, offset, value.len(), value, &order));
+        let line_spans = spans_on_line(&spans, start.saturating_sub(offset), line.len());
+        finding.context = Some(mask::mask_context(
+            line,
+            offset,
+            value.len(),
+            value,
+            &order,
+            &line_spans,
+        ));
         // Masked before it is lowercased: the key is source text, so an
         // embedded value appears in it with the case it was written in.
         finding.key = finding

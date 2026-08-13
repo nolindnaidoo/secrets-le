@@ -546,9 +546,28 @@ export function detectSecrets(
 	secrets.sort((a, b) => a.start - b.start);
 
 	const order = maskingOrder(secrets.map((secret) => secret.value));
+	// Every finding's span as offsets into the document, mirroring the crate.
+	const spans: readonly (readonly [number, number])[] = secrets.map(
+		(secret) => [secret.start, secret.start + secret.value.length] as const,
+	);
 	return Object.freeze(
 		secrets.map((secret) => {
 			const [line, offset] = lineAndOffset(content, secret.start);
+			// Every finding's span, rebased onto the line this context is cut
+			// from, so the window can blank source that overlaps another
+			// finding instead of relying on its text being present whole.
+			const lineStart = secret.start - offset;
+			const lineSpans = spans
+				.filter(
+					([from, to]) => to > lineStart && from < lineStart + line.length,
+				)
+				.map(
+					([from, to]) =>
+						[
+							Math.max(0, from - lineStart),
+							Math.min(line.length, to - lineStart),
+						] as const,
+				);
 			return Object.freeze({
 				...secret,
 				// Masked before it is lowercased: the key is source text, so an
@@ -563,6 +582,7 @@ export function detectSecrets(
 					secret.value.length,
 					secret.value,
 					order,
+					lineSpans,
 				),
 			});
 		}),
