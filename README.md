@@ -244,18 +244,19 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 90.78% |
-| Branches | 79.45% |
-| Functions | 95.37% |
-| Lines | 91.81% |
+| Statements | 91.03% |
+| Branches | 79.75% |
+| Functions | 95.90% |
+| Lines | 91.89% |
 
-142 test cases across 13 files, plus an integration suite that runs
+248 test cases across 15 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 
-Generated from `coverage/coverage-summary.json` by
-`scripts/coverage-readme.js`; CI fails if this section drifts from a fresh
-run. Reproduce with `bun run test:coverage`.
+Generated from a real run — `coverage/coverage-summary.json` and
+`coverage/test-results.json` — by `scripts/coverage-readme.js`; CI fails if
+this section drifts. Reproduce with `bun run test:coverage`, and the case
+count is the one vitest prints.
 <!-- coverage:end -->
 
 ## More from the LE family

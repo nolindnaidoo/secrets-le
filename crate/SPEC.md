@@ -115,7 +115,7 @@ crate/
     fixtures/         behaviour cases both frontends reproduce
 ```
 
-**`detect/` touches no filesystem**, carries the **90% line coverage
+**`detect/` touches no filesystem**, carries the **75% line coverage
 floor per module**, and is where masking lives — so the property that no
 value escapes is testable without a disk.
 

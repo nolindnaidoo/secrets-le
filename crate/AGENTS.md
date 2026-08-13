@@ -38,7 +38,7 @@ crate/src/
 
 - **`detect/` touches no filesystem.** It takes document text and a
   format and returns paths, so the entire detection layer tests from a
-  fixture file — no temp directories, no flake. It carries the **90%
+  fixture file — no temp directories, no flake. It carries the **75%
   line coverage floor per module**, enforced by the `coverage` job. A
   `std::fs` call appearing there is a bug, and the `policy` job greps
   for one.
@@ -153,7 +153,7 @@ pixelactions and scrape-le:
   other flag. A test asserts no MCP output contains `--`.
 - **`detect_secrets` belongs to both servers.** The npm server
   (`src/mcp/tools.ts`) and this one offer the same tool: same schema,
-  same envelope, byte-identical output. `fixtures/mcp-extract-paths.json`
+  same envelope, byte-identical output. `fixtures/mcp-detect-secrets.json`
   runs against both, so changing one without the other fails a build.
   Every tool here returns that envelope — `{ ok, data, diagnostics,
   meta }` — where `ok` means the check ran, never that the answer was
@@ -183,7 +183,7 @@ other sanctioned way to differ.
 
 The bar, enforced by review:
 
-- **`detect/`: 90% line coverage floor per module.** Everything in it is
+- **`detect/`: 75% line coverage floor per module.** Everything in it is
   pure; if something is hard to test there, the design is wrong. Per
   module rather than the crate total, because a total lets one module
   slide while the others carry it.

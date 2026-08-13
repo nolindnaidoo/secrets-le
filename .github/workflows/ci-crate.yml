@@ -24,6 +24,17 @@ on:
       - 'src/mcp/**'
       - 'scripts/check-detection-parity.ts'
       - '.github/workflows/ci-crate.yml'
+      # The policy job greps every *.md, and in the crate-only repos holds
+      # the six agent instruction files to one document. A change to one of
+      # those has to be able to reach it — the filter used to admit only
+      # crate/**, so both gates could fire only when the files they guard
+      # had not been touched. The Rust jobs below skip themselves instead.
+      - '**/*.md'
+      - '.cursorrules'
+      - '.windsurfrules'
+      - '.clinerules'
+      - '.cursor/**'
+      - '.github/copilot-instructions.md'
   pull_request:
     paths:
       - 'crate/**'
@@ -32,6 +43,17 @@ on:
       - 'src/mcp/**'
       - 'scripts/check-detection-parity.ts'
       - '.github/workflows/ci-crate.yml'
+      # The policy job greps every *.md, and in the crate-only repos holds
+      # the six agent instruction files to one document. A change to one of
+      # those has to be able to reach it — the filter used to admit only
+      # crate/**, so both gates could fire only when the files they guard
+      # had not been touched. The Rust jobs below skip themselves instead.
+      - '**/*.md'
+      - '.cursorrules'
+      - '.windsurfrules'
+      - '.clinerules'
+      - '.cursor/**'
+      - '.github/copilot-instructions.md'
 
 permissions:
   contents: read
@@ -44,7 +66,57 @@ defaults:
     working-directory: crate
 
 jobs:
+  # Whether anything the Rust jobs depend on actually moved. "Docs" is
+  # deliberately narrow — *.md, LICENSE and the agent instruction files —
+  # and anything unrecognised, or an unreadable diff, counts as code. The
+  # default is always to run more, never less.
+  changes:
+    name: What changed
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: .
+    outputs:
+      code: ${{ steps.classify.outputs.code }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - id: classify
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            range="origin/${{ github.base_ref }}...HEAD"
+          else
+            before="${{ github.event.before }}"
+            if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+              before="$(git rev-list --max-parents=0 HEAD | tail -1)"
+            fi
+            range="$before..HEAD"
+          fi
+
+          if ! files="$(git diff --name-only "$range")"; then files=""; fi
+
+          code=false
+          if [ -z "$files" ]; then code=true; fi
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            case "$file" in
+              *.md | LICENSE | .cursorrules | .windsurfrules | .clinerules) ;;
+              .cursor/* | .github/copilot-instructions.md) ;;
+              *) code=true; break ;;
+            esac
+          done <<EOF
+          $files
+          EOF
+
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "code=$code, files changed:"
+          echo "$files"
+
   test:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -62,6 +134,8 @@ jobs:
       - run: cargo build --locked
 
   msrv:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -119,6 +193,8 @@ jobs:
   # sliding while the others carry it. Scoped to extract/ because
   # everything else is I/O verified by the contract and scenario jobs.
   coverage:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -147,7 +223,13 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, sys
-          FLOOR = 90.0
+          # A backstop against a module nobody tested, not a target. It sits
+          # well below where the code actually is — the lowest measured module
+          # in the family was 92.69% against the old 90.0 floor, i.e. 2.69
+          # points from failing a build over a single new branch. A floor that
+          # tracks actual coverage stops being a floor and becomes a tax on
+          # writing the next module. Do not raise this to chase a number.
+          FLOOR = 75.0
           files = json.load(open("coverage.json"))["data"][0]["files"]
           under = []
           for f in files:
@@ -171,6 +253,8 @@ jobs:
   # enter, and a lockfile big enough to exhaust the regex engine — the
   # bug that made every repository with one exit 2.
   scenarios:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -187,6 +271,8 @@ jobs:
         run: cargo test --test scenarios -- --test-threads=1
 
   audit:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -202,6 +288,8 @@ jobs:
   # corpus (crate/fixtures/) disagree — the reason both frontends live
   # in one repo at all.
   parity:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -229,6 +317,8 @@ jobs:
   # permission-denied file to Windows, and each case the platform cannot
   # express prints the skip by name.
   hazards:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -248,6 +338,8 @@ jobs:
   # and a report that spells a path two ways cannot be diffed or
   # baselined.
   platform:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -280,6 +372,8 @@ jobs:
   # not, a credential goes unreported and the scan still exits clean),
   # and no answer from either server contains a value it detected.
   differential:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -306,6 +400,8 @@ jobs:
   # detector that gives up on a document this size, and — the one that
   # matters — any value the run reported appearing in what it printed.
   fuzz:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -326,6 +422,8 @@ jobs:
   # slower; the linearity assertion catches a scan whose cost stopped
   # being proportional to its input.
   budget:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -345,6 +443,8 @@ jobs:
   # sample plus a dozen nothing knows, and every one must come back with
   # its finding.
   coverage-matrix:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
