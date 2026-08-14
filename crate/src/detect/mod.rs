@@ -318,10 +318,17 @@ fn detect_with_values(content: &str, options: Options) -> Result<Vec<(Finding, S
         ));
         // Masked before it is lowercased: the key is source text, so an
         // embedded value appears in it with the case it was written in.
+        //
+        // Collapsed as well as masked, for the same reason the context is:
+        // every key pattern begins `[A-Za-z0-9_-]*`, so the key group runs
+        // backwards over whatever abuts the keyword. When that is a
+        // credential the table did not claim, no value covers it and the
+        // key carried it whole — a GitHub token shipped inside
+        // `ghp_…database_password`.
         finding.key = finding
             .key
             .as_ref()
-            .map(|key| mask::mask_all(key, &order).to_lowercase());
+            .map(|key| mask::collapse_unclaimed_runs(&mask::mask_all(key, &order)).to_lowercase());
     }
 
     Ok(findings

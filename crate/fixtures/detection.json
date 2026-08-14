@@ -242,7 +242,7 @@
 					"confidence": "high",
 					"key": null,
 					"preview": "EXAMPLEn\u2026 (27 chars)",
-					"context": "\u2026b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
+					"context": "\u2026?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
 					"line": 28,
 					"column": 105,
 					"description": "Azure Storage SAS signature"
@@ -389,7 +389,7 @@
 					"confidence": "high",
 					"key": null,
 					"preview": "EXAMPLEn\u2026 (27 chars)",
-					"context": "\u2026b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
+					"context": "\u2026?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
 					"line": 28,
 					"column": 105,
 					"description": "Azure Storage SAS signature"
@@ -526,7 +526,7 @@
 					"confidence": "high",
 					"key": null,
 					"preview": "EXAMPLEn\u2026 (27 chars)",
-					"context": "\u2026b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
+					"context": "\u2026?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEn\u2026 (27 chars)",
 					"line": 28,
 					"column": 105,
 					"description": "Azure Storage SAS signature"
@@ -1406,6 +1406,57 @@
 					"line": 5,
 					"column": 14,
 					"description": "OAuth token"
+				}
+			]
+		},
+		{
+			"name": "unclaimed-neighbour.txt at low sensitivity",
+			"file": "unclaimed-neighbour.txt",
+			"sensitivity": "low",
+			"expected": [
+				{
+					"type": "bearer-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci\u2026 (71 chars)",
+					"context": "\u2026: 'Bearer eyJhbGci\u2026 (71 chars)' }",
+					"line": 1,
+					"column": 75,
+					"description": "Bearer token"
+				}
+			]
+		},
+		{
+			"name": "unclaimed-neighbour.txt at medium sensitivity",
+			"file": "unclaimed-neighbour.txt",
+			"sensitivity": "medium",
+			"expected": [
+				{
+					"type": "bearer-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci\u2026 (71 chars)",
+					"context": "\u2026: 'Bearer eyJhbGci\u2026 (71 chars)' }",
+					"line": 1,
+					"column": 75,
+					"description": "Bearer token"
+				}
+			]
+		},
+		{
+			"name": "unclaimed-neighbour.txt at high sensitivity",
+			"file": "unclaimed-neighbour.txt",
+			"sensitivity": "high",
+			"expected": [
+				{
+					"type": "bearer-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "eyJhbGci\u2026 (71 chars)",
+					"context": "\u2026: 'Bearer eyJhbGci\u2026 (71 chars)' }",
+					"line": 1,
+					"column": 75,
+					"description": "Bearer token"
 				}
 			]
 		}

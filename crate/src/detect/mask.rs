@@ -138,10 +138,21 @@ pub(crate) fn mask_context(
     // first means the window cannot show source that overlaps any
     // finding, whatever the text happens to be; the text pass after it
     // still covers a value repeated somewhere the spans do not reach.
-    let before_raw = redact_spans(line, before_start, value_start, spans);
-    let after_raw = redact_spans(line, value_end, after_end, spans);
-    let before = mask_all(js_trim_start(&before_raw), values);
-    let after = mask_all(js_trim_end(&after_raw), values);
+    let mut before_raw = redact_spans(line, before_start, value_start, spans);
+    let mut after_raw = redact_spans(line, value_end, after_end, spans);
+    // Only where the margin actually cut. A window that reaches the start
+    // or the end of the line is showing whole tokens already.
+    if before_start > 0 {
+        before_raw = drop_leading_partial(&before_raw).to_string();
+    }
+    if after_end < line.len() {
+        after_raw = drop_trailing_partial(&after_raw).to_string();
+    }
+    // Collapsed after masking, never before: a value the detector *did*
+    // claim earns its `prefix… (n chars)` preview, and collapsing first
+    // would flatten every finding's neighbour into a bare length.
+    let before = collapse_unclaimed_runs(&mask_all(js_trim_start(&before_raw), values));
+    let after = collapse_unclaimed_runs(&mask_all(js_trim_end(&after_raw), values));
 
     let mut context = String::new();
     if before_start > 0 {
@@ -202,6 +213,138 @@ pub(crate) fn masking_order(values: &[String]) -> Vec<String> {
     });
     ordered.dedup();
     ordered
+}
+
+/// The longest run of source a context window will show verbatim.
+///
+/// Sixteen because every credential the table claims is longer than that,
+/// and the identifiers a reader needs in order to place a finding —
+/// `awsSecretAccessKey`, `DATABASE_PASSWORD`, `connection_string` — are
+/// words, which this rule keeps whatever their length.
+const MAX_RUN: usize = 16;
+
+/// Where one token ends and the next begins.
+///
+/// `DATABASE_PASSWORD=hunter2` is a name and a value, not one long run, so
+/// the separators a config or a language puts between them have to end a
+/// token — otherwise the key name collapses along with the credential and
+/// the context stops saying anything. `/` is deliberately **not** here: it
+/// is what an AWS secret is full of, and splitting on it would leave
+/// `bPxRfiCYEXAMPLEKEY` looking like a word.
+fn ends_a_token(character: char) -> bool {
+    character.is_whitespace()
+        || matches!(
+            character,
+            '=' | ':'
+                | ';'
+                | ','
+                | '\''
+                | '"'
+                | '`'
+                | '('
+                | ')'
+                | '{'
+                | '}'
+                | '['
+                | ']'
+                | '<'
+                | '>'
+                | '&'
+                | '|'
+                | '?'
+                | '!'
+                | '\u{2026}'
+        )
+}
+
+/// Whether a token is ordinary source rather than something with a
+/// credential's shape.
+///
+/// Letters, `_`, `-`, `.` and `/` are what names and paths are made of:
+/// `awsSecretAccessKey`, `DATABASE_PASSWORD`, `//registry.npmjs.org/`. A
+/// digit in a token this long is what every credential in the table
+/// carries and what none of those do.
+///
+/// A window that cuts through an undetected credential leaves a fragment
+/// like `G/bPxRfiCYEXAMPLEKEY`, which reads as a name by this rule. That
+/// is handled where it arises — the edge drops its partial token — rather
+/// than by refusing `/` here, which would cost every import path and URL
+/// its readability for a case the cut already covers.
+fn reads_as_a_name(token: &str) -> bool {
+    token.chars().all(|character| {
+        character.is_alphabetic()
+            || character == '_'
+            || character == '-'
+            || character == '.'
+            || character == '/'
+    })
+}
+
+/// Collapse anything in a context window that the detector did not claim
+/// but that has a credential's shape.
+///
+/// Masking covers the values a document *yielded*. A credential the table
+/// did not claim is in no finding, so no span covers it and no replacement
+/// matches it — and the window reproduced it from source. The fuzzer
+/// caught a complete AWS secret access key printed that way, in the
+/// context of the finding beside it: never detected, so never masked, and
+/// the harness could not even name it correctly because two values sharing
+/// a prefix and a length share a preview.
+///
+/// Runs are judged between ellipses, not across them, so a piece already
+/// blanked by a span cannot vouch for the source next to it.
+pub(crate) fn collapse_unclaimed_runs(text: &str) -> String {
+    let mut out = String::new();
+    let mut token = String::new();
+    for character in text.chars() {
+        if ends_a_token(character) {
+            out.push_str(&collapse_token(&token));
+            token.clear();
+            // Separators are kept as written: they are what make the window
+            // read as the line of code it came from.
+            out.push(character);
+            continue;
+        }
+        token.push(character);
+    }
+    out.push_str(&collapse_token(&token));
+    out
+}
+
+fn collapse_token(token: &str) -> String {
+    let length = token.encode_utf16().count();
+    if length >= MAX_RUN && !reads_as_a_name(token) {
+        return format!("({length} chars)");
+    }
+    token.to_string()
+}
+
+/// Drop the partial token a window edge cut through.
+///
+/// The margin is counted in code units, so it lands wherever it lands —
+/// usually inside a token. That fragment is the half of a credential the
+/// window happened to reach: `wJalrXUtnFE` reads as a word, is under the
+/// collapse threshold, and is eleven characters of a key the preview rule
+/// would only ever show eight of. A whole token or nothing.
+fn drop_leading_partial(window: &str) -> &str {
+    match window
+        .char_indices()
+        .find(|(_, character)| ends_a_token(*character))
+    {
+        Some((offset, _)) => &window[offset..],
+        None => "",
+    }
+}
+
+fn drop_trailing_partial(window: &str) -> &str {
+    match window
+        .char_indices()
+        .rev()
+        .find(|(_, character)| ends_a_token(*character))
+    {
+        Some((offset, character)) => &window[..offset + character.len_utf8()],
+        None => "",
+    }
 }
 
 /// The byte offset `units` UTF-16 code units before `from`, floored to a

@@ -23,20 +23,19 @@
 //!   it. (The crafted million-character word run that legitimately
 //!   exhausts it lives in `hazards.rs`, where the refusal is the
 //!   assertion.)
-//! - **A value the run *detected*, appearing anywhere in the output.**
-//!   This is the one that matters. A secret scanner that prints what it
-//!   found has leaked it to a CI log, which is archived, often
-//!   world-readable, and outlives the credential — and a fuzzer is
-//!   exactly what finds the one document shape that slips past the
-//!   masking. A finding is recognised here by its preview, which is a
-//!   deterministic function of the value.
+//! - **A planted value appearing anywhere in the output**, whether or
+//!   not the run detected it. This is the one that matters. A secret
+//!   scanner that prints what it found has leaked it to a CI log, which
+//!   is archived, often world-readable, and outlives the credential.
 //!
-//!   Text the run did **not** detect is a different thing, and the line
-//!   between them is drawn in SPEC.md under "What a context line can
-//!   still contain": a context is a bounded excerpt of the source line,
-//!   every detected value is masked out of it, and this tool cannot mask
-//!   what it never recognised. So the size of that excerpt is pinned
-//!   here too — it is the whole exposure surface.
+//!   This used to ask "did the run report it?" first, and recognised a
+//!   finding by its preview — eight characters and a length. Two values
+//!   sharing a prefix and a length share a preview, so the question was
+//!   answered wrongly, and the failure named a value that had never been
+//!   reported. The gate also excused the real defect: a credential the
+//!   table never claimed, printed from source in full, was waved through
+//!   as "never reported". The excerpt is still pinned below, because it
+//!   is the whole exposure surface.
 //!
 //! Not run to convergence: 60 seconds in CI, a fixed handful of
 //! iterations locally so `cargo test` stays quick. The point is a net,
@@ -78,19 +77,6 @@ const PATIENCE: Duration = Duration::from_secs(30);
 /// existed, a context was the *whole* source line, which on a minified
 /// file is the whole file.
 const MAX_CONTEXT_UNITS: usize = 300;
-
-/// `mask_secret_value`, as a caller outside the crate can compute it: at
-/// most eight characters, at most half the value, and the length. Used
-/// to recognise that a run reported a particular value without ever
-/// being handed the value back.
-fn preview_of(value: &str) -> String {
-    let length = value.encode_utf16().count();
-    if length < 3 {
-        return format!("({length} chars)");
-    }
-    let shown = 8.min(length / 2);
-    format!("{}… ({length} chars)", &value[..shown])
-}
 
 /// Long enough that no eight-character preview can contain one, so
 /// "this value appears in the output" means a leak and never a preview.
@@ -159,10 +145,20 @@ impl Seeded {
 }
 
 fn seeds() -> Vec<String> {
-    let mut documents: Vec<String> = std::fs::read_dir(CORPUS)
+    // Sorted, because `read_dir` yields in filesystem order and that differs
+    // between machines. Unsorted, a pinned seed replayed a different sequence
+    // on a developer machine than on the runner — so the "reproduce:" line
+    // this harness prints on failure pointed at a document that never
+    // regenerated, which is the one thing a fixed seed exists to prevent.
+    let mut paths: Vec<std::path::PathBuf> = std::fs::read_dir(CORPUS)
         .expect("the corpus is readable")
         .filter_map(Result::ok)
-        .filter_map(|entry| std::fs::read_to_string(entry.path()).ok())
+        .map(|entry| entry.path())
+        .collect();
+    paths.sort();
+    let mut documents: Vec<String> = paths
+        .iter()
+        .filter_map(|path| std::fs::read_to_string(path).ok())
         .collect();
     assert!(!documents.is_empty(), "the corpus seeded nothing");
     // Shapes the corpus does not carry, so the first mutations have
@@ -459,14 +455,21 @@ fn no_generated_document_crashes_hangs_or_leaks() {
         // the finding beside it is the shape that slipped through for a
         // release.
         for value in &case.present {
-            if !answer.stdout.contains(&preview_of(value)) {
-                // Never reported, so there is nothing the masking was
-                // asked to cover. See the module note.
-                continue;
-            }
+            // No preview gate any more. It asked "was this value reported?"
+            // by looking for its preview — and a preview is eight characters
+            // and a length, so two different values sharing a prefix and a
+            // length share one. A run reported a *corrupted* forty-character
+            // key and the harness read that as the pristine one being
+            // reported, then named the wrong value in the failure. Worse, the
+            // gate excused the real defect: a credential the detector never
+            // claimed was printed from source in full, and "never reported"
+            // waved it through.
+            //
+            // The promise is that nothing prints a secret, not that nothing
+            // prints a secret it happened to recognise.
             assert!(
                 !answer.stdout.contains(value),
-                "a reported value reached stdout: {value}\n{}",
+                "a planted value reached stdout: {value}\n{}",
                 where_from()
             );
             assert!(

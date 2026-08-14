@@ -9,6 +9,29 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
+## [Unreleased]
+
+### Fixed
+
+- **A credential the scanner did not detect could be printed in full.**
+  The context window masks every value a document yielded — but a
+  credential the table never claimed is in no finding, so no span covered
+  it and no replacement matched it, and the window reproduced it from
+  source. The fuzzer caught a complete AWS secret access key printed that
+  way, inside the context of the finding beside it. The same hole existed
+  in the reported key name, which runs backwards over whatever abuts the
+  keyword: a GitHub token shipped inside `ghp_…database_password`.
+
+  Anything left in a window or a key with a credential's shape — sixteen
+  characters or more, and not a plain name, path or identifier — now
+  collapses to its length, and a window that cuts through a token drops
+  the fragment rather than showing half of it. Names and paths still read
+  as themselves: `const awsSecretAccessKey = '`, `DATABASE_PASSWORD=`,
+  `//registry.npmjs.org/`.
+
+  The only visible change to an existing report is a window edge that used
+  to show a partial token and now starts at the next whole one.
+
 ## [2.3.0] - 2026-08-14
 
 ### Added

@@ -75,13 +75,24 @@ that shape, all of them found by the checks in `ci-crate.yml`:
   of key material went out verbatim.
 
 **What a context line can still contain.** Every value the scan detected
-is masked out of the window. Text the scan did *not* detect is not a
-secret as far as this tool knows, and the window is source, so a
-credential this tool deliberately misses — a JWT with a non-JSON header,
-a GCP project id — can appear in one. That is the price of a context line
-existing at all, and it is bounded: sixty characters either side, never
-the whole file. A pipeline that will not pay it has the file, line,
-column and key without ever reading `context`.
+is masked out of the window, and anything left in it with a credential's
+shape is collapsed to its length — a token of sixteen characters or more
+that is not a plain name, path or identifier. A window that cuts through
+a token drops that fragment rather than showing half of it.
+
+That second rule exists because the first is not enough. A credential the
+table never claimed is in no finding, so no value masks it and no span
+covers it, and the window reproduced it from source: a complete AWS secret
+access key was printed in the context of the finding beside it. "This tool
+cannot mask what it never recognised" was the old answer and it was the
+wrong one — the promise is that nothing prints a secret, not that nothing
+prints a secret it happened to recognise.
+
+What survives is what makes a context worth reading: `const
+awsSecretAccessKey = '`, `DATABASE_PASSWORD=`, `//registry.npmjs.org/`.
+What does not is any long run carrying a digit. The window is bounded at
+sixty characters either side regardless, and a pipeline that wants none of
+it has the file, line, column and key without ever reading `context`.
 
 ## Why this is not a remediation tool
 

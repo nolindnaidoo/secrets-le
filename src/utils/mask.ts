@@ -119,6 +119,100 @@ function redactSpans(
 	return out;
 }
 
+/** The longest run of source a context window will show verbatim. */
+const MAX_RUN = 16;
+
+/**
+ * Where one token ends and the next begins.
+ *
+ * `DATABASE_PASSWORD=hunter2` is a name and a value, not one long run, so the
+ * separators a config or a language puts between them have to end a token —
+ * otherwise the key name collapses with the credential and the context stops
+ * saying anything. `/` is deliberately absent: it is what an AWS secret is full
+ * of, and splitting on it would leave `bPxRfiCYEXAMPLEKEY` looking like a word.
+ */
+function endsAToken(character: string): boolean {
+	return /[\s=:;,'"`(){}[\]<>&|?!…]/.test(character);
+}
+
+/**
+ * Whether a token is ordinary source rather than something with a credential's
+ * shape.
+ *
+ * Letters, `_`, `-`, `.` and `/` are what names and paths are made of:
+ * `awsSecretAccessKey`, `DATABASE_PASSWORD`, `//registry.npmjs.org/`. A digit
+ * in a token this long is what every credential in the table carries and what
+ * none of those do. Window-edge fragments are handled by dropping the partial
+ * token, not by this rule — which is what lets a URL stay readable.
+ */
+function readsAsAName(token: string): boolean {
+	return /^[\p{L}_./-]*$/u.test(token);
+}
+
+/**
+ * Collapse anything in a context window the detector did not claim but that
+ * has a credential's shape.
+ *
+ * Masking covers the values a document *yielded*. A credential the table did
+ * not claim is in no finding, so no span covers it and no replacement matches
+ * it — and the window reproduced it from source. The fuzzer caught a complete
+ * AWS secret access key printed that way, in the context of the finding beside
+ * it.
+ */
+export function collapseUnclaimedRuns(text: string): string {
+	let out = '';
+	let token = '';
+	const flush = (): void => {
+		out += collapseToken(token);
+		token = '';
+	};
+	for (const character of text) {
+		if (endsAToken(character)) {
+			flush();
+			out += character;
+			continue;
+		}
+		token += character;
+	}
+	flush();
+	return out;
+}
+
+function collapseToken(token: string): string {
+	const length = token.length;
+	if (length >= MAX_RUN && !readsAsAName(token)) {
+		return `(${length} chars)`;
+	}
+	return token;
+}
+
+/**
+ * Drop the partial token a window edge cut through.
+ *
+ * The margin is counted in code units, so it lands wherever it lands — usually
+ * inside a token. That fragment is the half of a credential the window happened
+ * to reach: `wJalrXUtnFE` reads as a word, sits under the collapse threshold,
+ * and is eleven characters of a key the preview rule would only ever show eight
+ * of. A whole token or nothing.
+ */
+function dropLeadingPartial(window: string): string {
+	for (let index = 0; index < window.length; index += 1) {
+		if (endsAToken(window[index] as string)) {
+			return window.slice(index);
+		}
+	}
+	return '';
+}
+
+function dropTrailingPartial(window: string): string {
+	for (let index = window.length - 1; index >= 0; index -= 1) {
+		if (endsAToken(window[index] as string)) {
+			return window.slice(0, index + 1);
+		}
+	}
+	return '';
+}
+
 export function maskContext(
 	line: string,
 	valueStart: number,
@@ -155,14 +249,22 @@ export function maskContext(
 	// the span first means the window cannot show source overlapping any
 	// finding, whatever the text is; the text pass after it still covers a
 	// value repeated where the spans do not reach.
-	const before = maskAll(
-		trimStart(redactSpans(line, beforeStart, valueStart, spans)),
-		values,
-	);
-	const after = maskAll(
-		trimEnd(redactSpans(line, valueEnd, afterEnd, spans)),
-		values,
-	);
+	let beforeRaw = redactSpans(line, beforeStart, valueStart, spans);
+	let afterRaw = redactSpans(line, valueEnd, afterEnd, spans);
+	// Only where the margin actually cut. A window reaching the start or the end
+	// of the line is showing whole tokens already.
+	if (beforeStart > 0) {
+		beforeRaw = dropLeadingPartial(beforeRaw);
+	}
+	if (afterEnd < line.length) {
+		afterRaw = dropTrailingPartial(afterRaw);
+	}
+
+	// Collapsed after masking, never before: a value the detector *did* claim
+	// earns its `prefix… (n chars)` preview, and collapsing first would flatten
+	// every finding's neighbour into a bare length.
+	const before = collapseUnclaimedRuns(maskAll(trimStart(beforeRaw), values));
+	const after = collapseUnclaimedRuns(maskAll(trimEnd(afterRaw), values));
 
 	return [
 		beforeStart > 0 ? '…' : '',
