@@ -95,8 +95,6 @@ keys, bearer tokens, JWTs, OAuth/access/refresh tokens, session ids,
 cookies, database URLs with embedded credentials, and PEM private-key
 blocks (re-classified as SSH or PGP from their header).
 
-`signatures/patterns.toml` is the table, and both frontends load it.
-
 The table lives in
 [`signatures/patterns.toml`](https://github.com/nolindnaidoo/secrets-le/blob/main/crate/signatures/patterns.toml)
 — reviewable without reading Rust, and mirrored from the extension's own
@@ -218,6 +216,16 @@ Full behaviour is in
 
 The extension is the one that can *fix* what it finds; this binary only
 reports. All sixteen LE tools are on **[letools.dev](https://letools.dev)**.
+
+## Documentation
+
+| What | Where |
+|---|---|
+| What this tool is allowed to say — scope, output contract, refusals, non-goals | [SPEC.md](https://github.com/nolindnaidoo/secrets-le/blob/main/crate/SPEC.md) |
+| How the code is written and held together — architecture, invariants, the gates | [AGENTS.md](https://github.com/nolindnaidoo/secrets-le/blob/main/crate/AGENTS.md) |
+| The VS Code extension this shares its extraction with | [README.md](https://github.com/nolindnaidoo/secrets-le/blob/main/README.md) |
+| What changed | [CHANGELOG.md](https://github.com/nolindnaidoo/secrets-le/blob/main/crate/CHANGELOG.md) |
+| The tool's page, and the other fifteen | [letools.dev/tools/secrets-le](https://letools.dev/tools/secrets-le) |
 
 ## More from the LE family
 
