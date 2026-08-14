@@ -86,12 +86,16 @@ positions.
 
 ## What it looks for
 
-Nineteen patterns across four families — API keys, passwords, tokens and
-private keys — covering AWS access keys and secrets, Azure and GCP keys,
-GitHub, Slack, Stripe and Google token prefixes, bearer tokens, JWTs,
-OAuth/access/refresh tokens, session ids, cookies, database URLs with
-embedded credentials, and PEM private-key blocks (re-classified as SSH
-or PGP from their header).
+Thirty-four patterns across four families — API keys, passwords, tokens and
+private keys. Nineteen are named issuers: Anthropic, OpenAI, GitHub,
+GitLab, Slack, Stripe, Google, SendGrid, Mailgun, Sentry, npm, PyPI,
+Docker Hub, HashiCorp Vault, Terraform Cloud, Supabase, Shopify, Square
+and Azure SAS. The rest cover AWS access keys and secrets, Azure and GCP
+keys, bearer tokens, JWTs, OAuth/access/refresh tokens, session ids,
+cookies, database URLs with embedded credentials, and PEM private-key
+blocks (re-classified as SSH or PGP from their header).
+
+`signatures/patterns.toml` is the table, and both frontends load it.
 
 The table lives in
 [`signatures/patterns.toml`](https://github.com/nolindnaidoo/secrets-le/blob/main/crate/signatures/patterns.toml)
@@ -213,7 +217,7 @@ Full behaviour is in
 | **Zed** | The MCP server as a context server | [add it by hand](https://zed.dev/docs/ai/mcp) *(no listing yet)* |
 
 The extension is the one that can *fix* what it finds; this binary only
-reports. All ten LE tools are on **[letools.dev](https://letools.dev)**.
+reports. All sixteen LE tools are on **[letools.dev](https://letools.dev)**.
 
 ## More from the LE family
 
@@ -249,6 +253,7 @@ Each stands on its own: no shared crate, no published core. Where two of them
 agree, it is because the same answer was right twice.
 
 **Contact** — [nolindnaidoo.com](https://nolindnaidoo.com) · [GitHub](https://github.com/nolindnaidoo) · [LinkedIn](https://www.linkedin.com/in/nolindnaidoo/)
+
 ## Also by nolindnaidoo
 
 **Rust** — pixelcoords and pixelactions are one loop: pixelcoords answers

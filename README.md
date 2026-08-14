@@ -42,6 +42,16 @@ Open a workspace, press `Ctrl+Alt+S` (`Cmd+Alt+S` on Mac), and every detected se
 
 Detection is regex-based over the full text of each file, so it works on any text format — code, configs, `.env` files, YAML, JSON, logs. It is a pre-commit safety net, not a guarantee: a scanner built on patterns can miss secrets and can flag non-secrets. Review the results.
 
+## Install
+
+| Where | What you get | Install |
+|---|---|---|
+| **VS Code** | Detection and in-place sanitising, in your editor | [Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le) |
+| **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/OffensiveEdge/secrets-le) |
+| **A terminal or a CI step** | The same run over a whole tree, with exit codes | `cargo install secrets-le` · [crates.io](https://crates.io/crates/secrets-le) |
+| **Any MCP agent, via Node** | `detect_secrets` over stdio | `npx secrets-le-mcp` · [npm](https://www.npmjs.com/package/secrets-le-mcp) |
+| **Zed** | The MCP server as a context server | [add it by hand](https://zed.dev/docs/ai/mcp) *(no listing yet)* |
+
 ## Use it from an AI agent
 
 The same engine runs as an [MCP](https://modelcontextprotocol.io) server, so an agent can call it directly instead of you running a command.
@@ -77,7 +87,7 @@ Most hosts read a JSON config. Add one entry:
 }
 ```
 
-`-y` skips the install prompt on first run. Pin a version if you would rather not track releases — `secrets-le-mcp@2.2.1`.
+`-y` skips the install prompt on first run. Pin a version if you would rather not track releases — `secrets-le-mcp@2.3.0`.
 
 Prefer not to go through `npx` on every launch? Install it once and point at the binary instead:
 
@@ -128,25 +138,16 @@ half the value's length, context lines are masked, and there is no flag
 that changes either. The extension is the half that can *fix* what it
 finds; the binary only reports.
 
-Install it with `cargo install secrets-le`
-([crates.io](https://crates.io/crates/secrets-le)). The spec
-([`crate/SPEC.md`](crate/SPEC.md)) and the engineering standard
-([`crate/AGENTS.md`](crate/AGENTS.md)) live alongside it, and it keeps
-its own [CHANGELOG](crate/CHANGELOG.md).
-
-**Two MCP servers, one tool.** `secrets-le mcp` offers `detect_secrets`
-exactly as [`secrets-le-mcp`](https://www.npmjs.com/package/secrets-le-mcp)
-does — [`crate/fixtures/mcp-detect-secrets.json`](crate/fixtures/mcp-detect-secrets.json)
-runs against both and CI fails if they diverge. Take the npm one if Node
-is already there; take the binary if you want no runtime, or if you want
-`secrets_le_scan` too.
-
 ## What gets detected
+
+Thirty-four patterns, in `crate/signatures/patterns.toml` — the one table
+both frontends load.
 
 | Category | Types |
 |---|---|
-| API keys & cloud credentials | Generic API keys (`api_key = …`), AWS Access Key IDs (`AKIA…`, no key name needed), AWS Secret Access Keys, Azure account keys, GCP/Google Cloud keys |
-| Tokens | Generic tokens, bearer tokens, access/refresh tokens, OAuth tokens, JWTs (key-based or bare `eyJ…` form), known prefixes: GitHub `ghp_`/`github_pat_`, Slack `xox?-`, Stripe `sk_live_`/`sk_test_`, Google `AIza…` |
+| Named issuers | Anthropic `sk-ant-`, OpenAI `sk-`/`sk-proj-`, GitHub `ghp_`/`github_pat_`, GitLab, Slack `xox?-`, Stripe `sk_live_`/`sk_test_`, Google `AIza…`, SendGrid, Mailgun, Sentry, npm, PyPI, Docker Hub, HashiCorp Vault, Terraform Cloud, Supabase, Shopify, Square, Azure SAS |
+| Cloud credentials | AWS Access Key IDs (`AKIA…`, no key name needed), AWS Secret Access Keys, Azure account keys, GCP/Google Cloud keys |
+| Tokens | Generic tokens, bearer tokens, access/refresh tokens, OAuth tokens, JWTs (key-based or bare `eyJ…` form) |
 | Passwords | `password`/`passwd`/`pwd` values, including compound keys (`DATABASE_PASSWORD`) |
 | Private keys | Multi-line PEM blocks — RSA/EC, OpenSSH, PGP |
 | Connection data | Database URLs with embedded `user:pass@` credentials, connection strings, session IDs, cookies |
@@ -208,19 +209,15 @@ setting of its own.
 - Error notifications redact home directories and credential-shaped fragments before display.
 - Sanitize always asks for confirmation before editing your file, and edits are normal undo-able document edits.
 
-## Development
+## Documentation
 
-```bash
-bun install
-bun run build            # esbuild bundle -> dist/extension.js
-bun run typecheck        # tsc --noEmit (includes tests)
-bun run test             # vitest unit suite
-bun run test:integration # real VS Code extension host
-bun run lint             # biome
-bun run package          # VSIX into release/
-```
-
-Architecture and conventions live in [AGENTS.md](AGENTS.md). Changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+| What | Where |
+|---|---|
+| What the tool is allowed to say — scope, output contract, refusals, non-goals | [`crate/SPEC.md`](crate/SPEC.md) |
+| How the extension is built and held together — architecture, invariants, toolchain, release | [AGENTS.md](AGENTS.md) |
+| How the CLI is built and held together | [`crate/AGENTS.md`](crate/AGENTS.md) |
+| What changed | [CHANGELOG.md](CHANGELOG.md) · [`crate/CHANGELOG.md`](crate/CHANGELOG.md) |
+| The tool's page, and the other fifteen | [letools.dev/tools/secrets-le](https://letools.dev/tools/secrets-le) |
 
 ## Performance
 
@@ -293,6 +290,7 @@ Each stands on its own: no shared crate, no published core. Where two of them
 agree, it is because the same answer was right twice.
 
 **Contact** — [nolindnaidoo.com](https://nolindnaidoo.com) · [GitHub](https://github.com/nolindnaidoo) · [LinkedIn](https://www.linkedin.com/in/nolindnaidoo/)
+
 ## Also by nolindnaidoo
 
 **Rust** — pixelcoords and pixelactions are one loop: pixelcoords answers
