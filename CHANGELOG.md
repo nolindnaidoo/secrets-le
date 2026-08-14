@@ -9,7 +9,7 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
-## [2.3.0] - 2026-08-13
+## [2.3.0] - 2026-08-14
 
 ### Added
 
@@ -455,3 +455,4 @@ entries claimed features that did not exist (settings export/import/
 reset commands, "13 languages coming", GitGuardian-level detection,
 enterprise-grade error handling) and shipped packages that could not
 activate; those entries are not reproduced here.
+[0.2.0]: https://crates.io/crates/secrets-le/0.2.0
