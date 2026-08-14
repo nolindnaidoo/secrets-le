@@ -416,6 +416,19 @@ jobs:
           SECRETS_LE_FUZZ_SEED: "20260812"
         run: cargo test --release --locked --test fuzz -- --nocapture
 
+      # The document is written to the runner's temp directory and dies with
+      # the runner, so a failure printed 300 of its characters and destroyed
+      # the other 358 — leaving a real leak that could be read about and not
+      # reproduced. Keeping it is what makes the fix verifiable.
+      - name: Keep the document that broke it
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: fuzz-failure-document
+          path: /tmp/secrets-le-fuzz-*.txt
+          if-no-files-found: warn
+          retention-days: 14
+
   # This crate was fifty times slower than every sibling for a release —
   # 8.55s over a tree the others crossed in 0.06s — and nobody noticed,
   # because nothing measured it. A ceiling catches a scan that got
