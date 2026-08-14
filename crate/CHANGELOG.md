@@ -50,6 +50,24 @@ transmit it.
 
 ### Fixed
 
+- **A credential could reach a report through the context line of the
+  finding beside it.** Masking replaced a value by searching the window
+  for it, which needs the value present whole — and a credential
+  reported as *part* of a longer run leaves the window showing a prefix
+  of that longer value, which nothing matches. The shorter credential
+  inside it survived in the clear. The fuzzer found it at seed 20260812
+  with a connection string inside a 1,595-character database URL, and
+  `fixtures/`'s `secrets.ini` had been carrying a milder version of the
+  same thing: `Server=prod;Database=app;Uid=admin;` printed beside the
+  password it was masking, while being a reported finding itself.
+
+  The context is now redacted **by span** before the text pass runs:
+  every finding's offsets are rebased onto the line, and any part of the
+  window overlapping one is blanked whatever its text happens to be. The
+  text pass stays, and still covers a value repeated where no span
+  reaches. Both frontends, since this is the shared `detect_secrets`
+  tool — four corpus contexts move here and two in the extension's.
+
 - **Four kinds of finding no switch could turn off.** `--no-passwords`
   left connection strings and database URLs in the report, and
   `--no-tokens` left cookies and session IDs, because anything the

@@ -21,11 +21,37 @@ separate product on its own cadence and keeps its own
 
 ### Fixed
 
+- **A credential could reach a report through the context line of the
+  finding beside it.** Masking replaced a value by searching the window
+  for it, which needs the value present whole — and a credential
+  reported as *part* of a longer run leaves the window showing a prefix
+  of that longer value, which nothing matches. The shorter credential
+  inside it survived in the clear. The fuzzer found it at seed 20260812
+  with a connection string inside a 1,595-character database URL, and
+  `secrets.ini` in the corpus had been carrying a milder version of the
+  same thing.
+
+  The context is now redacted **by span** before the text pass runs:
+  every finding's offsets are rebased onto the line, and any part of the
+  window overlapping one is blanked whatever its text happens to be. The
+  text pass stays, and still covers a value repeated where no span
+  reaches. Both frontends, since this is the shared `detect_secrets`
+  tool — four corpus contexts move in the crate's goldens and two in
+  this one's.
+
 - **Four kinds of finding no toggle could turn off.** Turning passwords
   off left connection strings and database URLs in the results, and
   turning tokens off left cookies and session IDs. Both are credentials
   carried in a URI and a bearer credential respectively, so they now
   answer to the toggle a reader would reach for.
+
+### Changed
+
+- **New icon artwork.** All sixteen tools were redrawn in one style, so
+  the family reads as one set wherever the listings sit side by side —
+  the Marketplace, Open VSX and letools.dev. The framing is unchanged:
+  the drawing fills 65.8% of an 800×800 canvas, and every smaller size
+  is derived from that one file rather than drawn again.
 
 ### Also in this release
 
