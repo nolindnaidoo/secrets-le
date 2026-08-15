@@ -28,6 +28,10 @@
   </a>
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/nolindnaidoo/secrets-le/main/assets/demo.gif" alt="secrets-le demo — the real binary, recorded by assets/demo.tape" width="100%"/>
+</p>
+
 > **Useful?** A star is how other developers find it —
 > [★ GitHub](https://github.com/nolindnaidoo/secrets-le) ·
 > [letools.dev/tools/secrets-le](https://letools.dev/tools/secrets-le)

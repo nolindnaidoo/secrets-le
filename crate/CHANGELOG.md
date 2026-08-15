@@ -7,6 +7,17 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2026-08-15
+
+### Added
+
+- **The crates.io page carries a demo of the CLI.** It had the icon and
+  nothing else, because the only recording in the repository was of the
+  VS Code extension reading an editor buffer — a clip of something this
+  binary does not do. `assets/demo.tape` records the real binary against
+  the files in `assets/demo/`, so the clip is reproducible (`cd assets
+  && vhs demo.tape`) rather than an artifact nobody can regenerate.
+
 ## [0.2.2] - 2026-08-15
 
 ### Fixed
@@ -288,6 +299,7 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 300, over every corpus document, over a real binary run against planted
 credentials, and from the extension's side by the parity script.
 
+[0.2.3]: https://crates.io/crates/secrets-le/0.2.3
 [0.2.2]: https://crates.io/crates/secrets-le/0.2.2
 [0.2.0]: https://crates.io/crates/secrets-le/0.2.0
 [0.1.0]: https://crates.io/crates/secrets-le/0.1.0
