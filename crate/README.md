@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/nolindnaidoo/secrets-le/main/src/assets/images/icon.png" alt="secrets-le logo" width="96" height="96"/>
+</p>
+
 <h1 align="center">secrets-le</h1>
 
 <p align="center">
