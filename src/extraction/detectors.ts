@@ -200,6 +200,78 @@ export const SECRET_PATTERNS: readonly SecretPattern[] = Object.freeze([
 		description: 'Square access token',
 	},
 	{
+		type: 'huggingface-token',
+		pattern: /\b(hf_[A-Za-z0-9]{34,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Hugging Face access token',
+	},
+	{
+		type: 'groq-key',
+		pattern: /\b(gsk_[A-Za-z0-9]{48,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Groq API key',
+	},
+	{
+		type: 'replicate-token',
+		pattern: /\b(r8_[A-Za-z0-9]{37,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Replicate API token',
+	},
+	{
+		type: 'xai-key',
+		pattern: /\b(xai-[A-Za-z0-9]{70,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'xAI API key',
+	},
+	{
+		type: 'digitalocean-token',
+		pattern: /\b(do[opr]_v1_[a-f0-9]{64,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'DigitalOcean token',
+	},
+	{
+		type: 'doppler-token',
+		pattern: /\b(dp\.(?:pt|st|sa|ct|scim|audit)\.[A-Za-z0-9._-]{40,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Doppler token',
+	},
+	{
+		type: 'linear-key',
+		pattern: /\b(lin_api_[A-Za-z0-9]{40,})\b/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Linear API key',
+	},
+	{
+		type: 'google-oauth-secret',
+		pattern: /\b(GOCSPX-[A-Za-z0-9_-]{28,})/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Google OAuth client secret',
+	},
+	{
+		type: 'slack-webhook',
+		pattern:
+			/(https:\/\/hooks\.slack\.com\/(?:services|workflows|triggers)\/[A-Za-z0-9/_-]{20,})/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Slack webhook URL',
+	},
+	{
+		type: 'discord-webhook',
+		pattern:
+			/(https:\/\/(?:ptb\.|canary\.)?discord(?:app)?\.com\/api\/webhooks\/[0-9]{17,20}\/[A-Za-z0-9_-]{60,})/dg,
+		valueGroup: 1,
+		confidence: high,
+		description: 'Discord webhook URL',
+	},
+	{
 		type: 'azure-sas',
 		// The signature alone is the credential, so it alone is the
 		// value: everything before it is the policy the signature
@@ -366,7 +438,7 @@ export const SECRET_PATTERNS: readonly SecretPattern[] = Object.freeze([
 	{
 		type: 'token',
 		pattern:
-			/\b(ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_-]{35})\b/dg,
+			/\b(gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[baprs]-[A-Za-z0-9-]{10,}|(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{32,}|AIza[0-9A-Za-z_-]{35})\b/dg,
 		valueGroup: 1,
 		confidence: high,
 		description: 'Known token prefix (GitHub/Slack/Stripe/Google)',
@@ -438,6 +510,10 @@ const API_KEY_TYPES: ReadonlySet<SecretType> = new Set([
 	'openai-key',
 	'sendgrid-key',
 	'supabase-key',
+	'groq-key',
+	'xai-key',
+	'linear-key',
+	'google-oauth-secret',
 ]);
 const TOKEN_TYPES: ReadonlySet<SecretType> = new Set([
 	'token',
@@ -455,6 +531,12 @@ const TOKEN_TYPES: ReadonlySet<SecretType> = new Set([
 	'square-token',
 	'terraform-token',
 	'vault-token',
+	'huggingface-token',
+	'replicate-token',
+	'digitalocean-token',
+	'doppler-token',
+	'slack-webhook',
+	'discord-webhook',
 	'cookie',
 	'session-id',
 ]);

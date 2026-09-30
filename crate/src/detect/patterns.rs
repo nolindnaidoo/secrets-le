@@ -333,6 +333,55 @@ mod prefilter_soundness {
         }
     }
 
+    // Every issuer-prefixed shape is here as well as the generic
+    // ones. The prefilter is the reason a pattern runs at all, so a
+    // new pattern whose relaxed form does not match is a detector
+    // that never fires — and it would fire in no test that did not
+    // cross it with the ways a value gets written.
+    const VALUES: [&str; 34] = [
+        "hunter2hunter2",
+        "aB3xY7zQ9mK2pL5vN8wR4tS6",
+        "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "AKIAIOSFODNN7EXAMPLE",
+        "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N",
+        "postgres://user:pass@db.example.invalid/app",
+        "Server=prod;Database=app;Uid=admin;Pwd=secret123;",
+        "sk-ant-api03-EXAMPLEnotarealanthropickey00000",
+        "sk-proj-EXAMPLEnotarealopenaikey000000000000",
+        "glpat-EXAMPLEnotarealgitlab00",
+        "SG.EXAMPLEnotarealsendgridselector1234.EXAMPLEnotarealsendgridsecret00000",
+        "key-deadbeefdeadbeefdeadbeefdeadbeefface",
+        "sntrys_EXAMPLEnotarealsentryorgauthtoken00000000",
+        "npm_EXAMPLEnotarealnpmtoken00000000000000000",
+        "pypi-AgENOTAREALpypitokenEXAMPLE0000000000000000000000000000",
+        "dckr_pat_EXAMPLEnotarealdockertoken00000000",
+        "hvs.EXAMPLEnotarealvaulttoken00",
+        "EXAMPLEnotar.atlasv1.EXAMPLEnotarealterraformcloudtoken000000000000",
+        "sbp_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefface",
+        // Joined at compile time rather than written out: a
+        // complete Shopify-shaped token in a checked-in file trips
+        // other scanners, including GitHub's push protection.
+        concat!("shpat_", "deadbeef", "deadbeef", "deadbeef", "deadbeef"),
+        "hf_EXAMPLEnotarealhuggingface00000000000000",
+        "gsk_EXAMPLEnotarealgroq000000000000000000000000000000",
+        "r8_EXAMPLEnotarealreplicate0000000000000000",
+        "xai-EXAMPLEnotarealxai000000000000000000000000000000000000000000000000000000",
+        "dop_v1_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefface",
+        concat!(
+            "dp.",
+            "st.",
+            "dev.EXAMPLE-notareal-doppler-00000000000000000"
+        ),
+        "lin_api_EXAMPLEnotareallinear00000000000000000000000",
+        "GOCSPX-EXAMPLEnotarealgoogle00000000000",
+        "https://hooks.slack.com/services/EXAMPLE/NOTREAL/examplenotarealslackwebhook",
+        "https://discord.com/api/webhooks/000000000000000000/EXAMPLEnotarealdiscordwebhook00000000000000000000000000000000",
+        "gho_1234567890abcdefghijklmnopqrstuvwxyz",
+        "rk_test_EXAMPLEnotarealstripe000000000",
+        "whsec_EXAMPLEnotarealstripewebhook00000",
+    ];
+
     /// The same property over **generated** documents rather than the
     /// ones somebody thought of.
     ///
@@ -372,37 +421,6 @@ mod prefilter_soundness {
             "cookie",
             "connection_string",
             "accountkey",
-        ];
-        // Every issuer-prefixed shape is here as well as the generic
-        // ones. The prefilter is the reason a pattern runs at all, so a
-        // new pattern whose relaxed form does not match is a detector
-        // that never fires — and it would fire in no test that did not
-        // cross it with the ways a value gets written.
-        const VALUES: [&str; 21] = [
-            "hunter2hunter2",
-            "aB3xY7zQ9mK2pL5vN8wR4tS6",
-            "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-            "AKIAIOSFODNN7EXAMPLE",
-            "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
-            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N",
-            "postgres://user:pass@db.example.invalid/app",
-            "Server=prod;Database=app;Uid=admin;Pwd=secret123;",
-            "sk-ant-api03-EXAMPLEnotarealanthropickey00000",
-            "sk-proj-EXAMPLEnotarealopenaikey000000000000",
-            "glpat-EXAMPLEnotarealgitlab00",
-            "SG.EXAMPLEnotarealsendgridselector1234.EXAMPLEnotarealsendgridsecret00000",
-            "key-deadbeefdeadbeefdeadbeefdeadbeefface",
-            "sntrys_EXAMPLEnotarealsentryorgauthtoken00000000",
-            "npm_EXAMPLEnotarealnpmtoken00000000000000000",
-            "pypi-AgENOTAREALpypitokenEXAMPLE0000000000000000000000000000",
-            "dckr_pat_EXAMPLEnotarealdockertoken00000000",
-            "hvs.EXAMPLEnotarealvaulttoken00",
-            "EXAMPLEnotar.atlasv1.EXAMPLEnotarealterraformcloudtoken000000000000",
-            "sbp_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefface",
-            // Joined at compile time rather than written out: a
-            // complete Shopify-shaped token in a checked-in file trips
-            // other scanners, including GitHub's push protection.
-            concat!("shpat_", "deadbeef", "deadbeef", "deadbeef", "deadbeef"),
         ];
         // `{key}` and `{value}` stand in for the pair.
         const WRAPPERS: [&str; 12] = [
@@ -475,7 +493,7 @@ mod tests {
     #[test]
     fn the_embedded_table_loads_and_compiles() {
         assert!(!PATTERNS.is_empty());
-        assert_eq!(PATTERNS.len(), 34, "the corpus carries 34 patterns");
+        assert_eq!(PATTERNS.len(), 44, "the corpus carries 44 patterns");
     }
 
     /// The issuer-prefixed patterns lead the table, and the list of
@@ -487,7 +505,7 @@ mod tests {
     /// npm_…` is both — and the first to claim it wins the dedupe.
     #[test]
     fn the_issuer_prefixed_patterns_lead_the_table() {
-        const ISSUERS: [&str; 15] = [
+        const ISSUERS: [&str; 25] = [
             "anthropic-key",
             "openai-key",
             "gitlab-token",
@@ -502,6 +520,16 @@ mod tests {
             "supabase-key",
             "shopify-token",
             "square-token",
+            "huggingface-token",
+            "groq-key",
+            "replicate-token",
+            "xai-key",
+            "digitalocean-token",
+            "doppler-token",
+            "linear-key",
+            "google-oauth-secret",
+            "slack-webhook",
+            "discord-webhook",
             "azure-sas",
         ];
         let leading: Vec<&str> = PATTERNS

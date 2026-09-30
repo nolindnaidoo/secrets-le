@@ -74,6 +74,16 @@ export type SecretType =
 	| 'supabase-key'
 	| 'terraform-token'
 	| 'vault-token'
+	| 'huggingface-token'
+	| 'groq-key'
+	| 'replicate-token'
+	| 'xai-key'
+	| 'digitalocean-token'
+	| 'doppler-token'
+	| 'linear-key'
+	| 'google-oauth-secret'
+	| 'slack-webhook'
+	| 'discord-webhook'
 	| 'unknown';
 
 export type ConfidenceLevel = 'low' | 'medium' | 'high';

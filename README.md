@@ -145,7 +145,7 @@ both frontends load.
 
 | Category | Types |
 |---|---|
-| Named issuers | Anthropic `sk-ant-`, OpenAI `sk-`/`sk-proj-`, GitHub `ghp_`/`github_pat_`, GitLab, Slack `xox?-`, Stripe `sk_live_`/`sk_test_`, Google `AIza…`, SendGrid, Mailgun, Sentry, npm, PyPI, Docker Hub, HashiCorp Vault, Terraform Cloud, Supabase, Shopify, Square, Azure SAS |
+| Named issuers | Anthropic `sk-ant-`, OpenAI `sk-`/`sk-proj-`, xAI `xai-`, Groq `gsk_`, Hugging Face `hf_`, Replicate `r8_`, GitHub `ghp_`/`gho_`/`ghu_`/`ghs_`/`ghr_`/`github_pat_`, GitLab, Slack `xox?-` and webhook URLs, Discord webhook URLs, Stripe `sk_`/`rk_` live and test keys and `whsec_` webhook secrets, Google `AIza…` and OAuth client secrets `GOCSPX-`, Linear `lin_api_`, DigitalOcean `dop_v1_`/`doo_v1_`/`dor_v1_`, Doppler `dp.pt.`/`dp.st.`, SendGrid, Mailgun, Sentry, npm, PyPI, Docker Hub, HashiCorp Vault, Terraform Cloud, Supabase, Shopify, Square, Azure SAS |
 | Cloud credentials | AWS Access Key IDs (`AKIA…`, no key name needed), AWS Secret Access Keys, Azure account keys, GCP/Google Cloud keys |
 | Tokens | Generic tokens, bearer tokens, access/refresh tokens, OAuth tokens, JWTs (key-based or bare `eyJ…` form) |
 | Passwords | `password`/`passwd`/`pwd` values, including compound keys (`DATABASE_PASSWORD`) |
@@ -241,12 +241,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 91.03% |
-| Branches | 79.75% |
-| Functions | 95.90% |
-| Lines | 91.89% |
+| Statements | 90.53% |
+| Branches | 79.71% |
+| Functions | 95.34% |
+| Lines | 91.42% |
 
-248 test cases across 15 files, plus an integration suite that runs
+288 test cases across 15 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

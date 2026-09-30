@@ -246,6 +246,136 @@
 					"line": 28,
 					"column": 105,
 					"description": "Azure Storage SAS signature"
+				},
+				{
+					"type": "huggingface-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "hf_EXAMP\u2026 (43 chars)",
+					"context": "HF_TOKEN=hf_EXAMP\u2026 (43 chars)",
+					"line": 29,
+					"column": 10,
+					"description": "Hugging Face access token"
+				},
+				{
+					"type": "groq-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "gsk_EXAM\u2026 (53 chars)",
+					"context": "GROQ_API_KEY=gsk_EXAM\u2026 (53 chars)",
+					"line": 30,
+					"column": 14,
+					"description": "Groq API key"
+				},
+				{
+					"type": "replicate-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "r8_EXAMP\u2026 (43 chars)",
+					"context": "export REPLICATE_API_TOKEN=r8_EXAMP\u2026 (43 chars)",
+					"line": 31,
+					"column": 28,
+					"description": "Replicate API token"
+				},
+				{
+					"type": "xai-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "xai-EXAM\u2026 (76 chars)",
+					"context": "XAI_API_KEY=xai-EXAM\u2026 (76 chars)",
+					"line": 32,
+					"column": 13,
+					"description": "xAI API key"
+				},
+				{
+					"type": "digitalocean-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dop_v1_d\u2026 (75 chars)",
+					"context": "doctl auth init -t dop_v1_d\u2026 (75 chars)",
+					"line": 33,
+					"column": 20,
+					"description": "DigitalOcean token"
+				},
+				{
+					"type": "doppler-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dp.st.de\u2026 (52 chars)",
+					"context": "DOPPLER_TOKEN=dp.st.de\u2026 (52 chars)",
+					"line": 34,
+					"column": 15,
+					"description": "Doppler token"
+				},
+				{
+					"type": "linear-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "lin_api_\u2026 (52 chars)",
+					"context": "LINEAR_API_KEY=lin_api_\u2026 (52 chars)",
+					"line": 35,
+					"column": 16,
+					"description": "Linear API key"
+				},
+				{
+					"type": "google-oauth-secret",
+					"confidence": "high",
+					"key": null,
+					"preview": "GOCSPX-E\u2026 (39 chars)",
+					"context": "GOOGLE_CLIENT_SECRET=GOCSPX-E\u2026 (39 chars)",
+					"line": 36,
+					"column": 22,
+					"description": "Google OAuth client secret"
+				},
+				{
+					"type": "slack-webhook",
+					"confidence": "high",
+					"key": null,
+					"preview": "https://\u2026 (76 chars)",
+					"context": "curl -X POST https://\u2026 (76 chars)",
+					"line": 37,
+					"column": 14,
+					"description": "Slack webhook URL"
+				},
+				{
+					"type": "discord-webhook",
+					"confidence": "high",
+					"key": null,
+					"preview": "https://\u2026 (113 chars)",
+					"context": "curl -X POST https://\u2026 (113 chars)",
+					"line": 38,
+					"column": 14,
+					"description": "Discord webhook URL"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "gho_1234\u2026 (40 chars)",
+					"context": "gh auth login --with-token <<< gho_1234\u2026 (40 chars)",
+					"line": 39,
+					"column": 32,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "rk_test_\u2026 (38 chars)",
+					"context": "STRIPE_RESTRICTED=rk_test_\u2026 (38 chars)",
+					"line": 40,
+					"column": 19,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "whsec_EX\u2026 (39 chars)",
+					"context": "STRIPE_WEBHOOK_SECRET=whsec_EX\u2026 (39 chars)",
+					"line": 41,
+					"column": 23,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
 				}
 			]
 		},
@@ -393,6 +523,136 @@
 					"line": 28,
 					"column": 105,
 					"description": "Azure Storage SAS signature"
+				},
+				{
+					"type": "huggingface-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "hf_EXAMP\u2026 (43 chars)",
+					"context": "HF_TOKEN=hf_EXAMP\u2026 (43 chars)",
+					"line": 29,
+					"column": 10,
+					"description": "Hugging Face access token"
+				},
+				{
+					"type": "groq-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "gsk_EXAM\u2026 (53 chars)",
+					"context": "GROQ_API_KEY=gsk_EXAM\u2026 (53 chars)",
+					"line": 30,
+					"column": 14,
+					"description": "Groq API key"
+				},
+				{
+					"type": "replicate-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "r8_EXAMP\u2026 (43 chars)",
+					"context": "export REPLICATE_API_TOKEN=r8_EXAMP\u2026 (43 chars)",
+					"line": 31,
+					"column": 28,
+					"description": "Replicate API token"
+				},
+				{
+					"type": "xai-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "xai-EXAM\u2026 (76 chars)",
+					"context": "XAI_API_KEY=xai-EXAM\u2026 (76 chars)",
+					"line": 32,
+					"column": 13,
+					"description": "xAI API key"
+				},
+				{
+					"type": "digitalocean-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dop_v1_d\u2026 (75 chars)",
+					"context": "doctl auth init -t dop_v1_d\u2026 (75 chars)",
+					"line": 33,
+					"column": 20,
+					"description": "DigitalOcean token"
+				},
+				{
+					"type": "doppler-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dp.st.de\u2026 (52 chars)",
+					"context": "DOPPLER_TOKEN=dp.st.de\u2026 (52 chars)",
+					"line": 34,
+					"column": 15,
+					"description": "Doppler token"
+				},
+				{
+					"type": "linear-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "lin_api_\u2026 (52 chars)",
+					"context": "LINEAR_API_KEY=lin_api_\u2026 (52 chars)",
+					"line": 35,
+					"column": 16,
+					"description": "Linear API key"
+				},
+				{
+					"type": "google-oauth-secret",
+					"confidence": "high",
+					"key": null,
+					"preview": "GOCSPX-E\u2026 (39 chars)",
+					"context": "GOOGLE_CLIENT_SECRET=GOCSPX-E\u2026 (39 chars)",
+					"line": 36,
+					"column": 22,
+					"description": "Google OAuth client secret"
+				},
+				{
+					"type": "slack-webhook",
+					"confidence": "high",
+					"key": null,
+					"preview": "https://\u2026 (76 chars)",
+					"context": "curl -X POST https://\u2026 (76 chars)",
+					"line": 37,
+					"column": 14,
+					"description": "Slack webhook URL"
+				},
+				{
+					"type": "discord-webhook",
+					"confidence": "high",
+					"key": null,
+					"preview": "https://\u2026 (113 chars)",
+					"context": "curl -X POST https://\u2026 (113 chars)",
+					"line": 38,
+					"column": 14,
+					"description": "Discord webhook URL"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "gho_1234\u2026 (40 chars)",
+					"context": "gh auth login --with-token <<< gho_1234\u2026 (40 chars)",
+					"line": 39,
+					"column": 32,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "rk_test_\u2026 (38 chars)",
+					"context": "STRIPE_RESTRICTED=rk_test_\u2026 (38 chars)",
+					"line": 40,
+					"column": 19,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "whsec_EX\u2026 (39 chars)",
+					"context": "STRIPE_WEBHOOK_SECRET=whsec_EX\u2026 (39 chars)",
+					"line": 41,
+					"column": 23,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
 				}
 			]
 		},
@@ -530,6 +790,136 @@
 					"line": 28,
 					"column": 105,
 					"description": "Azure Storage SAS signature"
+				},
+				{
+					"type": "huggingface-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "hf_EXAMP\u2026 (43 chars)",
+					"context": "HF_TOKEN=hf_EXAMP\u2026 (43 chars)",
+					"line": 29,
+					"column": 10,
+					"description": "Hugging Face access token"
+				},
+				{
+					"type": "groq-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "gsk_EXAM\u2026 (53 chars)",
+					"context": "GROQ_API_KEY=gsk_EXAM\u2026 (53 chars)",
+					"line": 30,
+					"column": 14,
+					"description": "Groq API key"
+				},
+				{
+					"type": "replicate-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "r8_EXAMP\u2026 (43 chars)",
+					"context": "export REPLICATE_API_TOKEN=r8_EXAMP\u2026 (43 chars)",
+					"line": 31,
+					"column": 28,
+					"description": "Replicate API token"
+				},
+				{
+					"type": "xai-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "xai-EXAM\u2026 (76 chars)",
+					"context": "XAI_API_KEY=xai-EXAM\u2026 (76 chars)",
+					"line": 32,
+					"column": 13,
+					"description": "xAI API key"
+				},
+				{
+					"type": "digitalocean-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dop_v1_d\u2026 (75 chars)",
+					"context": "doctl auth init -t dop_v1_d\u2026 (75 chars)",
+					"line": 33,
+					"column": 20,
+					"description": "DigitalOcean token"
+				},
+				{
+					"type": "doppler-token",
+					"confidence": "high",
+					"key": null,
+					"preview": "dp.st.de\u2026 (52 chars)",
+					"context": "DOPPLER_TOKEN=dp.st.de\u2026 (52 chars)",
+					"line": 34,
+					"column": 15,
+					"description": "Doppler token"
+				},
+				{
+					"type": "linear-key",
+					"confidence": "high",
+					"key": null,
+					"preview": "lin_api_\u2026 (52 chars)",
+					"context": "LINEAR_API_KEY=lin_api_\u2026 (52 chars)",
+					"line": 35,
+					"column": 16,
+					"description": "Linear API key"
+				},
+				{
+					"type": "google-oauth-secret",
+					"confidence": "high",
+					"key": null,
+					"preview": "GOCSPX-E\u2026 (39 chars)",
+					"context": "GOOGLE_CLIENT_SECRET=GOCSPX-E\u2026 (39 chars)",
+					"line": 36,
+					"column": 22,
+					"description": "Google OAuth client secret"
+				},
+				{
+					"type": "slack-webhook",
+					"confidence": "high",
+					"key": null,
+					"preview": "https://\u2026 (76 chars)",
+					"context": "curl -X POST https://\u2026 (76 chars)",
+					"line": 37,
+					"column": 14,
+					"description": "Slack webhook URL"
+				},
+				{
+					"type": "discord-webhook",
+					"confidence": "high",
+					"key": null,
+					"preview": "https://\u2026 (113 chars)",
+					"context": "curl -X POST https://\u2026 (113 chars)",
+					"line": 38,
+					"column": 14,
+					"description": "Discord webhook URL"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "gho_1234\u2026 (40 chars)",
+					"context": "gh auth login --with-token <<< gho_1234\u2026 (40 chars)",
+					"line": 39,
+					"column": 32,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "rk_test_\u2026 (38 chars)",
+					"context": "STRIPE_RESTRICTED=rk_test_\u2026 (38 chars)",
+					"line": 40,
+					"column": 19,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"key": null,
+					"preview": "whsec_EX\u2026 (39 chars)",
+					"context": "STRIPE_WEBHOOK_SECRET=whsec_EX\u2026 (39 chars)",
+					"line": 41,
+					"column": 23,
+					"description": "Known token prefix (GitHub/Slack/Stripe/Google)"
 				}
 			]
 		},
@@ -1634,6 +2024,51 @@
 					"type": "square-token",
 					"confidence": "high",
 					"line": 27
+				},
+				{
+					"type": "huggingface-token",
+					"confidence": "high",
+					"line": 29
+				},
+				{
+					"type": "replicate-token",
+					"confidence": "high",
+					"line": 31
+				},
+				{
+					"type": "digitalocean-token",
+					"confidence": "high",
+					"line": 33
+				},
+				{
+					"type": "doppler-token",
+					"confidence": "high",
+					"line": 34
+				},
+				{
+					"type": "slack-webhook",
+					"confidence": "high",
+					"line": 37
+				},
+				{
+					"type": "discord-webhook",
+					"confidence": "high",
+					"line": 38
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"line": 39
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"line": 40
+				},
+				{
+					"type": "token",
+					"confidence": "high",
+					"line": 41
 				}
 			]
 		},
@@ -1673,6 +2108,26 @@
 					"type": "azure-sas",
 					"confidence": "high",
 					"line": 28
+				},
+				{
+					"type": "groq-key",
+					"confidence": "high",
+					"line": 30
+				},
+				{
+					"type": "xai-key",
+					"confidence": "high",
+					"line": 32
+				},
+				{
+					"type": "linear-key",
+					"confidence": "high",
+					"line": 35
+				},
+				{
+					"type": "google-oauth-secret",
+					"confidence": "high",
+					"line": 36
 				}
 			]
 		}

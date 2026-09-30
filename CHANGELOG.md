@@ -9,6 +9,21 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
+## [Unreleased]
+
+### Added
+
+- **Ten more credential formats are named by issuer**: Hugging Face `hf_`,
+  Groq `gsk_`, Replicate `r8_`, xAI `xai-`, DigitalOcean `do[opr]_v1_`,
+  Doppler `dp.pt.`/`dp.st.`, Linear `lin_api_`, Google OAuth client secrets
+  `GOCSPX-`, and Slack and Discord webhook URLs. Each is found with no key
+  name beside it and reported under its own type, so the finding says which
+  credential to revoke. The AI-provider keys answer to the API-key switch,
+  the rest to the token switch.
+- **GitHub's other token types** — `gho_`, `ghu_`, `ghs_`, `ghr_` — and
+  Stripe's restricted `rk_` keys and `whsec_` webhook secrets join the
+  known-prefix detector, which read only `ghp_` and `sk_` before.
+
 ## [2.3.1] - 2026-08-14
 
 ### Fixed

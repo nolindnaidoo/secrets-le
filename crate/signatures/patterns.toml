@@ -127,6 +127,86 @@ value_group = 1
 confidence = { kind = "fixed", level = "high" }
 
 [[pattern]]
+type = "huggingface-token"
+description = "Hugging Face access token"
+regex = "\\b(hf_[A-Za-z0-9]{34,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "groq-key"
+description = "Groq API key"
+regex = "\\b(gsk_[A-Za-z0-9]{48,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "replicate-token"
+description = "Replicate API token"
+regex = "\\b(r8_[A-Za-z0-9]{37,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "xai-key"
+description = "xAI API key"
+regex = "\\b(xai-[A-Za-z0-9]{70,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "digitalocean-token"
+description = "DigitalOcean token"
+regex = "\\b(do[opr]_v1_[a-f0-9]{64,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "doppler-token"
+description = "Doppler token"
+regex = "\\b(dp\\.(?:pt|st|sa|ct|scim|audit)\\.[A-Za-z0-9._-]{40,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "linear-key"
+description = "Linear API key"
+regex = "\\b(lin_api_[A-Za-z0-9]{40,})\\b"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "google-oauth-secret"
+description = "Google OAuth client secret"
+regex = "\\b(GOCSPX-[A-Za-z0-9_-]{28,})"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "slack-webhook"
+description = "Slack webhook URL"
+regex = "(https:\\/\\/hooks\\.slack\\.com\\/(?:services|workflows|triggers)\\/[A-Za-z0-9/_-]{20,})"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
+type = "discord-webhook"
+description = "Discord webhook URL"
+regex = "(https:\\/\\/(?:ptb\\.|canary\\.)?discord(?:app)?\\.com\\/api\\/webhooks\\/[0-9]{17,20}\\/[A-Za-z0-9_-]{60,})"
+flags = "dg"
+value_group = 1
+confidence = { kind = "fixed", level = "high" }
+
+[[pattern]]
 type = "azure-sas"
 description = "Azure Storage SAS signature"
 regex = "\\bsv=[0-9]{4}-[0-9]{2}-[0-9]{2}[^\\s'\"]{0,300}?[?&]sig=([A-Za-z0-9%+/]{20,})"
@@ -262,7 +342,7 @@ confidence = { kind = "fixed", level = "high" }
 [[pattern]]
 type = "token"
 description = "Known token prefix (GitHub/Slack/Stripe/Google)"
-regex = "\\b(ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_-]{35})\\b"
+regex = "\\b(gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|xox[baprs]-[A-Za-z0-9-]{10,}|(?:sk|rk)_(?:live|test)_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{32,}|AIza[0-9A-Za-z_-]{35})\\b"
 flags = "dg"
 value_group = 1
 confidence = { kind = "fixed", level = "high" }
