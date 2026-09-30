@@ -7,7 +7,7 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2026-09-30
 
 ### Added
 
@@ -314,6 +314,7 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 300, over every corpus document, over a real binary run against planted
 credentials, and from the extension's side by the parity script.
 
+[0.3.0]: https://crates.io/crates/secrets-le/0.3.0
 [0.2.3]: https://crates.io/crates/secrets-le/0.2.3
 [0.2.2]: https://crates.io/crates/secrets-le/0.2.2
 [0.2.0]: https://crates.io/crates/secrets-le/0.2.0
