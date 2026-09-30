@@ -26,3 +26,16 @@ supabase login --token sbp_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefface
 # Shopify is covered by a unit test rather than here: a complete token of
 square-cli --access-token sq0atp-EXAMPLEnotarealsquare00
 https://example.blob.core.windows.invalid/c/b?sv=2024-11-04&ss=b&srt=o&sp=r&se=2030-01-01T00:00:00Z&sig=EXAMPLEnotarealazuresas0000
+HF_TOKEN=hf_EXAMPLEnotarealhuggingface00000000000000
+GROQ_API_KEY=gsk_EXAMPLEnotarealgroq000000000000000000000000000000
+export REPLICATE_API_TOKEN=r8_EXAMPLEnotarealreplicate0000000000000000
+XAI_API_KEY=xai-EXAMPLEnotarealxai000000000000000000000000000000000000000000000000000000
+doctl auth init -t dop_v1_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefface
+DOPPLER_TOKEN=dp.st.dev.EXAMPLE-notareal-doppler-00000000000000000
+LINEAR_API_KEY=lin_api_EXAMPLEnotareallinear00000000000000000000000
+GOOGLE_CLIENT_SECRET=GOCSPX-EXAMPLEnotarealgoogle00000000000
+curl -X POST https://hooks.slack.com/services/EXAMPLE/NOTREAL/examplenotarealslackwebhook
+curl -X POST https://discord.com/api/webhooks/000000000000000000/EXAMPLEnotarealdiscordwebhook00000000000000000000000000000000
+gh auth login --with-token <<< gho_1234567890abcdefghijklmnopqrstuvwxyz
+STRIPE_RESTRICTED=rk_test_EXAMPLEnotarealstripe000000000
+STRIPE_WEBHOOK_SECRET=whsec_EXAMPLEnotarealstripewebhook00000

@@ -165,6 +165,84 @@ const CASES: readonly Case[] = [
 		family: 'tokens',
 		value: 'sq0atp-EXAMPLEnotarealsquare00',
 	},
+	{
+		issuer: 'Hugging Face',
+		type: 'huggingface-token',
+		confidence: 'high',
+		family: 'tokens',
+		value: 'hf_EXAMPLEnotarealhuggingface00000000000000',
+	},
+	{
+		issuer: 'Groq',
+		type: 'groq-key',
+		confidence: 'high',
+		family: 'apiKeys',
+		value: 'gsk_EXAMPLEnotarealgroq000000000000000000000000000000',
+	},
+	{
+		issuer: 'Replicate',
+		type: 'replicate-token',
+		confidence: 'high',
+		family: 'tokens',
+		value: 'r8_EXAMPLEnotarealreplicate0000000000000000',
+	},
+	{
+		issuer: 'xAI',
+		type: 'xai-key',
+		confidence: 'high',
+		family: 'apiKeys',
+		value:
+			'xai-EXAMPLEnotarealxai000000000000000000000000000000000000000000000000000000',
+	},
+	{
+		issuer: 'DigitalOcean',
+		type: 'digitalocean-token',
+		confidence: 'high',
+		family: 'tokens',
+		value:
+			'dop_v1_deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefface',
+	},
+	{
+		issuer: 'Doppler (service token)',
+		type: 'doppler-token',
+		confidence: 'high',
+		family: 'tokens',
+		// Joined rather than written out, so the file carries no
+		// Doppler-shaped literal for push protection to find.
+		value: ['dp', 'st', 'dev.EXAMPLE-notareal-doppler-00000000000000000'].join(
+			'.',
+		),
+	},
+	{
+		issuer: 'Linear',
+		type: 'linear-key',
+		confidence: 'high',
+		family: 'apiKeys',
+		value: 'lin_api_EXAMPLEnotareallinear00000000000000000000000',
+	},
+	{
+		issuer: 'Google OAuth client secret',
+		type: 'google-oauth-secret',
+		confidence: 'high',
+		family: 'apiKeys',
+		value: 'GOCSPX-EXAMPLEnotarealgoogle00000000000',
+	},
+	{
+		issuer: 'Slack webhook',
+		type: 'slack-webhook',
+		confidence: 'high',
+		family: 'tokens',
+		value:
+			'https://hooks.slack.com/services/EXAMPLE/NOTREAL/examplenotarealslackwebhook',
+	},
+	{
+		issuer: 'Discord webhook',
+		type: 'discord-webhook',
+		confidence: 'high',
+		family: 'tokens',
+		value:
+			'https://discord.com/api/webhooks/000000000000000000/EXAMPLEnotarealdiscordwebhook00000000000000000000000000000000',
+	},
 ];
 
 /** The Azure case is a query string, not a bare value, so it stands apart. */
@@ -263,7 +341,7 @@ describe('issuer prefixes deliberately not matched', () => {
 		it(`does not report ${why}`, () => {
 			for (const secret of detectSecrets(content, { sensitivity: 'low' })) {
 				expect(secret.type).not.toMatch(
-					/^(anthropic|openai|gitlab|sendgrid|mailgun|sentry|npm|pypi|docker|vault|terraform|supabase|shopify|square|azure-sas)/,
+					/^(anthropic|openai|gitlab|sendgrid|mailgun|sentry|npm|pypi|docker|vault|terraform|supabase|shopify|square|huggingface|groq|replicate|xai|digitalocean|doppler|linear|google-oauth|slack|discord|azure-sas)/,
 				);
 			}
 		});

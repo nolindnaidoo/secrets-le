@@ -7,6 +7,21 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Ten more credential formats are named by issuer**: Hugging Face `hf_`,
+  Groq `gsk_`, Replicate `r8_`, xAI `xai-`, DigitalOcean `do[opr]_v1_`,
+  Doppler `dp.pt.`/`dp.st.`, Linear `lin_api_`, Google OAuth client secrets
+  `GOCSPX-`, and Slack and Discord webhook URLs. Each is found with no key
+  name beside it and reported under its own type, so the finding says which
+  credential to revoke. The AI-provider keys answer to the API-key switch,
+  the rest to the token switch.
+- **GitHub's other token types** — `gho_`, `ghu_`, `ghs_`, `ghr_` — and
+  Stripe's restricted `rk_` keys and `whsec_` webhook secrets join the
+  known-prefix detector, which read only `ghp_` and `sk_` before.
+
 ## [0.2.3] - 2026-08-15
 
 ### Added

@@ -86,7 +86,7 @@ pub(crate) struct Finding {
 /// tokens, since a session credential is a bearer credential.
 const PASSWORD_TYPES: [&str; 3] = ["password", "connection-string", "database-url"];
 
-const API_KEY_TYPES: [&str; 11] = [
+const API_KEY_TYPES: [&str; 15] = [
     "api-key",
     "aws-key",
     "aws-secret",
@@ -98,8 +98,12 @@ const API_KEY_TYPES: [&str; 11] = [
     "openai-key",
     "sendgrid-key",
     "supabase-key",
+    "groq-key",
+    "xai-key",
+    "linear-key",
+    "google-oauth-secret",
 ];
-const TOKEN_TYPES: [&str; 17] = [
+const TOKEN_TYPES: [&str; 23] = [
     "token",
     "jwt",
     "oauth-token",
@@ -115,6 +119,12 @@ const TOKEN_TYPES: [&str; 17] = [
     "square-token",
     "terraform-token",
     "vault-token",
+    "huggingface-token",
+    "replicate-token",
+    "digitalocean-token",
+    "doppler-token",
+    "slack-webhook",
+    "discord-webhook",
     "cookie",
     "session-id",
 ];
