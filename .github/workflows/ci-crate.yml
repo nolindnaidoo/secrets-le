@@ -22,6 +22,7 @@ on:
       - 'src/extraction/**'
       - 'src/utils/mask.ts'
       - 'src/mcp/**'
+      - 'scripts/check-mcp-definition.ts'
       - 'scripts/check-detection-parity.ts'
       - '.github/workflows/ci-crate.yml'
       # The policy job greps every *.md, and in the crate-only repos holds
@@ -41,6 +42,7 @@ on:
       - 'src/extraction/**'
       - 'src/utils/mask.ts'
       - 'src/mcp/**'
+      - 'scripts/check-mcp-definition.ts'
       - 'scripts/check-detection-parity.ts'
       - '.github/workflows/ci-crate.yml'
       # The policy job greps every *.md, and in the crate-only repos holds
@@ -397,6 +399,9 @@ jobs:
       - name: Both detect_secrets servers, over generated documents
         working-directory: .
         run: bun scripts/check-detection-differential.ts
+      - name: Both servers define the shared tool identically
+        working-directory: .
+        run: bun scripts/check-mcp-definition.ts
 
   # A standing net over the detector table: nineteen patterns through a
   # backtracking engine, fed documents nobody wrote. Sixty seconds, not
