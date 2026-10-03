@@ -15,8 +15,9 @@
   </a>
 </p>
 
-An [MCP](https://modelcontextprotocol.io) server that extracts URLs from
-documentation, configuration and code — the extraction engine behind the
+An [MCP](https://modelcontextprotocol.io) server that detects hardcoded secrets — API
+keys, passwords, tokens and private keys — without ever returning one; the
+detection engine behind the
 [Secrets-LE](https://letools.dev/tools/secrets-le)
 editor extension, exposed as a tool an agent can call.
 
@@ -90,23 +91,33 @@ If that prints the tool name, the server works.
 | argument | type | |
 |---|---|---|
 | `content` | string | **required.** The text to scan. |
-| `format` | string | The language: `markdown`, `yaml`, `json`, `typescript`… Required unless `filename` is given. |
-| `filename` | string | Used to infer `format` when it is absent — `README.md` resolves to `markdown`. |
-| `dedupe` | boolean | Collapse repeats. Default `false`. |
+| `sensitivity` | string | `low` reports every match, `medium` (the default) drops low-confidence ones, `high` keeps only high-confidence ones. |
+| `includeApiKeys` | boolean | Include API key detectors. Default `true`. |
+| `includePasswords` | boolean | Include password detectors. Default `true`. |
+| `includeTokens` | boolean | Include token detectors. Default `true`. |
+| `includePrivateKeys` | boolean | Include private key detectors. Default `true`. |
 | `maxResults` | number | Default `500`, ceiling `5000`. |
 
-Returns each URL with its protocol and 1-based line and column, plus
-`meta.truncated` so a capped result is never mistaken for a complete one.
+Returns each finding by type, confidence, key name and 1-based line and
+column. **The value never leaves the tool**: `preview` is truncated and
+length-annotated, and `context` is the line with the value masked out, so a
+finding can be located without the credential leaving the machine it was
+found on. `meta.truncated` says whether a capped result dropped anything.
 
 ```json
 {
   "ok": true,
   "data": {
     "secrets": [
-      { "value": "https://example.com/guide", "protocol": "https", "line": 2, "column": 15 }
+      {"type": "aws-secret", "confidence": "high", "key": "aws_secret_access_key", "preview": "wJalrXUt… (40 chars)", "context": "AWS_SECRET_ACCESS_KEY=wJalrXUt… (40 chars)", "line": 1, "column": 23}
     ]
   },
-  "meta": { "count": 1, "truncated": false }
+  "diagnostics": [],
+  "meta": {
+    "tool": "detect_secrets",
+    "count": 1,
+    "truncated": false
+  }
 }
 ```
 
@@ -150,7 +161,7 @@ Architecture. [nolindnaidoo.com](https://nolindnaidoo.com) ·
 
 Twelve Rust tools built the same way: small, single-purpose, and driven by a
 machine rather than a person. pixelcoords and pixelactions make up one loop —
-pixelcoords answers *where*, pixelactions *acts* there. The nine LE crates are
+pixelcoords answers *where*, pixelactions *acts* there. The ten LE crates are
 the terminal half of the extensions they sit in: the same detection, held to
 the extension's own corpus, and an exit code instead of a results editor.
 
@@ -166,6 +177,7 @@ the extension's own corpus, and an exit code instead of a results editor.
 | **[numbers-le](https://github.com/nolindnaidoo/numbers-le/tree/main/crate)** | Find every hardcoded number in a codebase so a person can check them | [crates.io](https://crates.io/crates/numbers-le) |
 | **[envsync-le](https://github.com/nolindnaidoo/envsync-le/tree/main/crate)** | Compare the dotenv files in a tree and say which keys are missing from which | [crates.io](https://crates.io/crates/envsync-le) |
 | **[colors-le](https://github.com/nolindnaidoo/colors-le/tree/main/crate)** | Find every colour in a codebase, and say which are not in your palette | [crates.io](https://crates.io/crates/colors-le) |
+| **[dates-le](https://github.com/nolindnaidoo/dates-le/tree/main/crate)** | Extract every date and timestamp, and the exact instant each one resolves to | [crates.io](https://crates.io/crates/dates-le) |
 | **[scrape-le](https://github.com/nolindnaidoo/scrape-le/tree/main/crate)** | Check whether a page is scrapeable before the scraper is written | [crates.io](https://crates.io/crates/scrape-le) |
 
 ## Licence
