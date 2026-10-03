@@ -9,6 +9,22 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
+## [Unreleased]
+
+### Fixed
+
+- **`detect_secrets` described `sensitivity` backwards.** It told agents "higher
+  sensitivity reports more low-confidence matches"; `high` keeps only
+  high-confidence findings. It now says what each value does: `low` reports
+  every match, `medium` (the default) drops low-confidence ones, `high` keeps
+  only high-confidence ones.
+
+### Added
+
+- The differential test now holds the tool's definition identical on both
+  servers — name, description and schema — not only its answers. Both servers'
+  descriptions had drifted from the code, and nothing compared them.
+
 ## [2.4.1] - 2026-10-03
 
 ### Fixed

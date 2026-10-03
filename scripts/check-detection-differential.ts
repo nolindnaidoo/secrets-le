@@ -27,6 +27,7 @@
  *   SECRETS_LE_DIFFERENTIAL_CASES=<n> how many documents (default 600)
  *   SECRETS_LE_BIN=<path>             the Rust binary (default the release build)
  */
+import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { detectSecrets } from '../src/extraction/detectors';
@@ -311,6 +312,32 @@ console.log(
 
 const [npm, crate] = await Promise.all([fromNpm(documents), fromCrate(documents)]);
 const failures: string[] = [];
+
+// The tool's definition is half the contract: an agent reads the description
+// and the schema to decide what to send, so two servers that answer alike but
+// describe the tool differently are still two tools. Both descriptions here
+// once drifted from the code, one of them to the opposite of what it does.
+{
+	const listed = spawnSync(BINARY, ['mcp'], {
+		input: '{"jsonrpc":"2.0","id":0,"method":"tools/list"}\n',
+		encoding: 'utf8',
+	});
+	const crateTools = (
+		JSON.parse(listed.stdout.trim().split('\n')[0] ?? '{}') as {
+			result?: { tools?: { name: string; description: string; inputSchema: unknown }[] };
+		}
+	).result?.tools ?? [];
+	for (const tool of TOOLS) {
+		const twin = crateTools.find((candidate) => candidate.name === tool.name);
+		const ours = canonical({ name: tool.name, description: tool.description, inputSchema: tool.inputSchema });
+		const theirs = twin === undefined ? 'absent' : canonical(twin);
+		if (ours !== theirs) {
+			failures.push(
+				`the two servers define ${tool.name} differently\n  npm:   ${ours.slice(0, 600)}\n  crate: ${theirs.slice(0, 600)}`,
+			);
+		}
+	}
+}
 
 for (const [index, document] of documents.entries()) {
 	if (npm[index] !== crate[index]) {

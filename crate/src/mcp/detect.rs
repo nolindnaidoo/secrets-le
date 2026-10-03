@@ -41,8 +41,9 @@ pub(crate) fn definition() -> Value {
                 "sensitivity": {
                     "type": "string",
                     "enum": SENSITIVITIES,
-                    "description": "Detection threshold. Higher sensitivity reports more \
-                                    low-confidence matches.",
+                    "description": "Which findings to report: \"low\" reports every match, \
+                                    \"medium\" (the default) drops low-confidence ones, \
+                                    and \"high\" keeps only high-confidence ones.",
                 },
                 "includeApiKeys": {
                     "type": "boolean",

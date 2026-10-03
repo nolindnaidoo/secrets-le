@@ -7,6 +7,16 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **The `detect_secrets` MCP tool described `sensitivity` backwards.** It told agents "higher
+  sensitivity reports more low-confidence matches"; `high` keeps only
+  high-confidence findings. It now says what each value does: `low` reports
+  every match, `medium` (the default) drops low-confidence ones, `high` keeps
+  only high-confidence ones.
+
 ## [0.3.0] - 2026-09-30
 
 ### Added
