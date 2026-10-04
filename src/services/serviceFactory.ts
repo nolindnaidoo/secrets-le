@@ -3,6 +3,8 @@ import type { Telemetry } from '../telemetry/telemetry';
 import { createTelemetry } from '../telemetry/telemetry';
 import type { Notifier } from '../ui/notifier';
 import { createNotifier } from '../ui/notifier';
+import type { RatingPrompt } from '../ui/ratingPrompt';
+import { createRatingPromptFor } from '../ui/ratingPrompt';
 import type { StatusBar } from '../ui/statusBar';
 import { createStatusBar } from '../ui/statusBar';
 import type { PerformanceMonitor } from '../utils/performance';
@@ -16,6 +18,7 @@ export interface ExtensionServices {
 	readonly notifier: Notifier;
 	readonly statusBar: StatusBar;
 	readonly performanceMonitor: PerformanceMonitor;
+	readonly ratingPrompt: RatingPrompt;
 }
 
 /**
@@ -29,6 +32,7 @@ export function createServices(
 	const notifier = createNotifier();
 	const statusBar = createStatusBar(context);
 	const performanceMonitor = createPerformanceMonitor();
+	const ratingPrompt = createRatingPromptFor(context, telemetry.event);
 
 	context.subscriptions.push(telemetry, statusBar);
 
@@ -37,5 +41,6 @@ export function createServices(
 		notifier,
 		statusBar,
 		performanceMonitor,
+		ratingPrompt,
 	});
 }

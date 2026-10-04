@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "Не знайдено жодних секретів, які потрібно очистити.",
+	"Enjoying {0}? A rating helps other developers find it.": "Подобається {0}? Оцінка допомагає іншим розробникам знайти це розширення.",
+	"Rate": "Оцінити",
+	"Later": "Пізніше",
+	"Don't Ask Again": "Більше не питати",
 	"Sanitization failed: {0}": "Помилка під час очищення: {0}",
 	"Results copied to clipboard": "Результати скопійовано до буфера обміну",
 	"Detection failed: {0}": "Виявлення не вдалося: {0}",

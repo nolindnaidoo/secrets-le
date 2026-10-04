@@ -31,6 +31,7 @@ function setup() {
 		telemetry: services.telemetry,
 		notifier: services.notifier,
 		performanceMonitor: services.performanceMonitor,
+		ratingPrompt: { recordSuccess: async () => {} },
 	});
 	registerOpenSettingsCommand(context as never, services.telemetry);
 	return { context, services };

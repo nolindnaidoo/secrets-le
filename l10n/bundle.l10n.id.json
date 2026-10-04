@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "Tidak ditemukan rahasia yang perlu dibersihkan.",
+	"Enjoying {0}? A rating helps other developers find it.": "Suka dengan {0}? Penilaian membantu pengembang lain menemukannya.",
+	"Rate": "Beri Nilai",
+	"Later": "Nanti",
+	"Don't Ask Again": "Jangan Tanya Lagi",
 	"Sanitization failed: {0}": "Proses sanitasi gagal: {0}",
 	"Results copied to clipboard": "Hasil telah disalin ke papan klip",
 	"Detection failed: {0}": "Deteksi gagal: {0}",

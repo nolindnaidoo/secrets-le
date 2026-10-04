@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "Không tìm thấy bí mật nào cần xóa.",
+	"Enjoying {0}? A rating helps other developers find it.": "Bạn thích {0}? Một lượt đánh giá giúp các nhà phát triển khác tìm thấy tiện ích này.",
+	"Rate": "Đánh giá",
+	"Later": "Để sau",
+	"Don't Ask Again": "Không hỏi lại",
 	"Sanitization failed: {0}": "Quá trình khử trùng không thành công: {0}",
 	"Results copied to clipboard": "Kết quả đã được sao chép vào khay nhớ tạm",
 	"Detection failed: {0}": "Không phát hiện được: {0}",

@@ -17,6 +17,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		telemetry: services.telemetry,
 		notifier: services.notifier,
 		performanceMonitor: services.performanceMonitor,
+		ratingPrompt: services.ratingPrompt,
 	});
 
 	// Register settings command

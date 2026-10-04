@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "정리할 비밀이 발견되지 않았습니다.",
+	"Enjoying {0}? A rating helps other developers find it.": "{0}이(가) 마음에 드시나요? 평점을 남기면 다른 개발자가 찾는 데 도움이 됩니다.",
+	"Rate": "평가하기",
+	"Later": "나중에",
+	"Don't Ask Again": "다시 묻지 않기",
 	"Sanitization failed: {0}": "정리 작업 실패: {0}",
 	"Results copied to clipboard": "결과가 클립보드에 복사되었습니다.",
 	"Detection failed: {0}": "탐지 실패: {0}",
