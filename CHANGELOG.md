@@ -9,6 +9,14 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
+## [2.4.3] - 2026-10-04
+
+### Fixed
+
+- The Open VSX links and the Open VSX downloads badge in the README, the npm
+  README and the Help command pointed at a namespace the listing has left, so
+  they led nowhere. The listing is under `nolindnaidoo` now, and so are they.
+
 ## [2.4.2] - 2026-10-03
 
 ### Fixed
