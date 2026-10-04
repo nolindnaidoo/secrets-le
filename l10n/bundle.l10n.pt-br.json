@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "Não foram encontrados segredos para apagar.",
+	"Enjoying {0}? A rating helps other developers find it.": "Gostando do {0}? Uma avaliação ajuda outros desenvolvedores a encontrá-lo.",
+	"Rate": "Avaliar",
+	"Later": "Mais tarde",
+	"Don't Ask Again": "Não perguntar novamente",
 	"Sanitization failed: {0}": "Falha na sanitização: {0}",
 	"Results copied to clipboard": "Resultados copiados para a área de transferência",
 	"Detection failed: {0}": "Falha na detecção: {0}",

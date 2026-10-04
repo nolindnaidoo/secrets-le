@@ -5,6 +5,7 @@ import { formatDetectionResults } from '../report/format';
 import type { Telemetry } from '../telemetry/telemetry';
 import type { DetectedSecret, DetectionResult } from '../types';
 import type { Notifier } from '../ui/notifier';
+import type { RatingPrompt } from '../ui/ratingPrompt';
 import { sanitizeErrorMessage } from '../utils/errors';
 import type { PerformanceMonitor } from '../utils/performance';
 import {
@@ -22,6 +23,7 @@ export function registerDetectCommand(
 		readonly telemetry: Telemetry;
 		readonly notifier: Notifier;
 		readonly performanceMonitor: PerformanceMonitor;
+		readonly ratingPrompt: RatingPrompt;
 	},
 ): void {
 	const diagnostics = vscode.languages.createDiagnosticCollection('secrets-le');
@@ -234,6 +236,9 @@ export function registerDetectCommand(
 						filesSkipped,
 						sensitivity: config.detectionSensitivity,
 					});
+					// Not awaited: it resolves when the toast is answered, and a command that
+					// waited on that would stay pending for as long as the toast is ignored.
+					void deps.ratingPrompt.recordSuccess();
 
 					// Completion message; the notifier applies notificationsLevel
 					if (secrets.length > 0) {

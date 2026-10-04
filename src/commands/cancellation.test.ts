@@ -70,6 +70,7 @@ function makeDeps(events: string[] = [], cancelAfter?: number) {
 		performanceMonitor: {
 			startOperation: () => ({ end: () => ({ duration: 1 }) }),
 		},
+		ratingPrompt: { recordSuccess: async () => {} },
 	} as never;
 }
 

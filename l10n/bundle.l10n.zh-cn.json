@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "未找到需要清理的秘密。",
+	"Enjoying {0}? A rating helps other developers find it.": "喜欢 {0} 吗？评分可以帮助其他开发者发现它。",
+	"Rate": "评分",
+	"Later": "稍后",
+	"Don't Ask Again": "不再询问",
 	"Sanitization failed: {0}": "数据净化失败：{0}",
 	"Results copied to clipboard": "结果已复制到剪贴板",
 	"Detection failed: {0}": "检测失败：{0}",

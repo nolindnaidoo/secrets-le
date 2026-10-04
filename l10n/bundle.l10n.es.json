@@ -1,5 +1,9 @@
 {
 	"No secrets found to sanitize.": "No se han encontrado secretos que eliminar.",
+	"Enjoying {0}? A rating helps other developers find it.": "¿Te gusta {0}? Una valoración ayuda a otros desarrolladores a encontrarlo.",
+	"Rate": "Valorar",
+	"Later": "Más tarde",
+	"Don't Ask Again": "No volver a preguntar",
 	"Sanitization failed: {0}": "Error de sanitización: {0}",
 	"Results copied to clipboard": "Resultados copiados al portapapeles",
 	"Detection failed: {0}": "Error en la detección: {0}",
