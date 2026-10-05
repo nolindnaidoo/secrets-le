@@ -38,7 +38,7 @@
 
 ## What it does
 
-Open a workspace, press `Ctrl+Alt+S` (`Cmd+Alt+S` on Mac), and every detected secret lands in a results document — grouped by file, with line/column positions pointing at the value itself. Run `Secrets-LE: Sanitize Secrets` to replace the secrets in the active file with a placeholder. Works in VS Code and in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
+Open a workspace, run `Secrets-LE: Detect Secrets`, and every detected secret lands in a results document — grouped by file, with line/column positions pointing at the value itself. Run `Secrets-LE: Sanitize Secrets` to replace the secrets in the active file with a placeholder. Works in VS Code and in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
 
 Detection is regex-based over the full text of each file, so it works on any text format — code, configs, `.env` files, YAML, JSON, logs. It is a pre-commit safety net, not a guarantee: a scanner built on patterns can miss secrets and can flag non-secrets. Review the results.
 
@@ -160,10 +160,12 @@ Key-based patterns accept quoted and unquoted keys, so JSON (`"apiKey": "…"`),
 
 | Command | Description |
 |---|---|
-| `Secrets-LE: Detect Secrets` (`Ctrl+Alt+S` / `Cmd+Alt+S`) | Scan the workspace and open a results document |
+| `Secrets-LE: Detect Secrets` | Scan the workspace and open a results document |
 | `Secrets-LE: Sanitize Secrets` | Replace detected secrets in the active file (asks for confirmation first) |
 | `Secrets-LE: Open Settings` | Open Secrets-LE settings |
 | `Secrets-LE: Help` | Built-in documentation |
+
+No command is bound to a key by default. Give any of them one under **Keyboard Shortcuts** in the editor.
 
 ## Settings
 

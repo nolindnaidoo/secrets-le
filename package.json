@@ -86,14 +86,6 @@
 				"category": "%manifest.command.category%"
 			}
 		],
-		"keybindings": [
-			{
-				"command": "secrets-le.detect",
-				"key": "ctrl+alt+s",
-				"mac": "cmd+alt+s",
-				"when": "editorTextFocus"
-			}
-		],
 		"menus": {
 			"editor/context": [
 				{
