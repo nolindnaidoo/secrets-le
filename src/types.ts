@@ -124,6 +124,8 @@ export interface ParseError {
 }
 
 export interface Configuration {
+	/** Whether the copy on the clipboard carries positions, whatever the screen shows. */
+	readonly clipboardIncludesPositions: boolean;
 	readonly copyToClipboardEnabled: boolean;
 	readonly dedupeEnabled: boolean;
 	readonly notificationsLevel: 'all' | 'important' | 'silent';
@@ -136,6 +138,8 @@ export interface Configuration {
 	readonly sanitizationReplaceWith: string;
 	readonly safetyEnabled: boolean;
 	readonly safetyFileSizeWarnBytes: number;
+	/** Whether the output gives the line and column of each secret found. */
+	readonly showPositions: boolean;
 	readonly statusBarEnabled: boolean;
 	readonly telemetryEnabled: boolean;
 	readonly workspaceScanPatterns: readonly string[];

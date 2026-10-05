@@ -11,6 +11,13 @@ separate product on its own cadence and keeps its own
 
 ## [Unreleased]
 
+### Added
+
+- Positions are now a setting. `secrets-le.showPositions` decides whether the
+  output gives the line and column of each secret found, and
+  `secrets-le.clipboardIncludesPositions` decides the same for the copy on the
+  clipboard. Both are on by default, so the output is what it was.
+
 ### Changed
 
 - No command is bound to a key by default any more. The one default this

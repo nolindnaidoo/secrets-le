@@ -208,8 +208,10 @@ export function registerSanitizeCommand(
 
 						// Copy formatted report to clipboard if enabled
 						if (config.copyToClipboardEnabled) {
-							const formattedReport =
-								formatSanitizationResults(sanitizationResult);
+							const formattedReport = formatSanitizationResults(
+								sanitizationResult,
+								config.clipboardIncludesPositions,
+							);
 							// The document is already sanitized at this point, so a failed
 							// clipboard copy must not be reported as "Sanitization failed".
 							try {

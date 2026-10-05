@@ -29,10 +29,13 @@ function groupBy<T>(
 	return grouped;
 }
 
-/** The lines describing one finding. */
-function secretLines(secret: DetectedSecret): readonly string[] {
+/** The lines describing one finding. Its position leads them when there is one and it is asked for. */
+function secretLines(
+	secret: DetectedSecret,
+	positions: boolean,
+): readonly string[] {
 	const lines: string[] = [
-		secret.position
+		secret.position && positions
 			? `- Line ${secret.position.line}, Column ${secret.position.column}`
 			: '- Found',
 	];
@@ -57,12 +60,13 @@ function appendTypeGroups(
 	lines: string[],
 	secrets: readonly DetectedSecret[],
 	heading: '##' | '###',
+	positions: boolean,
 ): void {
 	for (const [type, group] of groupBy(secrets, (s) => s.type)) {
 		lines.push(`${heading} ${type.toUpperCase()} (${group.length})`);
 		lines.push('');
 		for (const secret of group) {
-			lines.push(...secretLines(secret));
+			lines.push(...secretLines(secret, positions));
 		}
 	}
 }
@@ -70,7 +74,10 @@ function appendTypeGroups(
 /**
  * Formats detection results for display
  */
-export function formatDetectionResults(result: DetectionResult): string {
+export function formatDetectionResults(
+	result: DetectionResult,
+	positions = true,
+): string {
 	const lines: string[] = [];
 
 	lines.push('# Secrets Detection Results');
@@ -92,12 +99,12 @@ export function formatDetectionResults(result: DetectionResult): string {
 			for (const [filepath, fileSecrets] of byFile) {
 				lines.push(`## 📄 ${filepath} (${fileSecrets.length} secret(s))`);
 				lines.push('');
-				appendTypeGroups(lines, fileSecrets, '###');
+				appendTypeGroups(lines, fileSecrets, '###', positions);
 			}
 		}
 
 		if (!hasFilePaths) {
-			appendTypeGroups(lines, result.secrets, '##');
+			appendTypeGroups(lines, result.secrets, '##', positions);
 		}
 	}
 
@@ -147,7 +154,10 @@ export function formatDetectionResults(result: DetectionResult): string {
 /**
  * Formats sanitization results for display
  */
-export function formatSanitizationResults(result: SanitizationResult): string {
+export function formatSanitizationResults(
+	result: SanitizationResult,
+	positions = true,
+): string {
 	const lines: string[] = [];
 
 	lines.push('# Content Sanitization Results');
@@ -178,7 +188,7 @@ export function formatSanitizationResults(result: SanitizationResult): string {
 			lines.push('');
 			for (const replacement of replacements) {
 				lines.push(
-					replacement.position
+					replacement.position && positions
 						? `- Line ${replacement.position.line}, Column ${replacement.position.column}`
 						: '- Found',
 				);
