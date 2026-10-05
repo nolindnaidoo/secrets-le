@@ -121,7 +121,10 @@ export function registerDetectCommand(
 						});
 
 						// Format results
-						const formattedResult = formatDetectionResults(result);
+						const formattedResult = formatDetectionResults(
+							result,
+							config.showPositions,
+						);
 
 						progress.report({
 							message: vscode.l10n.t('Preparing output...'),
@@ -146,7 +149,13 @@ export function registerDetectCommand(
 							// A clipboard that is unavailable must not fail the scan; the
 							// report still opens below.
 							try {
-								await vscode.env.clipboard.writeText(formattedResult);
+								// The copy is its own text: whether it carries positions is a separate setting.
+								await vscode.env.clipboard.writeText(
+									formatDetectionResults(
+										result,
+										config.clipboardIncludesPositions,
+									),
+								);
 								deps.notifier.showInfo(
 									vscode.l10n.t('Results copied to clipboard'),
 								);

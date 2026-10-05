@@ -20,6 +20,7 @@ describe('config defaults parity with package.json', () => {
 	const props = manifest.contributes.configuration.properties;
 
 	const KEY_MAP: Record<string, keyof typeof CONFIG_DEFAULTS> = {
+		'secrets-le.clipboardIncludesPositions': 'clipboardIncludesPositions',
 		'secrets-le.copyToClipboardEnabled': 'copyToClipboardEnabled',
 		'secrets-le.dedupeEnabled': 'dedupeEnabled',
 		'secrets-le.notificationsLevel': 'notificationsLevel',
@@ -32,6 +33,7 @@ describe('config defaults parity with package.json', () => {
 		'secrets-le.sanitization.replaceWith': 'sanitizationReplaceWith',
 		'secrets-le.safety.enabled': 'safetyEnabled',
 		'secrets-le.safety.fileSizeWarnBytes': 'safetyFileSizeWarnBytes',
+		'secrets-le.showPositions': 'showPositions',
 		'secrets-le.statusBar.enabled': 'statusBarEnabled',
 		'secrets-le.telemetryEnabled': 'telemetryEnabled',
 		'secrets-le.workspace.scanPatterns': 'workspaceScanPatterns',

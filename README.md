@@ -183,7 +183,9 @@ No command is bound to a key by default. Give any of them one under **Keyboard S
 | `secrets-le.safety.enabled` | `true` | Guardrails for very large files |
 | `secrets-le.safety.fileSizeWarnBytes` | `1000000` | Skip/refuse files above this size |
 | `secrets-le.dedupeEnabled` | `false` | Collapse identical value+type detections in results |
+| `secrets-le.showPositions` | `true` | Show the line and column of each secret found |
 | `secrets-le.copyToClipboardEnabled` | `false` | Also copy results to the clipboard |
+| `secrets-le.clipboardIncludesPositions` | `true` | Include the line and column in that copy |
 | `secrets-le.openResultsSideBySide` | `true` | Open results beside the current editor |
 | `secrets-le.notificationsLevel` | `important` | `all` = every notification, `important` = warnings + errors, `silent` = errors only |
 | `secrets-le.statusBar.enabled` | `true` | Show the status bar item |
@@ -242,11 +244,11 @@ a build only tells you how busy the runner was.
 | Metric | Coverage |
 | --- | --- |
 | Statements | 90.53% |
-| Branches | 79.71% |
+| Branches | 80.23% |
 | Functions | 95.34% |
 | Lines | 91.42% |
 
-294 test cases across 16 files, plus an integration suite that runs
+297 test cases across 16 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

@@ -100,6 +100,32 @@ describe('secrets-le.detect', () => {
 
 		expect(_clipboardText()).toContain('Secrets Detection Results');
 	});
+
+	it('decides positions for the clipboard separately from the report', async () => {
+		setup();
+		_setConfig('secrets-le.copyToClipboardEnabled', true);
+		_setWorkspaceFiles([
+			{
+				path: '/workspace/.env',
+				content: 'PASSWORD=hunter2butlonger\n',
+			},
+		]);
+		await runCommand('secrets-le.detect');
+		expect(_clipboardText()).toMatch(/- Line \d+, Column \d+/);
+
+		_setConfig('secrets-le.clipboardIncludesPositions', false);
+		_setWorkspaceFiles([
+			{
+				path: '/workspace/.env',
+				content: 'PASSWORD=hunter2butlonger\n',
+			},
+		]);
+		await runCommand('secrets-le.detect');
+		expect(_clipboardText()).not.toMatch(/Line \d+, Column \d+/);
+		// The finding is still there, with everything but where it is.
+		expect(_clipboardText()).toContain('- Found');
+		expect(_clipboardText()).toContain('Confidence:');
+	});
 });
 
 describe('secrets-le.sanitize', () => {

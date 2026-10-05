@@ -9,6 +9,7 @@ import type { Configuration } from '../types';
  * two drifting apart. The export is the seam that test needs.
  */
 export const CONFIG_DEFAULTS = Object.freeze({
+	clipboardIncludesPositions: true,
 	copyToClipboardEnabled: false,
 	dedupeEnabled: false,
 	notificationsLevel: 'important' as const,
@@ -21,6 +22,7 @@ export const CONFIG_DEFAULTS = Object.freeze({
 	sanitizationReplaceWith: '***REDACTED***',
 	safetyEnabled: true,
 	safetyFileSizeWarnBytes: 1_000_000,
+	showPositions: true,
 	statusBarEnabled: true,
 	telemetryEnabled: false,
 	workspaceScanPatterns: Object.freeze(['**/*']) as readonly string[],
@@ -44,6 +46,11 @@ export function getConfiguration(): Configuration {
 	const config = vscode.workspace.getConfiguration('secrets-le');
 
 	return Object.freeze({
+		clipboardIncludesPositions: readBoolean(
+			config,
+			'clipboardIncludesPositions',
+			CONFIG_DEFAULTS.clipboardIncludesPositions,
+		),
 		copyToClipboardEnabled: readBoolean(
 			config,
 			'copyToClipboardEnabled',
@@ -96,6 +103,11 @@ export function getConfiguration(): Configuration {
 			'safety.fileSizeWarnBytes',
 			CONFIG_DEFAULTS.safetyFileSizeWarnBytes,
 			1000,
+		),
+		showPositions: readBoolean(
+			config,
+			'showPositions',
+			CONFIG_DEFAULTS.showPositions,
 		),
 		statusBarEnabled: readBoolean(
 			config,
