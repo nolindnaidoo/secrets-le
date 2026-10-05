@@ -16,7 +16,7 @@ Replace this with your actual test data once you customize the template.
 ## Testing Instructions
 
 1. Open this file in VS Code
-2. Run the "Extract Items" command (Cmd/Ctrl+Alt+E)
+2. Run the "Extract Items" command
 3. View the results in a new document
 
 ## Next Steps
