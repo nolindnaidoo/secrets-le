@@ -50,7 +50,6 @@ Detection is regex-based over the full text of each file, so it works on any tex
 | **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/nolindnaidoo/secrets-le) |
 | **A terminal or a CI step** | The same run over a whole tree, with exit codes | `cargo install secrets-le` · [crates.io](https://crates.io/crates/secrets-le) |
 | **Any MCP agent, via Node** | `detect_secrets` over stdio | `npx secrets-le-mcp` · [npm](https://www.npmjs.com/package/secrets-le-mcp) |
-| **Zed** | The MCP server as a context server | [add it by hand](https://zed.dev/docs/ai/mcp) *(no listing yet)* |
 
 ## Use it from an AI agent
 
@@ -59,7 +58,6 @@ The same engine runs as an [MCP](https://modelcontextprotocol.io) server, so an 
 | Editor | How |
 |---|---|
 | **VS Code** 1.101+ | Nothing to install — the extension registers `detect_secrets` with agent mode |
-| **Zed** | No listing yet — [add the MCP server by hand](https://zed.dev/docs/ai/mcp) |
 | **Claude Code** | `claude mcp add secrets-le -- npx -y secrets-le-mcp` |
 | **Cursor, Windsurf, anything else** | point it at `npx secrets-le-mcp` |
 
