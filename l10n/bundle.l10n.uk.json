@@ -15,5 +15,15 @@
 	"No active editor. Please open a file first.": "Редактор неактивний. Будь ласка, спочатку відкрийте файл.",
 	"No workspace open. Please open a workspace folder first.": "Робоча область не відкрита. Спочатку відкрийте папку робочої області.",
 	"This will replace detected secrets with placeholders. Continue?": "Це призведе до заміни виявлених секретних даних на заповнювачі. Продовжити?",
-	"Yes, Sanitize": "Так, «Sanitize»"
+	"Yes, Sanitize": "Так, «Sanitize»",
+	"Scan Folder": "Сканувати папку",
+	"{0} of {1} files": "{0} з {1} файлів",
+	"More files matched than the limit of {0}. The rest were not read.": "Знайдено більше файлів, ніж ліміт {0}. Решту не було прочитано.",
+	"The results limit was reached. The rest of the files were not read.": "Досягнуто ліміту результатів. Решту файлів не було прочитано.",
+	"{0} file(s) larger than the safety limit were not read.": "Файлів, більших за безпечний ліміт, які не було прочитано: {0}.",
+	"{0} file(s) that are not UTF-8 text were not read.": "Файлів, що не є текстом UTF-8, які не було прочитано: {0}.",
+	"dependency folders, build output, caches and lockfiles": "папки залежностей, результати збирання, кеші та lock-файли",
+	"images, fonts, archives and other binary files": "зображення, шрифти, архіви та інші двійкові файли",
+	"{0} file(s) ignored by .gitignore": "файлів, які ігнорує .gitignore: {0}",
+	"Not read: {0}. The {1} settings change this.": "Не прочитано: {0}. Це змінюють параметри {1}."
 }

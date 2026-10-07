@@ -143,8 +143,18 @@ export interface Configuration {
 	readonly statusBarEnabled: boolean;
 	readonly telemetryEnabled: boolean;
 	readonly workspaceScanPatterns: readonly string[];
+	/** Globs left out on top of the built-in list. */
 	readonly workspaceScanExcludes: readonly string[];
+	/** Globs read whatever the excludes and `.gitignore` say. */
+	readonly workspaceScanAlwaysInclude: readonly string[];
 	readonly workspaceScanMaxFiles: number;
+	/** The most secrets one scan lists before it stops reading. */
+	readonly workspaceScanMaxResults: number;
+	/** Whether a scan's secrets also go to the Problems panel. */
+	readonly workspaceScanProblemsEnabled: boolean;
+	readonly workspaceScanRespectGitignore: boolean;
+	readonly workspaceScanSkipBinaryFiles: boolean;
+	readonly workspaceScanUseDefaultExcludes: boolean;
 }
 
 export interface PerformanceMetrics {

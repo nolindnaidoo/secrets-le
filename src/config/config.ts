@@ -26,20 +26,19 @@ export const CONFIG_DEFAULTS = Object.freeze({
 	statusBarEnabled: true,
 	telemetryEnabled: false,
 	workspaceScanPatterns: Object.freeze(['**/*']) as readonly string[],
-	workspaceScanExcludes: Object.freeze([
-		'**/node_modules/**',
-		'**/.git/**',
-		'**/dist/**',
-		'**/build/**',
-		'**/.next/**',
-		'**/coverage/**',
-		'**/*.min.js',
-		'**/*.bundle.js',
-		'**/package-lock.json',
-		'**/yarn.lock',
-		'**/pnpm-lock.yaml',
+	workspaceScanExcludes: Object.freeze([]) as readonly string[],
+	// A project keeps its secrets in the .env files its .gitignore leaves
+	// out. Those are the files this tool is run to look at.
+	workspaceScanAlwaysInclude: Object.freeze([
+		'**/.env',
+		'**/.env.*',
 	]) as readonly string[],
 	workspaceScanMaxFiles: 10_000,
+	workspaceScanMaxResults: 10_000,
+	workspaceScanProblemsEnabled: false,
+	workspaceScanRespectGitignore: true,
+	workspaceScanSkipBinaryFiles: true,
+	workspaceScanUseDefaultExcludes: true,
 });
 
 export function getConfiguration(): Configuration {
@@ -133,7 +132,38 @@ export function getConfiguration(): Configuration {
 			config,
 			'workspace.scanMaxFiles',
 			CONFIG_DEFAULTS.workspaceScanMaxFiles,
-			100,
+			1,
+		),
+		workspaceScanAlwaysInclude: readStringArray(
+			config,
+			'workspace.scanAlwaysInclude',
+			CONFIG_DEFAULTS.workspaceScanAlwaysInclude,
+		),
+		workspaceScanMaxResults: readNumber(
+			config,
+			'workspace.scanMaxResults',
+			CONFIG_DEFAULTS.workspaceScanMaxResults,
+			1,
+		),
+		workspaceScanProblemsEnabled: readBoolean(
+			config,
+			'workspace.scanProblemsEnabled',
+			CONFIG_DEFAULTS.workspaceScanProblemsEnabled,
+		),
+		workspaceScanRespectGitignore: readBoolean(
+			config,
+			'workspace.scanRespectGitignore',
+			CONFIG_DEFAULTS.workspaceScanRespectGitignore,
+		),
+		workspaceScanSkipBinaryFiles: readBoolean(
+			config,
+			'workspace.scanSkipBinaryFiles',
+			CONFIG_DEFAULTS.workspaceScanSkipBinaryFiles,
+		),
+		workspaceScanUseDefaultExcludes: readBoolean(
+			config,
+			'workspace.scanUseDefaultExcludes',
+			CONFIG_DEFAULTS.workspaceScanUseDefaultExcludes,
 		),
 	});
 }

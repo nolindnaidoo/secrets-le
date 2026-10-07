@@ -15,5 +15,15 @@
   "Removing duplicates...": "Removing duplicates...",
   "Preparing output...": "Preparing output...",
   "Results copied to clipboard": "Results copied to clipboard",
-  "Detection failed: {0}": "Detection failed: {0}"
+  "Detection failed: {0}": "Detection failed: {0}",
+  "Scan Folder": "Scan Folder",
+  "{0} of {1} files": "{0} of {1} files",
+  "More files matched than the limit of {0}. The rest were not read.": "More files matched than the limit of {0}. The rest were not read.",
+  "The results limit was reached. The rest of the files were not read.": "The results limit was reached. The rest of the files were not read.",
+  "{0} file(s) larger than the safety limit were not read.": "{0} file(s) larger than the safety limit were not read.",
+  "{0} file(s) that are not UTF-8 text were not read.": "{0} file(s) that are not UTF-8 text were not read.",
+  "dependency folders, build output, caches and lockfiles": "dependency folders, build output, caches and lockfiles",
+  "images, fonts, archives and other binary files": "images, fonts, archives and other binary files",
+  "{0} file(s) ignored by .gitignore": "{0} file(s) ignored by .gitignore",
+  "Not read: {0}. The {1} settings change this.": "Not read: {0}. The {1} settings change this."
 }

@@ -9,10 +9,22 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
-## [2.5.0] - 2026-10-05
+## [2.5.0] - 2026-10-06
 
 ### Added
 
+- Detect in one folder. `Secrets-LE: Detect Secrets in Folder` scans every
+  file under a folder, from the command palette or from a folder in the
+  Explorer. The report names each file relative to that folder.
+- A scan's secrets can go to the Problems panel. With
+  `secrets-le.workspace.scanProblemsEnabled` on, each secret is a warning on
+  its line, and each scan replaces the last one's. It is off by default. A
+  message names the kind of secret, never its value.
+- `secrets-le.workspace.scanMaxResults` caps how many secrets a scan lists
+  before it stops reading. The default is 10,000.
+- `secrets-le.workspace.scanAlwaysInclude` reads a path whatever the switches
+  below say. It holds `**/.env` and `**/.env.*` by default.
+- A scan's report ends with a line for each thing it left unread.
 - Positions are now a setting. `secrets-le.showPositions` decides whether the
   output gives the line and column of each secret found, and
   `secrets-le.clipboardIncludesPositions` decides the same for the copy on the
@@ -20,6 +32,20 @@ separate product on its own cadence and keeps its own
 
 ### Changed
 
+- A scan skips more by default, and says so. Three switches are on:
+  `secrets-le.workspace.scanUseDefaultExcludes` skips dependency folders,
+  build output, caches and lockfiles,
+  `secrets-le.workspace.scanRespectGitignore` skips whatever the project's
+  `.gitignore` files skip, and `secrets-le.workspace.scanSkipBinaryFiles`
+  skips images, fonts, archives and other files that are not text. `.env`
+  files are still read, though `.gitignore` usually leaves them out. A
+  secret in a skipped file is not reported, so turn the switches off to
+  screen everything.
+- `secrets-le.workspace.scanExcludes` is empty by default. The patterns it
+  held are covered by the built-in list. It now adds to that list.
+- A scan reads each file from disk as bytes. It used to open each one as a
+  document in the editor.
+- The report's line about skipped files is now one line for each reason.
 - No command is bound to a key by default any more. The one default this
   extension shipped sat on a key the editor, the system or another LE
   extension already used. Every command can still be given a key under

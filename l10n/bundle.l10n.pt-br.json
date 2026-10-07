@@ -15,5 +15,15 @@
 	"No active editor. Please open a file first.": "Não há nenhum editor ativo. Por favor, abra um arquivo primeiro.",
 	"No workspace open. Please open a workspace folder first.": "Nenhum espaço de trabalho está aberto. Por favor, abra primeiro uma pasta de espaço de trabalho.",
 	"This will replace detected secrets with placeholders. Continue?": "Isso substituirá os segredos detectados por espaços reservados. Deseja continuar?",
-	"Yes, Sanitize": "Sim, higienizar"
+	"Yes, Sanitize": "Sim, higienizar",
+	"Scan Folder": "Verificar pasta",
+	"{0} of {1} files": "{0} de {1} arquivos",
+	"More files matched than the limit of {0}. The rest were not read.": "Mais arquivos corresponderam do que o limite de {0}. Os demais não foram lidos.",
+	"The results limit was reached. The rest of the files were not read.": "O limite de resultados foi atingido. Os demais arquivos não foram lidos.",
+	"{0} file(s) larger than the safety limit were not read.": "{0} arquivo(s) maiores que o limite de segurança não foram lidos.",
+	"{0} file(s) that are not UTF-8 text were not read.": "{0} arquivo(s) que não são texto UTF-8 não foram lidos.",
+	"dependency folders, build output, caches and lockfiles": "pastas de dependências, saídas de build, caches e lockfiles",
+	"images, fonts, archives and other binary files": "imagens, fontes, arquivos compactados e outros arquivos binários",
+	"{0} file(s) ignored by .gitignore": "{0} arquivo(s) ignorado(s) pelo .gitignore",
+	"Not read: {0}. The {1} settings change this.": "Não lido: {0}. As configurações {1} alteram isso."
 }

@@ -71,6 +71,11 @@
 				"category": "%manifest.command.category%"
 			},
 			{
+				"command": "secrets-le.detectFolder",
+				"title": "%manifest.command.detect-folder.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
 				"command": "secrets-le.sanitize",
 				"title": "%manifest.command.sanitize.title%",
 				"category": "%manifest.command.category%"
@@ -104,6 +109,9 @@
 					"command": "secrets-le.detect"
 				},
 				{
+					"command": "secrets-le.detectFolder"
+				},
+				{
 					"command": "secrets-le.sanitize"
 				},
 				{
@@ -111,6 +119,13 @@
 				},
 				{
 					"command": "secrets-le.help"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "secrets-le.detectFolder",
+					"when": "explorerResourceIsFolder",
+					"group": "7_modification@1"
 				}
 			]
 		},
@@ -218,41 +233,75 @@
 					"default": false,
 					"description": "%manifest.settings.telemetry.desc%"
 				},
-				"secrets-le.workspace.scanPatterns": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [
-						"**/*"
-					],
-					"description": "%manifest.settings.workspace.scan-patterns.desc%"
-				},
 				"secrets-le.workspace.scanExcludes": {
 					"type": "array",
+					"default": [],
 					"items": {
 						"type": "string"
 					},
-					"default": [
-						"**/node_modules/**",
-						"**/.git/**",
-						"**/dist/**",
-						"**/build/**",
-						"**/.next/**",
-						"**/coverage/**",
-						"**/*.min.js",
-						"**/*.bundle.js",
-						"**/package-lock.json",
-						"**/yarn.lock",
-						"**/pnpm-lock.yaml"
-					],
-					"description": "%manifest.settings.workspace.scan-excludes.desc%"
+					"description": "%manifest.settings.workspace.excludes.desc%",
+					"order": 104
 				},
 				"secrets-le.workspace.scanMaxFiles": {
 					"type": "number",
 					"default": 10000,
-					"minimum": 100,
-					"description": "%manifest.settings.workspace.scan-max-files.desc%"
+					"minimum": 1,
+					"description": "%manifest.settings.workspace.max-files.desc%",
+					"order": 106
+				},
+				"secrets-le.workspace.scanMaxResults": {
+					"type": "number",
+					"default": 10000,
+					"minimum": 1,
+					"description": "%manifest.settings.workspace.max-results.desc%",
+					"order": 107
+				},
+				"secrets-le.workspace.scanPatterns": {
+					"type": "array",
+					"default": [
+						"**/*"
+					],
+					"items": {
+						"type": "string"
+					},
+					"description": "%manifest.settings.workspace.patterns.desc%",
+					"order": 100
+				},
+				"secrets-le.workspace.scanProblemsEnabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "%manifest.settings.workspace.problems.desc%",
+					"order": 109
+				},
+				"secrets-le.workspace.scanRespectGitignore": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.workspace.gitignore.desc%",
+					"order": 102
+				},
+				"secrets-le.workspace.scanAlwaysInclude": {
+					"type": "array",
+					"default": [
+						"**/.env",
+						"**/.env.*"
+					],
+					"items": {
+						"type": "string"
+					},
+					"description": "%manifest.settings.workspace.always-include.desc%",
+					"order": 105
+				},
+				"secrets-le.workspace.scanSkipBinaryFiles": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.workspace.binary.desc%",
+					"order": 103
+				},
+				"secrets-le.workspace.scanUseDefaultExcludes": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.workspace.default-excludes.desc%",
+					"order": 101
 				}
 			}
 		},

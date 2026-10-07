@@ -15,5 +15,15 @@
 	"No active editor. Please open a file first.": "Tidak ada editor yang aktif. Silakan buka file terlebih dahulu.",
 	"No workspace open. Please open a workspace folder first.": "Tidak ada folder ruang kerja yang terbuka. Silakan buka folder ruang kerja terlebih dahulu.",
 	"This will replace detected secrets with placeholders. Continue?": "Tindakan ini akan mengganti informasi rahasia yang terdeteksi dengan tempat penanda. Lanjutkan?",
-	"Yes, Sanitize": "Ya, Sterilkan"
+	"Yes, Sanitize": "Ya, Sterilkan",
+	"Scan Folder": "Pindai Folder",
+	"{0} of {1} files": "{0} dari {1} file",
+	"More files matched than the limit of {0}. The rest were not read.": "Jumlah file yang cocok melebihi batas {0}. Sisanya tidak dibaca.",
+	"The results limit was reached. The rest of the files were not read.": "Batas hasil telah tercapai. File lainnya tidak dibaca.",
+	"{0} file(s) larger than the safety limit were not read.": "{0} file yang lebih besar dari batas keamanan tidak dibaca.",
+	"{0} file(s) that are not UTF-8 text were not read.": "{0} file yang bukan teks UTF-8 tidak dibaca.",
+	"dependency folders, build output, caches and lockfiles": "folder dependensi, keluaran build, cache, dan lockfile",
+	"images, fonts, archives and other binary files": "gambar, font, arsip, dan file biner lainnya",
+	"{0} file(s) ignored by .gitignore": "{0} file yang diabaikan oleh .gitignore",
+	"Not read: {0}. The {1} settings change this.": "Tidak dibaca: {0}. Pengaturan {1} mengubah hal ini."
 }

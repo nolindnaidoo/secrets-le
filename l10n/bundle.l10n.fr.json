@@ -15,5 +15,15 @@
 	"No active editor. Please open a file first.": "Aucun éditeur n'est ouvert. Veuillez d'abord ouvrir un fichier.",
 	"No workspace open. Please open a workspace folder first.": "Aucun espace de travail n'est ouvert. Veuillez d'abord ouvrir un dossier d'espace de travail.",
 	"This will replace detected secrets with placeholders. Continue?": "Cela remplacera les informations confidentielles détectées par des espaces réservés. Voulez-vous continuer ?",
-	"Yes, Sanitize": "Oui, désinfecter"
+	"Yes, Sanitize": "Oui, désinfecter",
+	"Scan Folder": "Analyser le dossier",
+	"{0} of {1} files": "{0} sur {1} fichiers",
+	"More files matched than the limit of {0}. The rest were not read.": "Plus de fichiers correspondent que la limite de {0}. Les autres n'ont pas été lus.",
+	"The results limit was reached. The rest of the files were not read.": "La limite de résultats a été atteinte. Les autres fichiers n'ont pas été lus.",
+	"{0} file(s) larger than the safety limit were not read.": "{0} fichier(s) dépassant la limite de sécurité n'ont pas été lus.",
+	"{0} file(s) that are not UTF-8 text were not read.": "{0} fichier(s) qui ne sont pas du texte UTF-8 n'ont pas été lus.",
+	"dependency folders, build output, caches and lockfiles": "dossiers de dépendances, sorties de build, caches et fichiers de verrouillage",
+	"images, fonts, archives and other binary files": "images, polices, archives et autres fichiers binaires",
+	"{0} file(s) ignored by .gitignore": "{0} fichier(s) ignoré(s) par .gitignore",
+	"Not read: {0}. The {1} settings change this.": "Non lu : {0}. Les paramètres {1} permettent de changer cela."
 }

@@ -111,6 +111,98 @@ That prints the tool list and exits — if you see `detect_secrets`, the server 
 
 </details>
 
+## Across a folder or a workspace
+
+Detect reads files from disk and gives one report, grouped by file.
+
+- **The whole workspace**: run `Secrets-LE: Detect Secrets` from the command palette.
+- **One folder**: right-click it in the Explorer and choose `Detect Secrets in Folder`, or run `Secrets-LE: Detect Secrets in Folder` and pick one.
+
+```markdown
+# Secrets Detection Results
+
+⚠️ Found 2 potential secret(s):
+
+## 📄 .env (1 secret(s))
+
+### PASSWORD (1)
+
+- Line 1, Column 19
+  Key: database_password
+  Type: Password
+  Confidence: high
+  Value: hunter2… (14 chars)
+  Context: DATABASE_PASSWORD=hunter2… (14 chars)
+
+## 📄 src/config.ts (1 secret(s))
+
+### API-KEY (1)
+
+- Line 1, Column 17
+  Key: apikey
+  Type: Generic API key
+  Confidence: high
+  Value: sk_demo_… (40 chars)
+  Context: const apiKey = "sk_demo_… (40 chars)";
+
+
+---
+
+# Warnings
+
+- Not read: dependency folders, build output, caches and lockfiles; images, fonts, archives and other binary files; 1 file(s) ignored by .gitignore. The `secrets-le.workspace.*` settings change this.
+```
+
+**What a scan reads.** Files come from disk, so an unsaved edit is not seen. A file over the safety size, or one that is not UTF-8 text, is left unread. It stops at 10,000 files or 10,000 listed secrets. The report ends with a line for each thing it left out.
+
+**`.env` files are read even though `.gitignore` leaves them out.** That is where a project keeps its secrets, and it is what this tool is run to look at. `scanAlwaysInclude` holds `**/.env` and `**/.env.*` by default. Empty it to leave them to `.gitignore`.
+
+**A scan that skips is not a clearance.** A secret in a dependency folder, in another file `.gitignore` leaves out, or in a binary file is not reported. To screen everything, turn the three switches off.
+
+**What it skips, and how to change that.** Three switches are on by default, and each can be turned off on its own in Settings:
+
+| Switch | Skips |
+|---|---|
+| `scanUseDefaultExcludes` | Dependency folders, build output, tool caches and lockfiles. The full list is below |
+| `scanRespectGitignore` | Whatever the project's `.gitignore` files skip |
+| `scanSkipBinaryFiles` | Images, fonts, archives and other files that are not text |
+
+Two lists adjust the result without turning a switch off. To skip more, add a pattern to `scanExcludes`. To read something a switch would skip, add it to `scanAlwaysInclude`:
+
+```jsonc
+{
+	// Also skip the test fixtures.
+	"secrets-le.workspace.scanExcludes": ["**/fixtures/**"],
+	// Keep reading .env files, and read the vendored code as well.
+	"secrets-le.workspace.scanAlwaysInclude": ["**/.env", "**/.env.*", "**/vendor/**"]
+}
+```
+
+`Secrets-LE: Open Settings` opens all of these in the Settings editor.
+
+<details>
+<summary>The built-in list</summary>
+
+Folders, wherever they appear:
+
+<!-- built-in-folders -->
+`.git`, `.hg`, `.svn`, `node_modules`, `bower_components`, `jspm_packages`, `.pnpm-store`, `.yarn`, `vendor`, `site-packages`, `Pods`, `Carthage`, `dist`, `build`, `out`, `target`, `_build`, `_site`, `dist-newstyle`, `zig-out`, `storybook-static`, `cdk.out`, `DerivedData`, `CMakeFiles`, `.next`, `.nuxt`, `.output`, `.svelte-kit`, `.angular`, `.astro`, `.docusaurus`, `.vuepress`, `.expo`, `.turbo`, `.parcel-cache`, `.cache`, `.sass-cache`, `.jekyll-cache`, `.dart_tool`, `.pub-cache`, `.gradle`, `.kotlin`, `.cxx`, `.externalNativeBuild`, `captures`, `ephemeral`, `.symlinks`, `.swiftpm`, `.build`, `.bundle`, `.stack-work`, `.zig-cache`, `.godot`, `elm-stuff`, `.vercel`, `.netlify`, `.serverless`, `.aws-sam`, `.terraform`, `.venv`, `venv`, `__pycache__`, `.tox`, `.nox`, `.mypy_cache`, `.pytest_cache`, `.ruff_cache`, `.ipynb_checkpoints`, `.eggs`, `coverage`, `htmlcov`, `.nyc_output`, `.vscode-test`, `.idea`, `.vs`, `xcuserdata`, `*.egg-info`
+<!-- /built-in-folders -->
+
+Files, wherever they appear:
+
+<!-- built-in-files -->
+`*.min.js`, `*.min.css`, `*.map`, `*.snap`, `*.lock`, `package-lock.json`, `pnpm-lock.yaml`, `npm-shrinkwrap.json`, `go.sum`, `*.pbxproj`, `*.iml`, `local.properties`, `output-metadata.json`, `.flutter-plugins`, `.flutter-plugins-dependencies`, `.packages`, `Generated.xcconfig`, `flutter_export_environment.sh`, `GeneratedPluginRegistrant.*`, `fastlane/report.xml`, `fastlane/test_output/**`, `doc/api/**`
+<!-- /built-in-files -->
+
+Not on the list, because they are ordinary folders in many projects: `bin`, `obj`, `tmp`, `logs`, `public`, `generated`. A project that generates those ignores them in git, and the scan reads `.gitignore`.
+
+</details>
+
+**In the Problems panel.** Turn on `secrets-le.workspace.scanProblemsEnabled` and each secret is also a warning on its line. Each scan replaces the last one's. A message names the kind of secret, never its value.
+
+The settings that shape a scan are under [Settings](#settings).
+
 ## The CLI
 
 The same detection runs from a terminal or a CI step: a Rust CLI in
@@ -161,6 +253,7 @@ Key-based patterns accept quoted and unquoted keys, so JSON (`"apiKey": "…"`),
 | Command | Description |
 |---|---|
 | `Secrets-LE: Detect Secrets` | Scan the workspace and open a results document |
+| `Secrets-LE: Detect Secrets in Folder` | The same for one folder. Also on a folder in the Explorer |
 | `Secrets-LE: Sanitize Secrets` | Replace detected secrets in the active file (asks for confirmation first) |
 | `Secrets-LE: Open Settings` | Open Secrets-LE settings |
 | `Secrets-LE: Help` | Built-in documentation |
@@ -177,9 +270,15 @@ No command is bound to a key by default. Give any of them one under **Keyboard S
 | `secrets-le.detection.includeTokens` | `true` | Detect tokens and JWTs |
 | `secrets-le.detection.includePrivateKeys` | `true` | Detect PEM private-key blocks |
 | `secrets-le.sanitization.replaceWith` | `***REDACTED***` | Replacement text used by Sanitize |
-| `secrets-le.workspace.scanPatterns` | `["**/*"]` | Glob patterns to scan |
-| `secrets-le.workspace.scanExcludes` | node_modules, .git, dist, … | Glob patterns to skip |
-| `secrets-le.workspace.scanMaxFiles` | `10000` | Cap on files scanned per run |
+| `secrets-le.workspace.scanPatterns` | `["**/*"]` | The files a folder or workspace scan reads |
+| `secrets-le.workspace.scanUseDefaultExcludes` | `true` | Skip dependency folders, build output, caches and lockfiles |
+| `secrets-le.workspace.scanRespectGitignore` | `true` | Skip what the project's `.gitignore` files skip |
+| `secrets-le.workspace.scanSkipBinaryFiles` | `true` | Skip images, fonts, archives and other files that are not text |
+| `secrets-le.workspace.scanExcludes` | `[]` | More files to skip, as glob patterns |
+| `secrets-le.workspace.scanAlwaysInclude` | `["**/.env", "**/.env.*"]` | Files to read even when one of the three above would skip them |
+| `secrets-le.workspace.scanMaxFiles` | `10000` | The most files one scan reads |
+| `secrets-le.workspace.scanMaxResults` | `10000` | The most secrets one scan lists before it stops reading |
+| `secrets-le.workspace.scanProblemsEnabled` | `false` | Also show the secrets a scan finds in the Problems panel |
 | `secrets-le.safety.enabled` | `true` | Guardrails for very large files |
 | `secrets-le.safety.fileSizeWarnBytes` | `1000000` | Skip/refuse files above this size |
 | `secrets-le.dedupeEnabled` | `false` | Collapse identical value+type detections in results |
@@ -243,12 +342,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 90.53% |
-| Branches | 80.23% |
-| Functions | 95.34% |
-| Lines | 91.42% |
+| Statements | 92.45% |
+| Branches | 82.88% |
+| Functions | 95.51% |
+| Lines | 93.60% |
 
-297 test cases across 16 files, plus an integration suite that runs
+345 test cases across 18 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

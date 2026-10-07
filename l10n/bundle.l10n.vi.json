@@ -15,5 +15,15 @@
 	"No active editor. Please open a file first.": "Hiện không có trình soạn thảo nào đang hoạt động. Vui lòng mở một tệp trước.",
 	"No workspace open. Please open a workspace folder first.": "Chưa có thư mục không gian làm việc nào được mở. Vui lòng mở một thư mục không gian làm việc trước.",
 	"This will replace detected secrets with placeholders. Continue?": "Thao tác này sẽ thay thế các thông tin bí mật được phát hiện bằng các ký hiệu giữ chỗ. Bạn có muốn tiếp tục không?",
-	"Yes, Sanitize": "Đúng vậy, khử trùng"
+	"Yes, Sanitize": "Đúng vậy, khử trùng",
+	"Scan Folder": "Quét thư mục",
+	"{0} of {1} files": "{0} trên {1} tệp",
+	"More files matched than the limit of {0}. The rest were not read.": "Số tệp khớp vượt quá giới hạn {0}. Phần còn lại không được đọc.",
+	"The results limit was reached. The rest of the files were not read.": "Đã đạt giới hạn kết quả. Các tệp còn lại không được đọc.",
+	"{0} file(s) larger than the safety limit were not read.": "{0} tệp lớn hơn giới hạn an toàn không được đọc.",
+	"{0} file(s) that are not UTF-8 text were not read.": "{0} tệp không phải văn bản UTF-8 không được đọc.",
+	"dependency folders, build output, caches and lockfiles": "thư mục phụ thuộc, đầu ra bản dựng, bộ nhớ đệm và lockfile",
+	"images, fonts, archives and other binary files": "hình ảnh, phông chữ, tệp nén và các tệp nhị phân khác",
+	"{0} file(s) ignored by .gitignore": "{0} tệp bị .gitignore bỏ qua",
+	"Not read: {0}. The {1} settings change this.": "Không đọc: {0}. Các cài đặt {1} thay đổi điều này."
 }
