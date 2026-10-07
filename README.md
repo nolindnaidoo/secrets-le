@@ -309,7 +309,7 @@ setting of its own.
 - **The MCP server never returns a secret.** Its output goes to whatever model called it, so previews are truncated and length-annotated and the surrounding context line is masked, using the same `utils/mask` helpers as the report. There is no argument that turns this off, and the bundle gate fails the build if a value ever appears in a response — verified by making the tool leak on purpose and watching the gate catch it.
 - Error notifications redact home directories and credential-shaped fragments before display.
 - Sanitize always asks for confirmation before editing your file, and edits are normal undo-able document edits.
-- **One rating prompt, at most twice.** After 10 successful uses across 3 separate days the extension asks once whether you would rate it, and once more 30 uses later if you chose *Later* or dismissed it. *Don't Ask Again* ends it. Setting `notificationsLevel` to `important` or `silent` yourself turns it off. The counts are kept in VS Code's extension storage and nothing is sent anywhere; *Rate* opens the listing you installed from — the VS Code Marketplace or Open VSX — in your browser.
+- **One rating prompt, at most twice.** After 3 successful uses, on at least the second day you use it, the extension asks once whether you would rate it, and once more on the 25th use if you chose *Later* or dismissed it. *Don't Ask Again* ends it. Setting `notificationsLevel` to `important` or `silent` yourself turns it off. The counts are kept in VS Code's extension storage and nothing is sent anywhere; *Rate* opens the listing you installed from — the VS Code Marketplace or Open VSX — in your browser.
 
 ## Documentation
 
@@ -348,7 +348,7 @@ a build only tells you how busy the runner was.
 | Functions | 95.95% |
 | Lines | 94.01% |
 
-379 test cases across 21 files, plus an integration suite that runs
+382 test cases across 21 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 
