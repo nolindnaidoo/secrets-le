@@ -200,6 +200,8 @@ exports.run = async function run() {
 		extensionDevelopmentPath: probeDir,
 		extensionTestsPath: path.join(probeDir, 'suite.js'),
 		launchArgs: [
+			// As in .vscode-test.mjs: no GPU process to hang on under xvfb.
+			'--disable-gpu',
 			workspaceDir,
 			'--extensions-dir',
 			extensionsDir,
