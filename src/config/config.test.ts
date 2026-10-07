@@ -2,6 +2,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _resetMockState, _setConfig } from '../__mocks__/vscode';
+import {
+	DEFAULT_EXCLUDED_FILES,
+	DEFAULT_EXCLUDED_FOLDERS,
+	DEFAULT_EXCLUDED_PATHS,
+} from '../workspace/defaults';
 import { CONFIG_DEFAULTS, getConfiguration } from './config';
 
 /**
@@ -39,6 +44,14 @@ describe('config defaults parity with package.json', () => {
 		'secrets-le.workspace.scanPatterns': 'workspaceScanPatterns',
 		'secrets-le.workspace.scanExcludes': 'workspaceScanExcludes',
 		'secrets-le.workspace.scanMaxFiles': 'workspaceScanMaxFiles',
+		'secrets-le.workspace.scanAlwaysInclude': 'workspaceScanAlwaysInclude',
+		'secrets-le.workspace.scanMaxResults': 'workspaceScanMaxResults',
+		'secrets-le.workspace.scanProblemsEnabled': 'workspaceScanProblemsEnabled',
+		'secrets-le.workspace.scanRespectGitignore':
+			'workspaceScanRespectGitignore',
+		'secrets-le.workspace.scanSkipBinaryFiles': 'workspaceScanSkipBinaryFiles',
+		'secrets-le.workspace.scanUseDefaultExcludes':
+			'workspaceScanUseDefaultExcludes',
 	};
 
 	it('covers every declared setting', () => {
@@ -96,5 +109,55 @@ describe('getConfiguration read hardening', () => {
 	it('rejects arrays containing non-strings', () => {
 		_setConfig('secrets-le.workspace.scanPatterns', ['**/*.ts', 42]);
 		expect(getConfiguration().workspaceScanPatterns).toEqual(['**/*']);
+	});
+});
+
+describe('the README states the scan limits the code uses', () => {
+	const readme = readFileSync(join(__dirname, '..', '..', 'README.md'), 'utf8');
+	const grouped = (n: number) => n.toLocaleString('en-US');
+
+	it('in the settings table', () => {
+		expect(readme).toContain(
+			`| \`secrets-le.workspace.scanMaxFiles\` | \`${CONFIG_DEFAULTS.workspaceScanMaxFiles}\` |`,
+		);
+		expect(readme).toContain(
+			`| \`secrets-le.workspace.scanMaxResults\` | \`${CONFIG_DEFAULTS.workspaceScanMaxResults}\` |`,
+		);
+	});
+
+	it('in the prose', () => {
+		expect(readme).toContain(
+			`It stops at ${grouped(CONFIG_DEFAULTS.workspaceScanMaxFiles)} files or ${grouped(CONFIG_DEFAULTS.workspaceScanMaxResults)} listed secrets.`,
+		);
+	});
+});
+
+describe('the README lists the folders a scan skips', () => {
+	it('exactly as the code has them', () => {
+		const readme = readFileSync(
+			join(__dirname, '..', '..', 'README.md'),
+			'utf8',
+		);
+		const listed =
+			/<!-- built-in-folders -->\n(.*)\n<!-- \/built-in-folders -->/
+				.exec(readme)?.[1]
+				?.split(', ')
+				.map((entry) => entry.replace(/`/g, ''));
+		expect(listed).toEqual([...DEFAULT_EXCLUDED_FOLDERS, '*.egg-info']);
+	});
+
+	it('and the files, exactly as the code has them', () => {
+		const readme = readFileSync(
+			join(__dirname, '..', '..', 'README.md'),
+			'utf8',
+		);
+		const listed = /<!-- built-in-files -->\n(.*)\n<!-- \/built-in-files -->/
+			.exec(readme)?.[1]
+			?.split(', ')
+			.map((entry) => entry.replace(/`/g, ''));
+		expect(listed).toEqual([
+			...DEFAULT_EXCLUDED_FILES,
+			...DEFAULT_EXCLUDED_PATHS,
+		]);
 	});
 });

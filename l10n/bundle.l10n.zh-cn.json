@@ -15,5 +15,15 @@
 	"No active editor. Please open a file first.": "当前没有正在使用的编辑器。请先打开一个文件。",
 	"No workspace open. Please open a workspace folder first.": "未打开任何工作区。请先打开一个工作区文件夹。",
 	"This will replace detected secrets with placeholders. Continue?": "这将把检测到的机密信息替换为占位符。继续吗？",
-	"Yes, Sanitize": "是的，进行消毒"
+	"Yes, Sanitize": "是的，进行消毒",
+	"Scan Folder": "扫描文件夹",
+	"{0} of {1} files": "第 {0} 个文件，共 {1} 个",
+	"More files matched than the limit of {0}. The rest were not read.": "匹配的文件超过了 {0} 个的上限。其余文件未读取。",
+	"The results limit was reached. The rest of the files were not read.": "已达到结果上限。其余文件未读取。",
+	"{0} file(s) larger than the safety limit were not read.": "{0} 个超过安全上限的文件未读取。",
+	"{0} file(s) that are not UTF-8 text were not read.": "{0} 个非 UTF-8 文本的文件未读取。",
+	"dependency folders, build output, caches and lockfiles": "依赖文件夹、构建输出、缓存和锁文件",
+	"images, fonts, archives and other binary files": "图像、字体、压缩包和其他二进制文件",
+	"{0} file(s) ignored by .gitignore": ".gitignore 忽略的 {0} 个文件",
+	"Not read: {0}. The {1} settings change this.": "未读取：{0}。可通过 {1} 设置更改。"
 }

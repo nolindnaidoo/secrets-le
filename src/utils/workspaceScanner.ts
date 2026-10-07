@@ -1,6 +1,12 @@
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import { detectSecretsInContent } from '../extraction/extract';
 import type { DetectedSecret, ParseError } from '../types';
+import {
+	listFiles,
+	type ScanLimits,
+	type ScanSummary,
+	scanFiles,
+} from '../workspace/scan';
 
 export interface WorkspaceScanOptions {
 	readonly includeApiKeys?: boolean;
@@ -8,179 +14,95 @@ export interface WorkspaceScanOptions {
 	readonly includeTokens?: boolean;
 	readonly includePrivateKeys?: boolean;
 	readonly sensitivity?: 'low' | 'medium' | 'high';
-	readonly patterns?: readonly string[];
-	readonly excludes?: readonly string[];
-	readonly maxFiles?: number;
-	readonly fileSizeLimit?: number;
+	/** The folder to scan, or undefined for the whole workspace. */
+	readonly root?: vscode.Uri | undefined;
+	/** Which files are read, and how large one may be. */
+	readonly limits: ScanLimits;
+	/** The most secrets listed before the scan stops reading. */
+	readonly maxResults: number;
+	readonly token: vscode.CancellationToken;
+	readonly onProgress?: (done: number, total: number) => void;
+}
+
+/** One file's secrets, with the file itself for whatever points back at it. */
+export interface FileSecrets {
+	readonly uri: vscode.Uri;
+	readonly secrets: readonly DetectedSecret[];
 }
 
 export interface WorkspaceScanResult {
 	readonly secrets: readonly DetectedSecret[];
+	readonly files: readonly FileSecrets[];
 	readonly errors: readonly ParseError[];
-	readonly filesScanned: number;
-	readonly filesSkipped: number;
+	/** What was read and what was left unread, for the report to say. */
+	readonly summary: ScanSummary;
 	readonly totalProcessingTimeMs: number;
 }
 
 /**
- * Scans workspace files for secrets
+ * Scan a folder, or the whole workspace, for secrets.
+ *
+ * Files are read from disk as bytes, so an unsaved edit is not seen and a
+ * file is never opened as a document. Which files are read is the shared
+ * listing's decision, the same one the rest of the family makes.
  */
 export async function scanWorkspaceForSecrets(
-	options: WorkspaceScanOptions = {},
+	options: WorkspaceScanOptions,
 ): Promise<WorkspaceScanResult> {
-	const {
-		patterns = ['**/*'],
-		excludes = [
-			'**/node_modules/**',
-			'**/.git/**',
-			'**/dist/**',
-			'**/build/**',
-			'**/.next/**',
-			'**/coverage/**',
-			'**/*.min.js',
-			'**/*.bundle.js',
-			'**/package-lock.json',
-			'**/yarn.lock',
-			'**/pnpm-lock.yaml',
-		],
-		maxFiles = 10000,
-		fileSizeLimit = 1048576, // 1MB default
-	} = options;
-
 	const startTime = Date.now();
 	const secrets: DetectedSecret[] = [];
+	const files: FileSecrets[] = [];
 	const errors: ParseError[] = [];
-	let filesScanned = 0;
-	let filesSkipped = 0;
+	const detection = {
+		...(options.includeApiKeys !== undefined && {
+			includeApiKeys: options.includeApiKeys,
+		}),
+		...(options.includePasswords !== undefined && {
+			includePasswords: options.includePasswords,
+		}),
+		...(options.includeTokens !== undefined && {
+			includeTokens: options.includeTokens,
+		}),
+		...(options.includePrivateKeys !== undefined && {
+			includePrivateKeys: options.includePrivateKeys,
+		}),
+		...(options.sensitivity !== undefined && {
+			sensitivity: options.sensitivity,
+		}),
+	};
 
-	try {
-		// Find all files matching patterns
-		const fileArrays = await Promise.all(
-			patterns.map((pattern) =>
-				vscode.workspace.findFiles(pattern, null, maxFiles),
-			),
-		);
-		// Deduplicate files by URI string
-		const fileSet = new Set<string>();
-		const allFiles: vscode.Uri[] = [];
-		for (const fileArray of fileArrays) {
-			for (const uri of fileArray) {
-				const uriString = uri.toString();
-				if (!fileSet.has(uriString)) {
-					fileSet.add(uriString);
-					allFiles.push(uri);
-				}
+	const listed = await listFiles(options.root, options.limits);
+	const scanned = await scanFiles(
+		options.root,
+		listed.files,
+		options.limits,
+		options.token,
+		options.onProgress ?? (() => {}),
+		({ uri, file, text }) => {
+			const result = detectSecretsInContent(text, detection);
+			errors.push(...result.errors.map((err) => ({ ...err, filepath: file })));
+			// The limit is on what the report lists, so the file that crosses
+			// it is cut and the scan stops there.
+			const kept = result.secrets
+				.slice(0, options.maxResults - secrets.length)
+				.map((secret) => Object.freeze({ ...secret, filepath: file }));
+			if (kept.length > 0) {
+				secrets.push(...kept);
+				files.push({ uri, secrets: kept });
 			}
-		}
-		let allFilesList = allFiles;
-
-		// Apply manual excludes filtering
-		if (excludes.length > 0) {
-			allFilesList = allFilesList.filter((uri) => {
-				const relativePath = vscode.workspace.asRelativePath(uri, false);
-				return !excludes.some((exclude) => {
-					// Simple glob matching - convert ** to regex
-					const regexStr = exclude
-						.replace(/\*\*/g, '.*')
-						.replace(/\*/g, '[^/]*')
-						.replace(/\?/g, '.');
-					const regex = new RegExp(`^${regexStr}$`);
-					return regex.test(relativePath);
-				});
-			});
-		}
-
-		// Limit to maxFiles
-		allFilesList = allFilesList.slice(0, maxFiles);
-
-		// Process each file
-		for (const fileUri of allFilesList) {
-			try {
-				const stat = await vscode.workspace.fs.stat(fileUri);
-
-				// Skip if too large
-				if (stat.size > fileSizeLimit) {
-					filesSkipped++;
-					continue;
-				}
-
-				// Read and process file
-				const document = await vscode.workspace.openTextDocument(fileUri);
-				const filepath = vscode.workspace.asRelativePath(fileUri, false);
-
-				// Skip binary files
-				if (
-					document.languageId === 'plaintext' &&
-					stat.size > 0 &&
-					document.getText().includes('\x00')
-				) {
-					filesSkipped++;
-					continue;
-				}
-
-				const content = document.getText();
-				const result = detectSecretsInContent(content, {
-					...(options.includeApiKeys !== undefined && {
-						includeApiKeys: options.includeApiKeys,
-					}),
-					...(options.includePasswords !== undefined && {
-						includePasswords: options.includePasswords,
-					}),
-					...(options.includeTokens !== undefined && {
-						includeTokens: options.includeTokens,
-					}),
-					...(options.includePrivateKeys !== undefined && {
-						includePrivateKeys: options.includePrivateKeys,
-					}),
-					...(options.sensitivity !== undefined && {
-						sensitivity: options.sensitivity,
-					}),
-				});
-
-				// Add filepath to each secret
-				const secretsWithPath = result.secrets.map((secret) =>
-					Object.freeze({
-						...secret,
-						filepath,
-					}),
-				);
-
-				secrets.push(...secretsWithPath);
-				errors.push(
-					...result.errors.map((err) => ({
-						...err,
-						filepath,
-					})),
-				);
-
-				filesScanned++;
-			} catch (error) {
-				const errorMessage =
-					error instanceof Error ? error.message : String(error);
-				const filepath = vscode.workspace.asRelativePath(fileUri, false);
-				errors.push({
-					type: 'parse-error',
-					message: `Failed to scan file: ${errorMessage}`,
-					filepath,
-				});
-				filesSkipped++;
-			}
-		}
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		errors.push({
-			type: 'parse-error',
-			message: `Workspace scan failed: ${errorMessage}`,
-		});
-	}
-
-	const totalProcessingTimeMs = Date.now() - startTime;
+			return secrets.length < options.maxResults;
+		},
+	);
 
 	return Object.freeze({
 		secrets: Object.freeze(secrets),
+		files: Object.freeze(files),
 		errors: Object.freeze(errors),
-		filesScanned,
-		filesSkipped,
-		totalProcessingTimeMs,
+		summary: Object.freeze({
+			...scanned,
+			fileLimitReached: listed.fileLimitReached,
+			ignored: listed.ignored,
+		}),
+		totalProcessingTimeMs: Date.now() - startTime,
 	});
 }

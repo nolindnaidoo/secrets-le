@@ -39,6 +39,9 @@ function buildHelpContent(): string {
 ## Commands
 
 **Detect**: Scan workspace for secrets (API keys, tokens, passwords, etc.)
+**Detect in Folder**: The same for one folder. Also on a folder in the Explorer
+
+A scan skips dependency folders, files .gitignore leaves out (except .env files) and binary files, unless the secrets-le.workspace.* settings say otherwise.
 **Sanitize**: Replace detected secrets in the active file with safe placeholders
 **Settings**: Configure detection sensitivity and options
 

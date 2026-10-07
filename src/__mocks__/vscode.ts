@@ -38,6 +38,25 @@ export class Uri {
 		return this.path;
 	}
 
+	with(change: { path?: string }): Uri {
+		return new Uri(
+			this.scheme,
+			this.authority,
+			change.path ?? this.path,
+			this.query,
+			this.fragment,
+		);
+	}
+
+	static joinPath(base: Uri, ...segments: string[]): Uri {
+		const parts = base.path.split('/').filter(Boolean);
+		for (const segment of segments.flatMap((s) => s.split('/'))) {
+			if (segment === '..') parts.pop();
+			else if (segment && segment !== '.') parts.push(segment);
+		}
+		return base.with({ path: `/${parts.join('/')}` });
+	}
+
 	toString(_skipEncoding?: boolean): string {
 		return `${this.scheme}://${this.authority}${this.path}`;
 	}
@@ -62,7 +81,50 @@ export class Position {
 		public readonly line: number,
 		public readonly character: number,
 	) {}
+	translate(lines: number, characters: number): Position {
+		return new Position(this.line + lines, this.character + characters);
+	}
 }
+
+export class RelativePattern {
+	constructor(
+		public readonly baseUri: Uri,
+		public readonly pattern: string,
+	) {}
+}
+
+export const DiagnosticSeverity = {
+	Error: 0,
+	Warning: 1,
+	Information: 2,
+	Hint: 3,
+};
+
+export class Diagnostic {
+	source: string | undefined;
+	constructor(
+		public readonly range: Range,
+		public readonly message: string,
+		public readonly severity: number,
+	) {}
+}
+
+const publishedDiagnostics = new Map<string, Diagnostic[]>();
+
+/** What the Problems panel would show: file path to its diagnostics. */
+export function _diagnostics(): ReadonlyMap<string, readonly Diagnostic[]> {
+	return publishedDiagnostics;
+}
+
+export const languages = {
+	createDiagnosticCollection: (_name: string) => ({
+		clear: () => publishedDiagnostics.clear(),
+		set: (uri: Uri, items: Diagnostic[]) => {
+			publishedDiagnostics.set(uri.path, items);
+		},
+		dispose: () => publishedDiagnostics.clear(),
+	}),
+};
 
 export class Range {
 	constructor(
@@ -172,14 +234,28 @@ export function _fireConfigChange(section: string): void {
 
 export interface MockWorkspaceFile {
 	readonly path: string;
-	readonly content: string;
+	readonly content: string | Uint8Array;
 	readonly languageId?: string;
 }
 
 const workspaceFiles: MockWorkspaceFile[] = [];
 
-export function _setWorkspaceFiles(files: readonly MockWorkspaceFile[]): void {
+/**
+ * Fill the in-memory filesystem. A list of files also opens `/workspace`, as
+ * the command tests expect. A map of path to content leaves the workspace
+ * folders to the test, as the shared scan tests expect.
+ */
+export function _setWorkspaceFiles(
+	files:
+		| readonly MockWorkspaceFile[]
+		| Readonly<Record<string, string | Uint8Array>>,
+): void {
 	workspaceFiles.length = 0;
+	if (!Array.isArray(files)) {
+		for (const [path, content] of Object.entries(files))
+			workspaceFiles.push({ path, content });
+		return;
+	}
 	workspaceFiles.push(...files);
 	workspace.workspaceFolders = [
 		{ uri: Uri.file('/workspace'), name: 'workspace', index: 0 },
@@ -197,16 +273,62 @@ export const workspace = {
 			? path.slice('/workspace/'.length)
 			: path;
 	},
-	findFiles: async (_pattern: string, _exclude?: unknown, maxResults?: number) =>
-		workspaceFiles
-			.slice(0, maxResults ?? workspaceFiles.length)
-			.map((file) => Uri.file(file.path)),
+	// Globs are read as the editor reads the ones this code sends: `**/`
+	// for any depth, `/**` for everything beneath, `*` within one segment.
+	findFiles: async (
+		include: string | RelativePattern,
+		exclude?: string | null,
+		maxResults?: number,
+	) => {
+		const toRegExp = (glob: string) =>
+			new RegExp(
+				`^${glob
+					.split(/(\*\*\/|\/\*\*|\*)/)
+					.map((part) =>
+						part === '**/'
+							? '(?:.*/)?'
+							: part === '/**'
+								? '/.*'
+								: part === '*'
+									? '[^/]*'
+									: part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'),
+					)
+					.join('')}$`,
+			);
+		const excluded = (exclude ?? '')
+			.replace(/^\{|\}$/g, '')
+			.split(',')
+			.filter(Boolean)
+			.map(toRegExp);
+		const base = typeof include === 'string' ? '' : `${include.baseUri.path}/`;
+		const wanted = toRegExp(
+			typeof include === 'string' ? include : include.pattern,
+		);
+		return workspaceFiles
+			.map((file) => file.path)
+			.filter((path) => path.startsWith(base))
+			.filter((path) => wanted.test(path.slice(base.length)))
+			.filter((path) => !excluded.some((glob) => glob.test(path.slice(1))))
+			.slice(0, maxResults)
+			.map((path) => Uri.file(path));
+	},
 	fs: {
-		readFile: async (_uri: Uri) => new Uint8Array(),
+		readFile: async (uri: Uri) => {
+			const file = workspaceFiles.find((f) => f.path === uri.path);
+			if (file === undefined) throw new Error(`no such file: ${uri.path}`);
+			return typeof file.content === 'string'
+				? new TextEncoder().encode(file.content)
+				: file.content;
+		},
 		writeFile: async (_uri: Uri, _content: Uint8Array) => {},
 		stat: async (uri: Uri) => {
 			const file = workspaceFiles.find((f) => f.path === uri.path);
-			return { type: 1, ctime: 0, mtime: 0, size: file?.content.length ?? 0 };
+			if (file !== undefined)
+				return { type: 1, ctime: 0, mtime: 0, size: file.content.length };
+			const prefix = `${uri.path}/`;
+			if (workspaceFiles.some((f) => f.path.startsWith(prefix)))
+				return { type: 2, ctime: 0, mtime: 0, size: 0 };
+			throw new Error(`no such file or directory: ${uri.path}`);
 		},
 	},
 	getConfiguration: (section?: string) => ({
@@ -237,15 +359,20 @@ export const workspace = {
 		if (target instanceof Uri) {
 			const file = workspaceFiles.find((f) => f.path === target.path);
 			return _createDocument({
-				content: file?.content ?? '',
+				content:
+					typeof file?.content === 'string'
+						? file.content
+						: new TextDecoder().decode(file?.content),
 				languageId: file?.languageId ?? 'plaintext',
 				fileName: target.path,
 			});
 		}
-		return _createDocument({
+		const document = _createDocument({
 			content: target?.content ?? '',
 			languageId: target?.language ?? 'plaintext',
 		});
+		openedDocuments.push(document);
+		return document;
 	},
 	applyEdit: async (edit: WorkspaceEdit) => {
 		// A hardcoded true made the rejected-edit path untestable, and that is
@@ -290,6 +417,23 @@ export function _respondToWarning(
 	warningResponder = responder;
 }
 
+const openedDocuments: ReturnType<typeof _createDocument>[] = [];
+
+/** What a command put in front of the user: the documents it opened, in order. */
+export function _openedDocuments(): readonly ReturnType<
+	typeof _createDocument
+>[] {
+	return openedDocuments;
+}
+
+let openDialogResponder: (() => Uri[] | undefined) | undefined;
+
+export function _respondToOpenDialog(
+	responder: (() => Uri[] | undefined) | undefined,
+): void {
+	openDialogResponder = responder;
+}
+
 export const StatusBarAlignment = { Left: 1, Right: 2 };
 export const ViewColumn = { Active: -1, Beside: -2, One: 1, Two: 2 };
 export const ProgressLocation = {
@@ -315,6 +459,7 @@ export const window = {
 		return undefined;
 	},
 	showTextDocument: async (_document: unknown, _column?: unknown) => undefined,
+	showOpenDialog: async (_options?: unknown) => openDialogResponder?.(),
 	withProgress: async <T>(
 		_options: unknown,
 		task: (
@@ -488,6 +633,9 @@ export function _resetMockState(): void {
 	warningResponder = undefined;
 	clipboard.value = '';
 	workspace.workspaceFolders = undefined;
+	openedDocuments.length = 0;
+	openDialogResponder = undefined;
+	publishedDiagnostics.clear();
 }
 
 export const l10n = {
