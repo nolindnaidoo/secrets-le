@@ -7,6 +7,16 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-10-11
+
+### Fixed
+
+- **The README's Open VSX link led nowhere.** It pointed at a namespace the
+  extension's listing has left, and points at `nolindnaidoo` now. The Zed
+  row is gone with the Zed extension, which was never listed.
+- The family list's String-LE line no longer promises a position for every
+  string.
+
 ## [0.3.1] - 2026-10-03
 
 ### Fixed
@@ -324,6 +334,7 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 300, over every corpus document, over a real binary run against planted
 credentials, and from the extension's side by the parity script.
 
+[0.3.2]: https://crates.io/crates/secrets-le/0.3.2
 [0.3.1]: https://crates.io/crates/secrets-le/0.3.1
 [0.3.0]: https://crates.io/crates/secrets-le/0.3.0
 [0.2.3]: https://crates.io/crates/secrets-le/0.2.3
