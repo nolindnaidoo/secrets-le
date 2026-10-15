@@ -28,7 +28,7 @@ Enter
 Sleep 5s
 Show
 Sleep 1s
-Type "Use secrets-le to check app.env for secrets. One short line each, no values."
+Type "Use secrets-le to check app.env for secrets. One short line each, no values, nothing else."
 Sleep 500ms
 Enter
 Sleep 24s
