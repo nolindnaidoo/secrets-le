@@ -1,0 +1,16 @@
+{
+  "files": [
+    "app.env"
+  ],
+  "steps": [
+    {
+      "wait": 1500
+    },
+    {
+      "command": "Secrets-LE: Detect Secrets"
+    },
+    {
+      "wait": 5000
+    }
+  ]
+}

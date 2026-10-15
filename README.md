@@ -28,7 +28,7 @@
 ---
 
 <p align="center">
-  <img src="src/assets/images/demo.gif" alt="Secrets-LE Demo" style="max-width: 100%; height: auto;" />
+  <img src="assets/demos/editor.gif" alt="%manifest.ext.name% in VS Code" style="max-width: 100%; height: auto;" />
 </p>
 
 > **Useful?** A star or rating is how other developers find it —
@@ -60,6 +60,10 @@ The same engine runs as an [MCP](https://modelcontextprotocol.io) server, so an 
 | **VS Code** 1.101+ | Nothing to install — the extension registers `detect_secrets` with agent mode |
 | **Claude Code** | `claude mcp add secrets-le -- npx -y secrets-le-mcp` |
 | **Cursor, Windsurf, anything else** | point it at `npx secrets-le-mcp` |
+
+<p align="center">
+  <img src="assets/demos/mcp.gif" alt="An agent in Claude Code calling the secrets-le MCP server" style="max-width: 100%; height: auto;" />
+</p>
 
 ```
 detect_secrets(content, sensitivity?, includeApiKeys?, includePasswords?, includeTokens?, includePrivateKeys?, maxResults?)
@@ -216,6 +220,10 @@ secrets-le --sensitivity high .     # only high-confidence findings
 secrets-le --no-ignore --hidden .   # reach .env and everything git ignores
 secrets-le mcp                      # the same detection over MCP on stdio
 ```
+
+<p align="center">
+  <img src="assets/demos/cli.gif" alt="secrets-le in a terminal" style="max-width: 100%; height: auto;" />
+</p>
 
 The exit code is the answer: **0 nothing found · 1 findings · 2 the
 question was malformed** — so `secrets-le .` is a CI step as it stands.
