@@ -180,7 +180,9 @@ low, `low` keeps everything. Identical to the extension.
 ## Output contract
 
 **stdout is protocol. stderr is human.** One JSON report per line, one
-line per file examined. Every value in both is masked.
+line per file examined. Every value in both is masked. stdout carries the
+reports when it is piped or redirected and stays silent when it is a
+terminal, where the stderr summary already says the same thing.
 
 ```json
 {

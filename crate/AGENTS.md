@@ -98,6 +98,10 @@ crate/src/
 - **Nothing is rewritten.** The extension's `sanitize` has no equivalent
   here and will not until its confirmation story is designed.
 - **stdout is protocol, stderr is human. There is no `--json` flag.**
+  stdout stays silent when it is a terminal, because the stderr summary
+  already covers a person reading it. Anything that can parse gets every
+  report, and the human summary is a projection of the same reports so
+  the two cannot drift.
 - **Parity scope is detection only** — `src/extraction/**` and
   `src/utils/mask.ts`. Commands, UI, i18n and the config reader are
   extension concerns. The walker and the CLI have no extension
