@@ -79,6 +79,9 @@ cat config.env | secrets-le --stdin
 3 findings in 2 files
 ```
 
+The summary above is stderr. The JSON report, one object per line, goes to
+stdout when it is piped or redirected and is left out at a terminal.
+
 The exit code is the answer: **0 nothing found · 1 findings · 2 the
 question was malformed.** So `secrets-le .` is a CI step as it stands.
 
