@@ -7,6 +7,14 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-10-15
+
+### Changed
+
+- **stdout is silent at a terminal.** The JSON reports printed on the same
+  screen as the stderr summary and said the same thing again. Piped or
+  redirected, stdout carries every report exactly as before.
+
 ## [0.3.2] - 2026-10-11
 
 ### Fixed
@@ -334,6 +342,7 @@ The property is asserted four ways: exhaustively over value lengths 3 to
 300, over every corpus document, over a real binary run against planted
 credentials, and from the extension's side by the parity script.
 
+[0.3.3]: https://crates.io/crates/secrets-le/0.3.3
 [0.3.2]: https://crates.io/crates/secrets-le/0.3.2
 [0.3.1]: https://crates.io/crates/secrets-le/0.3.1
 [0.3.0]: https://crates.io/crates/secrets-le/0.3.0
