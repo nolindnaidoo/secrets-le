@@ -15,6 +15,8 @@
   </a>
 </p>
 
+![An agent in Claude Code calling the secrets-le MCP server](https://raw.githubusercontent.com/nolindnaidoo/secrets-le/main/assets/demos/mcp.gif)
+
 An [MCP](https://modelcontextprotocol.io) server that detects hardcoded secrets — API
 keys, passwords, tokens and private keys — without ever returning one; the
 detection engine behind the
