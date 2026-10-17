@@ -90,10 +90,11 @@ question was malformed.** So `secrets-le .` is a CI step as it stands.
 | Route | Command | Worth knowing |
 |---|---|---|
 | **cargo** | `cargo install secrets-le` | Any platform, needs **Rust 1.88+**. |
+| **npm** | `npm install -g secrets-le` or `npx secrets-le` | Needs **Node 20+**. The same `secrets-le` command, held to this one byte for byte. |
 | **From source** | `git clone https://github.com/nolindnaidoo/secrets-le`<br>`cd secrets-le/crate && cargo build --release` | The same build CI runs. |
 
-No runtime, no network, nothing written. It reads files and reports
-positions.
+The cargo build needs no runtime. Neither one touches the network or
+writes a file. It reads files and reports positions.
 
 ## What it looks for
 

@@ -49,6 +49,7 @@ Detection is regex-based over the full text of each file, so it works on any tex
 | **VS Code** | Detection and in-place sanitising, in your editor | [Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.secrets-le) |
 | **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/nolindnaidoo/secrets-le) |
 | **A terminal or a CI step** | The same run over a whole tree, with exit codes | `cargo install secrets-le` · [crates.io](https://crates.io/crates/secrets-le) |
+| **A terminal, via Node** | The same command line, held to the Rust one byte for byte | `npx secrets-le` · [npm](https://www.npmjs.com/package/secrets-le) |
 | **Any MCP agent, via Node** | `detect_secrets` over stdio | `npx secrets-le-mcp` · [npm](https://www.npmjs.com/package/secrets-le-mcp) |
 
 ## Use it from an AI agent
@@ -212,7 +213,10 @@ The settings that shape a scan are under [Settings](#settings).
 The same detection runs from a terminal or a CI step: a Rust CLI in
 [`crate/`](crate/README.md), sharing one pattern table with the extension
 — [`crate/signatures/patterns.toml`](crate/signatures/patterns.toml) —
-so the two can never disagree about what counts as a credential.
+so the two can never disagree about what counts as a credential. The
+same command line also ships on npm as `secrets-le`, for a machine with
+Node and no Rust, and CI holds it to the crate byte for byte on three
+operating systems.
 
 ```bash
 secrets-le .                        # scan a tree
@@ -351,12 +355,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 92.91% |
-| Branches | 83.64% |
-| Functions | 95.93% |
-| Lines | 93.99% |
+| Statements | 86.69% |
+| Branches | 78.27% |
+| Functions | 86.41% |
+| Lines | 88.41% |
 
-380 test cases across 21 files, plus an integration suite that runs
+408 test cases across 23 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

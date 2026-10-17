@@ -1,6 +1,6 @@
 {
 	"name": "secrets-le",
-	"version": "2.5.0",
+	"version": "2.6.0",
 	"author": {
 		"name": "nolindnaidoo",
 		"url": "https://nolindnaidoo.com"
@@ -21,6 +21,7 @@
 		"@vscode/test-electron": "^3.1.0",
 		"@vscode/vsce": "^4.0.0",
 		"esbuild": "^0.28.2",
+		"ignore": "^7.0.5",
 		"mocha": "^12.0.3",
 		"ovsx": "^1.2.0",
 		"typescript": "^7.0.2",
@@ -362,6 +363,11 @@
 		"build:prod": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20 --main-fields=module,main --minify --sourcemap=external",
 		"watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --target=node20 --main-fields=module,main --sourcemap --watch",
 		"typecheck": "tsc --noEmit",
+		"build:cli": "node scripts/build-cli.js",
+		"build:cli:prod": "node scripts/build-cli.js --prod",
+		"check:cli-parity": "bun scripts/check-cli-parity.ts",
+		"check:cli-pipes": "bun scripts/check-cli-pipes.ts",
+		"check:cli-package": "node scripts/check-cli-package.js",
 		"check:bundle": "node scripts/check-bundle.js",
 		"build:mcp": "node scripts/build-mcp.js",
 		"build:mcp:prod": "node scripts/build-mcp.js --prod",

@@ -30,6 +30,12 @@ with its own `CLAUDE.md`.
   the walk, `--sensitivity`, `--strict`, the detector toggles, the exit codes and JSON Lines have no
   editor equivalent and are not drift. SPEC.md's "Deliberate
   divergences" is the bar for a new one.
+- **The command line has a twin.** The npm package `secrets-le`, built
+  from the extension's `src/cli/`, mirrors `cli.rs`, `scan.rs`,
+  `walk.rs` and `mcp/` byte for byte, and
+  `bun ../scripts/check-cli-parity.ts` fails on any difference. A change
+  to a flag, a message, the walk, the masking, an exit code or an MCP
+  reply changes `src/cli/` in the same commit.
 - Write regression tests for every bug you fix; keep unit tests free of
   clocks, randomness, and the filesystem outside `resolve`/`walk`/
   `audit`.

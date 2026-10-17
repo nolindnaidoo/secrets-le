@@ -308,6 +308,18 @@ did not: only the path route dropped the mark.
 A BOM anywhere other than the start is a zero-width no-break space and
 belongs to the text.
 
+**Held equal: this surface and the npm one.** The npm package
+`secrets-le` installs a command named `secrets-le`, built from the
+extension's `src/cli/` over the extension's engine, and nobody running
+`secrets-le` can tell which one they have. It is held to the CLI and MCP
+surfaces above byte for byte — flags, walk, the excluded-file count, the
+masking, exit codes, stdout, stderr, and every reply `secrets-le mcp`
+writes — by `scripts/check-cli-parity.ts`. A change to this surface
+changes `src/cli/` in the same commit. That includes `--version`: every
+surface in the repository carries one version. One gap is known: a
+pattern that exhausts this crate's backtracking budget makes the file
+`incomplete` here, and JavaScript, which has no budget, answers it.
+
 ## Deliberate divergences
 
 Two surfaces, two jobs. The extension is **IDE-first** — one open buffer,

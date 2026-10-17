@@ -1,0 +1,46 @@
+{
+	"name": "secrets-le",
+	"version": "2.6.0",
+	"description": "Find hardcoded credentials in a codebase and report where each one is, never what it is.",
+	"keywords": [
+		"secrets",
+		"credentials",
+		"api-keys",
+		"security",
+		"audit",
+		"cli",
+		"secrets-le",
+		"nolindnaidoo",
+		"letools"
+	],
+	"license": "MIT",
+	"author": {
+		"name": "Nolin Naidoo",
+		"url": "https://nolindnaidoo.com"
+	},
+	"homepage": "https://letools.dev/tools/secrets-le",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nolindnaidoo/secrets-le.git",
+		"directory": "cli"
+	},
+	"bugs": {
+		"url": "https://github.com/nolindnaidoo/secrets-le/issues"
+	},
+	"type": "commonjs",
+	"bin": {
+		"secrets-le": "cli.js"
+	},
+	"files": [
+		"cli.js",
+		"README.md",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=20"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	}
+}
