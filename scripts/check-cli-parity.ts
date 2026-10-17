@@ -64,7 +64,9 @@ for (const [label, path] of [
 	['cli/cli.js', NODE_CLI],
 ] as const) {
 	if (!existsSync(path)) {
-		console.error(`FAIL: ${label} is missing at ${path}. Build it first.`);
+		// The path is not printed: it can come from SECRETS_LE_BIN, and an
+		// environment value is not something this script echoes into a log.
+		console.error(`FAIL: ${label} is missing. Build it first.`);
 		process.exit(1);
 	}
 }
