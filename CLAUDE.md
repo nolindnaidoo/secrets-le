@@ -62,6 +62,14 @@ artifact users actually install.
   the active buffer, plus a workspace scan on demand — one of two in the family that reaches past the buffer, and deliberately. The CLI is terminal-first: a tree walk,
   exit codes and JSON Lines, none of which has an editor equivalent. That
   is not drift, and nothing holds them equal — see `crate/SPEC.md`.
+- **The npm command line is the crate's surface, not the extension's.**
+  `src/cli/` builds the npm package `secrets-le`, which installs the same
+  command the crate does, so it is held to the Rust CLI byte for byte by
+  `bun run check:cli-parity` (after `bun run build:cli` and a `cargo build`
+  in `crate/`), MCP replies included. A change to the crate's flags, walk,
+  masking, exit codes or output changes `src/cli/` in the same commit.
+  `--version` is compared too, because every surface carries one version;
+  see AGENTS.md, Release.
 - **Nothing may print a secret.** The masking in `src/utils/mask.ts` is what
   makes both frontends safe to run in CI. Before adding any output path, ask
   what a CI log would have captured.
