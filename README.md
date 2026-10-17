@@ -17,6 +17,9 @@
   <a href="https://www.npmjs.com/package/secrets-le-mcp">
     <img src="https://img.shields.io/npm/v/secrets-le-mcp?style=for-the-badge&label=MCP%20server&color=blue&logo=npm" alt="secrets-le-mcp on npm" />
   </a>
+  <a href="https://www.npmjs.com/package/secrets-le">
+    <img src="https://img.shields.io/npm/v/secrets-le?style=for-the-badge&label=npm%20CLI&color=blue&logo=npm" alt="secrets-le on npm" />
+  </a>
   <a href="https://crates.io/crates/secrets-le">
     <img src="https://img.shields.io/crates/v/secrets-le?style=for-the-badge&label=Rust%20CLI&color=blue&logo=rust" alt="secrets-le on crates.io" />
   </a>
@@ -228,6 +231,22 @@ secrets-le mcp                      # the same detection over MCP on stdio
 <p align="center">
   <img src="assets/demos/cli.gif" alt="secrets-le in a terminal" style="max-width: 100%; height: auto;" />
 </p>
+
+**Install it from npm** ([`secrets-le`](https://www.npmjs.com/package/secrets-le)) **or from crates.io** ([`secrets-le`](https://crates.io/crates/secrets-le)). Both install the same `secrets-le` command.
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/secrets-le">
+    <img src="https://img.shields.io/npm/v/secrets-le?style=for-the-badge&label=npm%20CLI&color=blue&logo=npm" alt="secrets-le on npm" />
+  </a>
+  <a href="https://crates.io/crates/secrets-le">
+    <img src="https://img.shields.io/crates/v/secrets-le?style=for-the-badge&label=Rust%20CLI&color=blue&logo=rust" alt="secrets-le on crates.io" />
+  </a>
+</p>
+
+```bash
+npm install -g secrets-le   # or run it once: npx secrets-le
+cargo install secrets-le
+```
 
 The exit code is the answer: **0 nothing found · 1 findings · 2 the
 question was malformed** — so `secrets-le .` is a CI step as it stands.
