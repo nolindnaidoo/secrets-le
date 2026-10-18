@@ -28,22 +28,7 @@
 		"vitest": "^4.1.11"
 	},
 	"activationEvents": [
-		"onLanguage:javascript",
-		"onLanguage:javascriptreact",
-		"onLanguage:typescript",
-		"onLanguage:typescriptreact",
-		"onLanguage:json",
-		"onLanguage:jsonc",
-		"onLanguage:dotenv",
-		"onLanguage:env",
-		"onLanguage:yaml",
-		"onLanguage:yml",
-		"onLanguage:toml",
-		"onLanguage:python",
-		"onLanguage:ruby",
-		"onLanguage:shellscript",
-		"onLanguage:bash",
-		"onLanguage:plaintext"
+		"onStartupFinished"
 	],
 	"bugs": {
 		"url": "https://github.com/nolindnaidoo/secrets-le/issues"

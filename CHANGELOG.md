@@ -14,6 +14,13 @@ version and releases from one tag.
 
 ### Changed
 
+- **Activates once the window has started, instead of on 16 language
+  IDs.** vsce publishes every `onLanguage:` activation event as a marketplace
+  tag, and Open VSX scores tags, so 16 language names diluted the
+  keywords people search for. Secrets-LE, its status bar item and its MCP server
+  are now ready in every window shortly after startup, rather than when the
+  first file in one of those languages opens.
+
 - **The name carries the next words people search for.** Secrets-LE ranked
   15th for "password" and 21st for "credential scanner" on 2026-10-18,
   because neither word was in the name. The name is now "Secrets-LE: API
