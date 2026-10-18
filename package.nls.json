@@ -1,5 +1,5 @@
 {
-	"manifest.ext.name": "Secrets-LE: Secret & API Key Scanner",
+	"manifest.ext.name": "Secrets-LE: API Key, Password & Credential Scanner",
 	"manifest.ext.description": "Detect and sanitize credentials, tokens, API keys, and private keys locally — before you commit. 100% local processing; nothing leaves your machine.",
 	"manifest.command.category": "Secrets-LE",
 	"manifest.command.detect.title": "Detect Secrets",
