@@ -10,6 +10,18 @@ npm command line. The Rust CLI in `crate/` keeps its own
 [CHANGELOG](crate/CHANGELOG.md). From 2.6.0 every surface carries one
 version and releases from one tag.
 
+## [Unreleased]
+
+### Changed
+
+- **The listing carries the words people search for.** Open VSX ranks a
+  match in the name five times a match in the description, and "Secrets-LE"
+  holds "secrets" but not "secret", which Open VSX does not match to it, so
+  a search for "secret" put it 14th on 2026-10-18. The name is "Secrets-LE:
+  Secret & API Key Scanner", the description opens with "Secret scanner",
+  where a card has room for about forty characters, and the keywords are cut
+  from 30 to 12 phrases someone would search for.
+
 ## [2.6.1] - 2026-10-17
 
 ### Fixed
