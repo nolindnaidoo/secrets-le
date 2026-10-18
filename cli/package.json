@@ -1,6 +1,6 @@
 {
 	"name": "secrets-le",
-	"version": "2.6.1",
+	"version": "2.6.2",
 	"description": "Find hardcoded credentials in a codebase and report where each one is, never what it is.",
 	"keywords": [
 		"secrets",
