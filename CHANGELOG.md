@@ -10,6 +10,16 @@ npm command line. The Rust CLI in `crate/` keeps its own
 [CHANGELOG](crate/CHANGELOG.md). From 2.6.0 every surface carries one
 version and releases from one tag.
 
+## [Unreleased]
+
+### Changed
+
+- **The name carries the next words people search for.** Secrets-LE ranked
+  15th for "password" and 21st for "credential scanner" on 2026-10-18,
+  because neither word was in the name. The name is now "Secrets-LE: API
+  Key, Password & Credential Scanner". "secret" stays matched by "Secrets"
+  and the description.
+
 ## [2.6.2] - 2026-10-18
 
 ### Changed
