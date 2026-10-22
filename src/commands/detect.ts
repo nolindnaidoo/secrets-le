@@ -13,6 +13,7 @@ import {
 	scanWorkspaceForSecrets,
 } from '../utils/workspaceScanner';
 import { type ScanLimits, unreadNotes } from '../workspace/scan';
+import { guarded } from './guard';
 
 /**
  * Register command to detect secrets in workspace
@@ -271,15 +272,18 @@ export function registerDetectCommand(
 
 	context.subscriptions.push(
 		diagnostics,
-		vscode.commands.registerCommand('secrets-le.detect', async () => detect()),
+		vscode.commands.registerCommand(
+			'secrets-le.detect',
+			guarded(deps.notifier, async () => detect()),
+		),
 		// The Explorer hands over the folder that was clicked. From the
 		// palette there is none, and the command asks.
 		vscode.commands.registerCommand(
 			'secrets-le.detectFolder',
-			async (picked?: vscode.Uri) => {
+			guarded(deps.notifier, async (picked?: vscode.Uri) => {
 				const folder = picked ?? (await askForFolder());
 				if (folder !== undefined) await detect(folder);
-			},
+			}),
 		),
 	);
 }

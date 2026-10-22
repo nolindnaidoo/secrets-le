@@ -7,6 +7,7 @@ import type { Notifier } from '../ui/notifier';
 import { sanitizeErrorMessage } from '../utils/errors';
 import type { PerformanceMonitor } from '../utils/performance';
 import { handleSafetyChecks } from '../utils/safety';
+import { guarded } from './guard';
 
 /**
  * Register command to sanitize secrets in active document
@@ -21,7 +22,7 @@ export function registerSanitizeCommand(
 ): void {
 	const disposable = vscode.commands.registerCommand(
 		'secrets-le.sanitize',
-		async () => {
+		guarded(deps.notifier, async () => {
 			deps.telemetry.event('sanitize-command-invoked');
 
 			const editor = vscode.window.activeTextEditor;
@@ -261,7 +262,7 @@ export function registerSanitizeCommand(
 					error: errorMessage,
 				});
 			}
-		},
+		}),
 	);
 
 	context.subscriptions.push(disposable);
