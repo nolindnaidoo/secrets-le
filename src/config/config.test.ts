@@ -165,3 +165,25 @@ describe('the README lists the folders a scan skips', () => {
 		]);
 	});
 });
+
+describe('a number setting is read as a number', () => {
+	beforeEach(() => _resetMockState());
+
+	it('falls back to the default when the stored value is not a number', () => {
+		// `Number('')` and `Number(null)` are both 0, so a setting cleared to an
+		// empty string or null read as 0 and was clamped to the floor: a 1,000
+		// byte size guard in place of the 1,000,000 byte default.
+		for (const stored of ['', null, true, 'abc']) {
+			_resetMockState();
+			_setConfig('secrets-le.safety.fileSizeWarnBytes', stored);
+			expect(getConfiguration().safetyFileSizeWarnBytes, String(stored)).toBe(
+				CONFIG_DEFAULTS.safetyFileSizeWarnBytes,
+			);
+		}
+	});
+
+	it('clamps a number below the floor to the floor', () => {
+		_setConfig('secrets-le.safety.fileSizeWarnBytes', 5);
+		expect(getConfiguration().safetyFileSizeWarnBytes).toBe(1000);
+	});
+});
